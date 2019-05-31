@@ -1,0 +1,99 @@
+{
+    "type": "APL",
+    "version": "1.0",
+    "theme": "dark",
+    "mainTemplate": {
+        "parameters": [
+            "payload"
+        ],
+        "items": [{
+            "type": "Frame",
+            "width": "100vw",
+            "height": "100vh",
+            "backgroundColor": "white",
+            "items": [
+                {
+                    "type": "Container",
+                    "width": "100vw",
+                    "height": "100vh",
+                    "justifyContent": "spaceAround",
+                    "items": [
+                        {
+                            "type": "Text",
+                            "width": "100vw",
+                            "height": "25vh",
+                            "text": "${payload.mainData.welcomeText}",
+                            "color": "black",
+                            "fontSize": "16vh",
+                            "textAlign": "center",
+                            "textAlignVertical": "center"
+                        },
+                        {
+                            "type": "Container",
+                            "width": "100vw",
+                            "height": "75vh",
+                            "justifyContent": "spaceAround",
+                            "direction": "row",
+                            "alignItems": "center",
+                            "items" : [
+                                {   
+                                    "type": "TouchWrapper",
+                                    "width": "40vw",
+                                    "height": "18vh",
+                                    "item": {
+                                        "type": "Frame",
+                                        "width": "40vw",
+                                        "height": "18vh",
+                                        "borderColor": "black",
+                                        "borderWidth": "5px",
+                                        "items": [
+                                            {
+                                                "type": "Text",
+                                                "text": "${payload.mainData.yesText}",
+                                                "color": "black",
+                                                "fontSize": "18vh",
+                                                "textAlign": "center",
+                                                "textAlignVertical": "center"
+                                            }]
+                                    },
+                                    "onPress": {
+                                        "type": "SendEvent",
+                                        "arguments":[
+                                            "YesIntent"
+                                        ]
+                                    }
+                                },
+                                {   
+                                    "type": "TouchWrapper",
+                                    "width": "40vw",
+                                    "height": "18vh",
+                                    "item": {
+                                        "type": "Frame",
+                                        "width": "40vw",
+                                        "height": "18vh",
+                                        "borderColor": "black",
+                                        "borderWidth": "5px",
+                                        "items": [
+                                            {
+                                                "type": "Text",
+                                                "text": "${payload.mainData.noText}",
+                                                "color": "black",
+                                                "fontSize": "18vh",
+                                                "textAlign": "center",
+                                                "textAlignVertical": "center"
+                                            }]
+                                    },
+                                    "onPress": {
+                                        "type": "SendEvent",
+                                        "arguments":[
+                                            "NoIntent"
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }]
+        }]
+    }
+}
