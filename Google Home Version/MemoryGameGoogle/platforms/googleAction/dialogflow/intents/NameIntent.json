@@ -1,0 +1,17 @@
+{
+	"name": "NameIntent",
+	"auto": true,
+	"webhookUsed": true,
+	"responses": [
+		{
+			"parameters": [
+				{
+					"isList": false,
+					"name": "playerName",
+					"value": "$playerName",
+					"dataType": "@sys.any"
+				}
+			]
+		}
+	]
+}

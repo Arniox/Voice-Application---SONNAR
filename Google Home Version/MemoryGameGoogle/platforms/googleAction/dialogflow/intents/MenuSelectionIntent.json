@@ -1,0 +1,17 @@
+{
+	"name": "MenuSelectionIntent",
+	"auto": true,
+	"webhookUsed": true,
+	"responses": [
+		{
+			"parameters": [
+				{
+					"isList": false,
+					"name": "menuOption",
+					"value": "$menuOption",
+					"dataType": "@menuOption"
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,98 @@
+[
+	{
+		"data": [
+			{
+				"text": "inputAnswer",
+				"userDefined": true,
+				"alias": "inputAnswer",
+				"meta": "@inputAnswer"
+			}
+		],
+		"isTemplate": false,
+		"count": 0
+	},
+	{
+		"data": [
+			{
+				"text": "inputAnswer",
+				"userDefined": true,
+				"alias": "inputAnswer",
+				"meta": "@inputAnswer"
+			},
+			{
+				"text": " please",
+				"userDefined": false
+			}
+		],
+		"isTemplate": false,
+		"count": 0
+	},
+	{
+		"data": [
+			{
+				"text": "ah ",
+				"userDefined": false
+			},
+			{
+				"text": "inputAnswer",
+				"userDefined": true,
+				"alias": "inputAnswer",
+				"meta": "@inputAnswer"
+			},
+			{
+				"text": " thank you",
+				"userDefined": false
+			}
+		],
+		"isTemplate": false,
+		"count": 0
+	},
+	{
+		"data": [
+			{
+				"text": "inputAnswer",
+				"userDefined": true,
+				"alias": "inputAnswer",
+				"meta": "@inputAnswer"
+			},
+			{
+				"text": " thank you",
+				"userDefined": false
+			}
+		],
+		"isTemplate": false,
+		"count": 0
+	},
+	{
+		"data": [
+			{
+				"text": "inputAnswer",
+				"userDefined": true,
+				"alias": "inputAnswer",
+				"meta": "@inputAnswer"
+			},
+			{
+				"text": " thanks",
+				"userDefined": false
+			}
+		],
+		"isTemplate": false,
+		"count": 0
+	},
+	{
+		"data": [
+			{
+				"text": "I'll say ",
+				"userDefined": false
+			},
+			{
+				"text": "inputAnswer",
+				"userDefined": true,
+				"alias": "inputAnswer",
+				"meta": "@inputAnswer"
+			}
+		],
+		"isTemplate": false,
+		"count": 0
+	}
+]

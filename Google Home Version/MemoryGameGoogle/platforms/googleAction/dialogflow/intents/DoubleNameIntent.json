@@ -1,0 +1,23 @@
+{
+	"name": "DoubleNameIntent",
+	"auto": true,
+	"webhookUsed": true,
+	"responses": [
+		{
+			"parameters": [
+				{
+					"isList": false,
+					"name": "firstPlayerName",
+					"value": "$firstPlayerName",
+					"dataType": "@sys.any"
+				},
+				{
+					"isList": false,
+					"name": "secondPlayerName",
+					"value": "$secondPlayerName",
+					"dataType": "@sys.any"
+				}
+			]
+		}
+	]
+}

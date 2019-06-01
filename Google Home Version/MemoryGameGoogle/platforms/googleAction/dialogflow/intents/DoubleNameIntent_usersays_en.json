@@ -1,0 +1,180 @@
+[
+	{
+		"data": [
+			{
+				"text": "Our names are ",
+				"userDefined": false
+			},
+			{
+				"text": "firstPlayerName",
+				"userDefined": true,
+				"alias": "firstPlayerName",
+				"meta": "@sys.any"
+			},
+			{
+				"text": " and ",
+				"userDefined": false
+			},
+			{
+				"text": "secondPlayerName",
+				"userDefined": true,
+				"alias": "secondPlayerName",
+				"meta": "@sys.any"
+			}
+		],
+		"isTemplate": false,
+		"count": 0
+	},
+	{
+		"data": [
+			{
+				"text": "I am ",
+				"userDefined": false
+			},
+			{
+				"text": "firstPlayerName",
+				"userDefined": true,
+				"alias": "firstPlayerName",
+				"meta": "@sys.any"
+			},
+			{
+				"text": " and this is ",
+				"userDefined": false
+			},
+			{
+				"text": "secondPlayerName",
+				"userDefined": true,
+				"alias": "secondPlayerName",
+				"meta": "@sys.any"
+			}
+		],
+		"isTemplate": false,
+		"count": 0
+	},
+	{
+		"data": [
+			{
+				"text": "You can call us ",
+				"userDefined": false
+			},
+			{
+				"text": "firstPlayerName",
+				"userDefined": true,
+				"alias": "firstPlayerName",
+				"meta": "@sys.any"
+			},
+			{
+				"text": " and ",
+				"userDefined": false
+			},
+			{
+				"text": "secondPlayerName",
+				"userDefined": true,
+				"alias": "secondPlayerName",
+				"meta": "@sys.any"
+			}
+		],
+		"isTemplate": false,
+		"count": 0
+	},
+	{
+		"data": [
+			{
+				"text": "Call us ",
+				"userDefined": false
+			},
+			{
+				"text": "firstPlayerName",
+				"userDefined": true,
+				"alias": "firstPlayerName",
+				"meta": "@sys.any"
+			},
+			{
+				"text": " and ",
+				"userDefined": false
+			},
+			{
+				"text": "secondPlayerName",
+				"userDefined": true,
+				"alias": "secondPlayerName",
+				"meta": "@sys.any"
+			}
+		],
+		"isTemplate": false,
+		"count": 0
+	},
+	{
+		"data": [
+			{
+				"text": "firstPlayerName",
+				"userDefined": true,
+				"alias": "firstPlayerName",
+				"meta": "@sys.any"
+			},
+			{
+				"text": " and ",
+				"userDefined": false
+			},
+			{
+				"text": "secondPlayerName",
+				"userDefined": true,
+				"alias": "secondPlayerName",
+				"meta": "@sys.any"
+			},
+			{
+				"text": " are our names",
+				"userDefined": false
+			}
+		],
+		"isTemplate": false,
+		"count": 0
+	},
+	{
+		"data": [
+			{
+				"text": "My name is ",
+				"userDefined": false
+			},
+			{
+				"text": "firstPlayerName",
+				"userDefined": true,
+				"alias": "firstPlayerName",
+				"meta": "@sys.any"
+			},
+			{
+				"text": " and my friend is ",
+				"userDefined": false
+			},
+			{
+				"text": "secondPlayerName",
+				"userDefined": true,
+				"alias": "secondPlayerName",
+				"meta": "@sys.any"
+			}
+		],
+		"isTemplate": false,
+		"count": 0
+	},
+	{
+		"data": [
+			{
+				"text": "firstPlayerName",
+				"userDefined": true,
+				"alias": "firstPlayerName",
+				"meta": "@sys.any"
+			},
+			{
+				"text": " and ",
+				"userDefined": false
+			},
+			{
+				"text": "secondPlayerName",
+				"userDefined": true,
+				"alias": "secondPlayerName",
+				"meta": "@sys.any"
+			}
+		],
+		"isTemplate": false,
+		"count": 0
+	}
+]

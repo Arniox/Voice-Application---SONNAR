@@ -1,0 +1,65 @@
+[
+	{
+		"value": "exit",
+		"synonyms": [
+			"exit",
+			"exit please",
+			"please exit",
+			"exit",
+			"close",
+			"close it",
+			"escape",
+			"break",
+			"end it",
+			"end"
+		]
+	},
+	{
+		"value": "help",
+		"synonyms": [
+			"help",
+			"help",
+			"help please",
+			"please help",
+			"help me",
+			"I need help",
+			"tutorial",
+			"tutorial please"
+		]
+	},
+	{
+		"value": "rank",
+		"synonyms": [
+			"rank",
+			"rank please",
+			"show me my score",
+			"scores please",
+			"scores",
+			"ranks",
+			"rank",
+			"score",
+			"show me my rank",
+			"show me my ranking",
+			"ranking",
+			"ranking board",
+			"leader boards",
+			"scoreboard",
+			"scores list",
+			"ranking list"
+		]
+	},
+	{
+		"value": "play",
+		"synonyms": [
+			"play",
+			"play",
+			"start",
+			"start it",
+			"play it",
+			"begin",
+			"begin anew",
+			"complete",
+			"go"
+		]
+	}
+]

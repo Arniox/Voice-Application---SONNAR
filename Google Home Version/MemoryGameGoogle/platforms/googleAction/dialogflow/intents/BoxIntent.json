@@ -1,0 +1,17 @@
+{
+	"name": "BoxIntent",
+	"auto": true,
+	"webhookUsed": true,
+	"responses": [
+		{
+			"parameters": [
+				{
+					"isList": false,
+					"name": "boxNumber",
+					"value": "$boxNumber",
+					"dataType": "@sys.number"
+				}
+			]
+		}
+	]
+}

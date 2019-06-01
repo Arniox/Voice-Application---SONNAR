@@ -14,7 +14,7 @@ const LaunchHandler = {
     const request = handlerInput.requestEnvelope.request;
     var speechOutput = "";
     var repromptText = "";
-    speechOutput="<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/bgm.mp3'/> Welcome to the Memory Game! this game needs two players to play. You want to play yourself? Don't worry! <amazon:effect name=\"whispered\">I will not tell anyone if you played both player1 and 2.</amazon:effect> Do you need tutorial?";  
+    speechOutput="<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/bgm.mp3'/> Welcome to the Memory Game! this game needs two players to play. You want to play yourself? Don't worry! <amazon:effect name=\"whispered\">I will not tell anyone if you played both player1 and 2.</amazon:effect> Do you need tutorial?";
     //Reset Session attributes
     handlerInput.attributesManager.setSessionAttributes({});
     const attributes = handlerInput.attributesManager.getSessionAttributes();
@@ -22,7 +22,7 @@ const LaunchHandler = {
     attributes.errorCount = 0;
     handlerInput.attributesManager.setSessionAttributes(attributes);
     repromptText = RepromptText(attributes);
-    
+
     return handlerInput.responseBuilder
       .speak(speechOutput)
       .reprompt(repromptText)
@@ -36,9 +36,9 @@ const NameHandler = {
     const attributes = handlerInput.attributesManager.getSessionAttributes();
     const request = handlerInput.requestEnvelope.request;
     return request.type === 'IntentRequest'
-        && request.intent.name === 'NameIntent' 
+        && request.intent.name === 'NameIntent'
         && attributes.state !== "tutorial"
-        && (typeof attributes.playerOne === 'undefined' 
+        && (typeof attributes.playerOne === 'undefined'
         || typeof attributes.playerTwo ==='undefined');
   },
   handle(handlerInput) {
@@ -61,7 +61,7 @@ const NameHandler = {
     repromptText = RepromptText(repromptText);
     //Save Session attributes
     handlerInput.attributesManager.setSessionAttributes(attributes);
- 
+
     return handlerInput.responseBuilder
       .speak(speechOutput)
       .reprompt(repromptText)
@@ -70,7 +70,7 @@ const NameHandler = {
 };
 
 const InitiateGame = function(attributes){
-  
+
   //turn tells who's turn it is
   attributes.turn = attributes.playerOne;
   //boxChoose tells it is about to choose first box or second box.
@@ -178,7 +178,7 @@ const BoxHandler = {
     //Get Session attributes
     const attributes = handlerInput.attributesManager.getSessionAttributes();
     return request.type === 'IntentRequest'
-        && (request.intent.name === 'BoxIntent' 
+        && (request.intent.name === 'BoxIntent'
         && (attributes.state === 'leveling' || attributes.state === 'in game'));
   },
   handle(handlerInput) {
@@ -193,16 +193,16 @@ const BoxHandler = {
       if((userInput<12 && userInput>=3)&& userInput%2 === 1){
         attributes.state = "in game";
         attributes.numOfanimals = parseInt(userInput);
-        InitiateGame(attributes);  
-        speechOutput = "Alright! let's start with " + userInput 
-        +" pairs of animals! Our adorable animals are hidden in " 
+        InitiateGame(attributes);
+        speechOutput = "Alright! let's start with " + userInput
+        +" pairs of animals! Our adorable animals are hidden in "
         + userInput*2 + " boxes. please choose the box between one and "+userInput*2+". "
         +RepromptText(attributes);
-        
+
       }else{
         speechOutput = "Choose an odd number between 3 and 11. "+RepromptText(attributes);
       }
-      
+
     }else{
       //if the game is not over, keep going
       if(!attributes.gameover){
@@ -246,22 +246,22 @@ const BoxHandler = {
                 //Change the player turn
                 attributes.turn = attributes.turn===attributes.playerOne?attributes.playerTwo:attributes.playerOne;
                 speechOutput += "now, it's "+attributes.turn+"'s turn! ";
-              }//Check selected boxes are the same End 
+              }//Check selected boxes are the same End
               //Change the box turn
               attributes.boxTurn ="first";
             }//Check the box turn End
           }//Check box opened End
         }else{//Check user input
           speechOutput = "Choose from 1 to "+ attributes.numOfanimals*2 +". ";
-        }  
+        }
         speechOutput += attributes.gameover? "" : RepromptText(attributes);
         repromptText = attributes.gameover? "" : RepromptText(attributes);
       }else{// Check Game over End
         speechOutput = GameOverPrompt(attributes);
       }
     }
-      
-      
+
+
     //Save Session attributes
     handlerInput.attributesManager.setSessionAttributes(attributes);
     return handlerInput.responseBuilder
@@ -277,7 +277,7 @@ const ScoreHandler = {
     const request = handlerInput.requestEnvelope.request;
     //Get Session attributes
     const attributes = handlerInput.attributesManager.getSessionAttributes();
-    return request.type === 'IntentRequest' 
+    return request.type === 'IntentRequest'
     && request.intent.name === 'ScoreIntent'&& attributes.state === 'in game';
   },
   handle(handlerInput) {
@@ -291,7 +291,7 @@ const ScoreHandler = {
       speechOutput = "You didn't start the game yet! ";
     }
     speechOutput += RepromptText(attributes);
-    repromptText = RepromptText(attributes); 
+    repromptText = RepromptText(attributes);
     return handlerInput.responseBuilder
       .speak(speechOutput)
       .reprompt(repromptText)
@@ -302,7 +302,7 @@ const SkipHandler = {
   canHandle(handlerInput) {
     //Get request obj
     const request = handlerInput.requestEnvelope.request;
-    return request.type === 'IntentRequest' 
+    return request.type === 'IntentRequest'
     && request.intent.name === 'SkipIntent';
   },
   handle(handlerInput) {
@@ -310,9 +310,9 @@ const SkipHandler = {
     const attributes = handlerInput.attributesManager.getSessionAttributes();
     var speechOutput = "";
     var repromptText = "";
-   
+
     speechOutput += RepromptText(attributes);
-    repromptText += RepromptText(attributes); 
+    repromptText += RepromptText(attributes);
     return handlerInput.responseBuilder
       .speak(speechOutput)
       .reprompt(repromptText)
@@ -326,7 +326,7 @@ const OpenedHandler = {
     const request = handlerInput.requestEnvelope.request;
     //Get Session attributes
     const attributes = handlerInput.attributesManager.getSessionAttributes();
-    return request.type === 'IntentRequest' 
+    return request.type === 'IntentRequest'
     && request.intent.name === 'OpenedIntent' && attributes.state === 'in game';
   },
   handle(handlerInput) {
@@ -334,7 +334,7 @@ const OpenedHandler = {
     const attributes = handlerInput.attributesManager.getSessionAttributes();
     var speechOutput = "";
     if(typeof attributes.playerOne !== 'undefined' &&typeof attributes.playerTwo !=='undefined'){
-      
+
       var opened = [];
       for (var i = 0; i < attributes.boxes.length; i++)
       {
@@ -366,7 +366,7 @@ const YesHandler = {
     const request = handlerInput.requestEnvelope.request;
     //Get Session attributes
     const attributes = handlerInput.attributesManager.getSessionAttributes();
-    return request.type === 'IntentRequest' 
+    return request.type === 'IntentRequest'
     && request.intent.name === 'AMAZON.YesIntent'
     && attributes.state !== "tutorial"
     && ((attributes.gameover && attributes.state === 'in game')
@@ -401,8 +401,8 @@ const NoHandler = {
     const request = handlerInput.requestEnvelope.request;
     //Get Session attributes
     const attributes = handlerInput.attributesManager.getSessionAttributes();
-    return request.type === 'IntentRequest'  
-    && (request.intent.name === 'AMAZON.NoIntent' 
+    return request.type === 'IntentRequest'
+    && (request.intent.name === 'AMAZON.NoIntent'
     && (attributes.state === "tutorial" //Check the state is tutorial
     || attributes.state === "reset"
     ||(typeof attributes.gameover ==='undefined' //Check the game is over
@@ -414,7 +414,7 @@ const NoHandler = {
     const attributes = handlerInput.attributesManager.getSessionAttributes();
     var speechOutput = "";
     var repromptText = "";
-    
+
     if(attributes.state === "tutorial"){
       attributes.state = "naming";
       speechOutput = RepromptText(attributes);
@@ -426,7 +426,7 @@ const NoHandler = {
       speechOutput = 'No no no, '+RepromptText(attributes);
       repromptText = RepromptText(attributes);
     }
-    
+
     handlerInput.attributesManager.setSessionAttributes(attributes);
     return handlerInput.responseBuilder
       .speak(speechOutput)
@@ -444,15 +444,15 @@ const HelpHandler = {
   },
   handle(handlerInput) {
     const attributes = handlerInput.attributesManager.getSessionAttributes();
-    var speechOutput = "this game needs two players to play. there are pairs of animals in boxes! On your turn, you choose two boxes. if there're same animals inside two boxes, you will get one score. The boxes will stay opened. You will need to choose not opened boxes. Your turn will be continued until you make the wrong boxes. The wrong boxes with different animals will be closed at the next turn. The game will be continued until one player wins. A player with higher score will be the winner. during the game, to check the score, say score. to check opened boxes, say opened. To reset the game, in the other person's turn, say reset. for more help, say help. "; 
+    var speechOutput = "this game needs two players to play. there are pairs of animals in boxes! On your turn, you choose two boxes. if there're same animals inside two boxes, you will get one score. The boxes will stay opened. You will need to choose not opened boxes. Your turn will be continued until you make the wrong boxes. The wrong boxes with different animals will be closed at the next turn. The game will be continued until one player wins. A player with higher score will be the winner. during the game, to check the score, say score. to check opened boxes, say opened. To reset the game, in the other person's turn, say reset. for more help, say help. ";
     var repromptText = RepromptText(attributes);
     if(attributes.state === "tutorial"){
       attributes.state = "naming";
-      speechOutput += "are you ready to play the game? "+RepromptText(attributes);      
+      speechOutput += "are you ready to play the game? "+RepromptText(attributes);
     }else{
       speechOutput += RepromptText(attributes);
     }
-    
+
     return handlerInput.responseBuilder
       .speak(speechOutput)
       .reprompt(repromptText)
@@ -466,7 +466,7 @@ const ExitHandler = {
     const attributes = handlerInput.attributesManager.getSessionAttributes();
     return request.type === 'IntentRequest'
       && (request.intent.name === 'AMAZON.CancelIntent'
-        || request.intent.name === 'AMAZON.StopIntent' 
+        || request.intent.name === 'AMAZON.StopIntent'
         || (request.intent.name === 'AMAZON.NoIntent' && attributes.gameover));
   },
   handle(handlerInput) {
@@ -477,8 +477,8 @@ const ExitHandler = {
     }else{
       speechOutput += ". ";
     }
-    
-    
+
+
     return handlerInput.responseBuilder
       .speak(speechOutput)
       .withShouldEndSession(true)
@@ -492,8 +492,8 @@ const ResetHandler = {
     const request = handlerInput.requestEnvelope.request;
     //Get Session attributes
     const attributes = handlerInput.attributesManager.getSessionAttributes();
-    return request.type === 'IntentRequest' 
-    && request.intent.name === 'ResetIntent' 
+    return request.type === 'IntentRequest'
+    && request.intent.name === 'ResetIntent'
     && attributes.state === "in game";
   },
   handle(handlerInput) {
@@ -544,10 +544,10 @@ const ErrorHandler = {
     }else if(attributes.state === "in game"){
       speechOutput += "Please tell me a number from 1 to "+attributes.numOfanimals*2+". ";
     }
-    
-    
+
+
     speechOutput += RepromptText(attributes);
-    
+
     return handlerInput.responseBuilder
       .speak(speechOutput)
       .reprompt(repromptText)

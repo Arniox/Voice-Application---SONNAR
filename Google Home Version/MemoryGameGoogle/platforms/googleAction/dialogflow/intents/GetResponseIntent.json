@@ -1,0 +1,17 @@
+{
+	"name": "GetResponseIntent",
+	"auto": true,
+	"webhookUsed": true,
+	"responses": [
+		{
+			"parameters": [
+				{
+					"isList": false,
+					"name": "inputAnswer",
+					"value": "$inputAnswer",
+					"dataType": "@inputAnswer"
+				}
+			]
+		}
+	]
+}

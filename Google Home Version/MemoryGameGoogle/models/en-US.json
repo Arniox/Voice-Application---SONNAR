@@ -1,29 +1,260 @@
 {
-	"invocation": "my test app",
+	"invocation": "memory game",
 	"intents": [
 		{
-			"name": "HelloWorldIntent",
+			"name": "NameIntent",
 			"phrases": [
-				"hello",
-				"say hello",
-				"say hello world"
-			]
-		},
-		{
-			"name": "MyNameIsIntent",
-			"phrases": [
-				"{name}",
-				"my name is {name}",
-				"i am {name}",
-				"you can call me {name}"
+				"My name is {playerName}",
+				"I am {playerName}",
+				"You can call me {playerName}",
+				"Call me {playerName}",
+				"{playerName} is my name",
+				"call me {playerName}"
 			],
 			"inputs": [
 				{
-					"name": "name",
+					"name": "playerName",
 					"type": {
 						"alexa": "AMAZON.US_FIRST_NAME",
-						"dialogflow": "@sys.given-name"
+						"dialogflow": "@sys.any"
 					}
+				}
+			]
+		},
+		{
+			"name": "DoubleNameIntent",
+			"phrases": [
+				"Our names are {firstPlayerName} and {secondPlayerName}",
+				"I am {firstPlayerName} and this is {secondPlayerName}",
+				"You can call us {firstPlayerName} and {secondPlayerName}",
+				"Call us {firstPlayerName} and {secondPlayerName}",
+				"{firstPlayerName} and {secondPlayerName} are our names",
+				"My name is {firstPlayerName} and my friend is {secondPlayerName}",
+				"{firstPlayerName} and {secondPlayerName}"
+			],
+			"inputs": [
+				{
+					"name": "firstPlayerName",
+					"type": {
+						"alexa": "AMAZON.US_FIRST_NAME",
+						"dialogflow": "@sys.any"
+					}
+				},
+				{
+					"name": "secondPlayerName",
+					"type": {
+						"alexa": "AMAZON.US_FIRST_NAME",
+						"dialogflow": "@sys.any"
+					}
+				}
+			]
+		},
+		{
+			"name": "BoxIntent",
+			"phrases": [
+				"{boxNumber}",
+				"I will choose {boxNumber}",
+				"I'll go for {boxNumber}",
+				"I'll select {boxNumber}",
+				"My selection will be {boxNumber}",
+				"box {boxNumber}",
+				"box number {boxNumber}",
+				"number {boxNumber}",
+				"sound {boxNumber}",
+				"sound number {boxNumber}"
+			],
+			"inputs": [
+				{
+					"name": "boxNumber",
+					"type": {
+						"alexa": "AMAZON.NUMBER",
+						"dialogflow": "@sys.number"
+					}
+				}
+			]
+		},
+		{
+			"name": "GetResponseIntent",
+			"phrases": [
+				"{inputAnswer}",
+				"{inputAnswer} please",
+				"ah {inputAnswer} thank you",
+				"{inputAnswer} thank you",
+				"{inputAnswer} thanks",
+				"I'll say {inputAnswer}"
+			],
+			"inputs": [
+				{
+					"name": "inputAnswer",
+					"type": "inputAnswer"
+				}
+			]
+		},
+		{
+			"name": "MenuSelectionIntent",
+			"phrases": [
+				"I would like to {menuOption}",
+				"please {menuOption}",
+				"go to {menuOption}",
+				"{menuOption} please",
+				"give me {menuOption}",
+				"lets {menuOption}",
+				"I think i'll {menuOption}",
+				"we should {menuOption}",
+				"{menuOption} thanks"
+			],
+			"inputs": [
+				{
+					"name": "menuOption",
+					"type": "menuOption"
+				}
+			]
+		},
+		{
+			"name": "OpenedIntent",
+			"phrases": [
+				"check opened",
+				"what have I already opened",
+				"opened",
+				"check my revealed boxes",
+				"revealed",
+				"check opened boxes",
+				"revealed boxes",
+				"opened boxes",
+				"what have I revealed",
+				"what have I completed",
+				"completed",
+				"completed boxes"
+			]
+		},
+		{
+			"name": "ResetIntent",
+			"phrases": [
+				"please reset",
+				"reset please",
+				"reset",
+				"start again",
+				"repeat again",
+				"begin again",
+				"begin a new"
+			]
+		},
+		{
+			"name": "SkipIntent",
+			"phrases": [
+				"please skip",
+				"skip it",
+				"nah skip it",
+				"please skip it",
+				"skip tutorial",
+				"skip"
+			]
+		}
+	],
+	"inputTypes": [
+		{
+			"name": "inputAnswer",
+			"dialogflow": {
+				"automatedExpansion": true
+			},
+			"values": [
+				{
+					"value": "yes",
+					"synonyms": [
+						"kay",
+						"yes",
+						"k",
+						"okay",
+						"ok",
+						"yes please",
+						"yas",
+						"yu",
+						"yup",
+						"yea",
+						"yep"
+					]
+				},
+				{
+					"value": "no",
+					"synonyms": [
+						"none",
+						"nope",
+						"noor",
+						"nah",
+						"nah thanks",
+						"no thanks",
+						"no",
+						"nein",
+						"nu",
+						"no, fuck off"
+					]
+				}
+			]
+		},
+		{
+			"name": "menuOption",
+			"dialogflow": {
+				"automatedExpansion": true
+			},
+			"values": [
+				{
+					"value": "exit",
+					"synonyms": [
+						"exit please",
+						"please exit",
+						"exit",
+						"close",
+						"close it",
+						"escape",
+						"break",
+						"end it",
+						"end"
+					]
+				},
+				{
+					"value": "help",
+					"synonyms": [
+						"help",
+						"help please",
+						"please help",
+						"help me",
+						"I need help",
+						"tutorial",
+						"tutorial please"
+					]
+				},
+				{
+					"value": "rank",
+					"synonyms": [
+						"rank please",
+						"show me my score",
+						"scores please",
+						"scores",
+						"ranks",
+						"rank",
+						"score",
+						"show me my rank",
+						"show me my ranking",
+						"ranking",
+						"ranking board",
+						"leader boards",
+						"scoreboard",
+						"scores list",
+						"ranking list"
+					]
+				},
+				{
+					"value": "play",
+					"synonyms": [
+						"play",
+						"start",
+						"start it",
+						"play it",
+						"begin",
+						"begin anew",
+						"complete",
+						"go"
+					]
 				}
 			]
 		}

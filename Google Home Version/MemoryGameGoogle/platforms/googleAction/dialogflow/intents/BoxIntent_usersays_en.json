@@ -1,0 +1,158 @@
+[
+	{
+		"data": [
+			{
+				"text": "boxNumber",
+				"userDefined": true,
+				"alias": "boxNumber",
+				"meta": "@sys.number"
+			}
+		],
+		"isTemplate": false,
+		"count": 0
+	},
+	{
+		"data": [
+			{
+				"text": "I will choose ",
+				"userDefined": false
+			},
+			{
+				"text": "boxNumber",
+				"userDefined": true,
+				"alias": "boxNumber",
+				"meta": "@sys.number"
+			}
+		],
+		"isTemplate": false,
+		"count": 0
+	},
+	{
+		"data": [
+			{
+				"text": "I'll go for ",
+				"userDefined": false
+			},
+			{
+				"text": "boxNumber",
+				"userDefined": true,
+				"alias": "boxNumber",
+				"meta": "@sys.number"
+			}
+		],
+		"isTemplate": false,
+		"count": 0
+	},
+	{
+		"data": [
+			{
+				"text": "I'll select ",
+				"userDefined": false
+			},
+			{
+				"text": "boxNumber",
+				"userDefined": true,
+				"alias": "boxNumber",
+				"meta": "@sys.number"
+			}
+		],
+		"isTemplate": false,
+		"count": 0
+	},
+	{
+		"data": [
+			{
+				"text": "My selection will be ",
+				"userDefined": false
+			},
+			{
+				"text": "boxNumber",
+				"userDefined": true,
+				"alias": "boxNumber",
+				"meta": "@sys.number"
+			}
+		],
+		"isTemplate": false,
+		"count": 0
+	},
+	{
+		"data": [
+			{
+				"text": "box ",
+				"userDefined": false
+			},
+			{
+				"text": "boxNumber",
+				"userDefined": true,
+				"alias": "boxNumber",
+				"meta": "@sys.number"
+			}
+		],
+		"isTemplate": false,
+		"count": 0
+	},
+	{
+		"data": [
+			{
+				"text": "box number ",
+				"userDefined": false
+			},
+			{
+				"text": "boxNumber",
+				"userDefined": true,
+				"alias": "boxNumber",
+				"meta": "@sys.number"
+			}
+		],
+		"isTemplate": false,
+		"count": 0
+	},
+	{
+		"data": [
+			{
+				"text": "number ",
+				"userDefined": false
+			},
+			{
+				"text": "boxNumber",
+				"userDefined": true,
+				"alias": "boxNumber",
+				"meta": "@sys.number"
+			}
+		],
+		"isTemplate": false,
+		"count": 0
+	},
+	{
+		"data": [
+			{
+				"text": "sound ",
+				"userDefined": false
+			},
+			{
+				"text": "boxNumber",
+				"userDefined": true,
+				"alias": "boxNumber",
+				"meta": "@sys.number"
+			}
+		],
+		"isTemplate": false,
+		"count": 0
+	},
+	{
+		"data": [
+			{
+				"text": "sound number ",
+				"userDefined": false
+			},
+			{
+				"text": "boxNumber",
+				"userDefined": true,
+				"alias": "boxNumber",
+				"meta": "@sys.number"
+			}
+		],
+		"isTemplate": false,
+		"count": 0
+	}
+]

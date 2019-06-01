@@ -1,0 +1,98 @@
+[
+	{
+		"data": [
+			{
+				"text": "My name is ",
+				"userDefined": false
+			},
+			{
+				"text": "playerName",
+				"userDefined": true,
+				"alias": "playerName",
+				"meta": "@sys.any"
+			}
+		],
+		"isTemplate": false,
+		"count": 0
+	},
+	{
+		"data": [
+			{
+				"text": "I am ",
+				"userDefined": false
+			},
+			{
+				"text": "playerName",
+				"userDefined": true,
+				"alias": "playerName",
+				"meta": "@sys.any"
+			}
+		],
+		"isTemplate": false,
+		"count": 0
+	},
+	{
+		"data": [
+			{
+				"text": "You can call me ",
+				"userDefined": false
+			},
+			{
+				"text": "playerName",
+				"userDefined": true,
+				"alias": "playerName",
+				"meta": "@sys.any"
+			}
+		],
+		"isTemplate": false,
+		"count": 0
+	},
+	{
+		"data": [
+			{
+				"text": "Call me ",
+				"userDefined": false
+			},
+			{
+				"text": "playerName",
+				"userDefined": true,
+				"alias": "playerName",
+				"meta": "@sys.any"
+			}
+		],
+		"isTemplate": false,
+		"count": 0
+	},
+	{
+		"data": [
+			{
+				"text": "playerName",
+				"userDefined": true,
+				"alias": "playerName",
+				"meta": "@sys.any"
+			},
+			{
+				"text": " is my name",
+				"userDefined": false
+			}
+		],
+		"isTemplate": false,
+		"count": 0
+	},
+	{
+		"data": [
+			{
+				"text": "call me ",
+				"userDefined": false
+			},
+			{
+				"text": "playerName",
+				"userDefined": true,
+				"alias": "playerName",
+				"meta": "@sys.any"
+			}
+		],
+		"isTemplate": false,
+		"count": 0
+	}
+]
