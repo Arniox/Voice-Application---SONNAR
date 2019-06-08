@@ -48,7 +48,8 @@ app.setHandler({
         this.ask(speech, reprompt);
     },
 
-    NameIntent(){
+    NameIntent()
+    {
         //Get the name of one player
         player1Name = this.$inputs.playerName.value;
         return this.toIntent('GiveMenuIntent');
@@ -98,7 +99,7 @@ app.setHandler({
         }else if(playerState == "TwoPlayer"){
             speech = 'Nice to meet you; '+player1Name+' and '+player2Name+'<break time="1" /> ';
         }
-        //if it's the players first time logging in, then player a slightly larger introduction to the menu
+        //if it's the players first time logging in, then play a slightly larger introduction to the menu
         if(numberOfTimesLoggedIn == 0){
             speech += '<p>When playing the memory game, from the main menu you can select to either</p><break time="0.1" />'+
                       '<p>Start!</p><break time="0.1" />'+
@@ -154,6 +155,44 @@ function Reprompt(){
     }else if(currentState === "gettingNames"){
         text = "Please give me a name to call you by!"
     }
-
     return text;
+}
+
+/*
+    ContextualHelp() function will give help only relative to the current state the game is in.
+*/
+function ContextualHelp()
+{
+    let helpText
+
+    if(currentState === "start")
+    {
+        helpText = "This game can be played either alone or with a friend. The current menu you are in is asking if you want to play the game in either 1 player, or 2 player mode."; //Start menu is only choosing between either 1 player or 2 players??
+    }
+    else if(currentState === "gettingNames")
+    {
+        helpText = "This menu will ask you for a name to be assigned to player 1 and player 2."
+    }
+    else if(currentState === "mainMenu")
+    {
+        helpText = "This is the main menu, from this menu you can choose to either start the game, show your rank compared to others globaly and locally, access the advanced help menu, or exit the game";//What does the help option in the main menu do?? 
+    }     
+    else if(currentState === "soundSelect")
+    {
+        helpText = "This is the sound select menu, from this menu you can choose which sound package to use, for example you can select the 'Farm animal' package to play with."
+        + "To select a sound package say either the package number, or the package name. For example you could say 'one' to " 
+        + "select the farm animal pack, or you could say 'farm animals' to select the farm animal pack.";
+    }
+    else if(currentState === "levelSelect")
+    {
+        helpText = "This is the level select menu, from this menu you can choose the level/diffuculty to play on. A higher level will require you to match more sounds than a lower level would."
+        + "Each sound pack has it's own amount of levels unlocked, so if you unlocked"
+        + "more levels with with the farm animals pack, it will only be unlocked on the farm animals pack.";
+    }
+    else if(currentState === "inGame")
+    {
+        helpText = "........."
+    }
+
+    return helpText;
 }
