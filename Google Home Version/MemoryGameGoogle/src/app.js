@@ -24,13 +24,17 @@ app.use(
 // APP LOGIC
 // ------------------------------------------------------------------
 //States and user data
+let currentState = ""; //Current game state
+let playerState = ""; //Current player state (2 players or 1)
+
 let player1Name = "";
 let player2Name = "";
-let playerState = "";
-let currentState = "";
 let numberOfTimesLoggedIn = 0;
+let userAnswer = "";
 
-//Variables for the game
+//Current States
+// - Start: Beginning state. Only a yes or a no are acceptable for playing either one or two players
+// -
 
 
 app.setHandler({
@@ -39,65 +43,79 @@ app.setHandler({
         currentState = "start";
 
         //Set speech and reprompt
-        let speech = '<audio src="https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/bgm.mp3"/>'+
-                     '<p><s>Welcome to the Memory Game!</s><s>It is advised to play this game with two players.</s></p>'+
-                     '<p><s>Do you want to play by yourself?</s>Please answer with a yes or no!</p>';
-        let reprompt = Reprompt();
+        this.$speech.addText(
+            '<audio src="https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/bgm.mp3"/>'+
+            '<p><s>Welcome to the Memory Game!</s><s>It is advised to play this game with two players.</s></p>'+
+            '<p><s>Do you want to play by yourself?</s>Please answer with a yes or no!</p>'
+        );
+        this.$reprompt.addText(Reprompt());
 
-        //Ask user about how many players are playing
-        this.ask(speech, reprompt);
+        //Ask user about how many players are playing with state promise
+        this.followUpState('StartState').ask(this.$speech, this.$reprompt);
     },
 
-    NameIntent()
-    {
-        //Get the name of one player
-        player1Name = this.$inputs.playerName.value;
-        return this.toIntent('GiveMenuIntent');
-    },
-
-    DoubleNameIntent(){
-        //Get the name of two players
-        player1Name = this.$inputs.firstPlayerName.value;
-        player2Name = this.$inputs.secondPlayerName.value;
-        return this.toIntent('GiveMenuIntent');
-    },
-
-    GetResponseIntent(){
-        let userAnswer = this.$inputs.inputAnswer.value;
-        if(currentState == "start"){
-            //Current state is getting names
+    //Start state: Only yes or no are accepted for playing either one or two players
+    StartState: {
+        //Yes/no answers
+        YesIntent(){
             currentState = "gettingNames";
-            if(userAnswer == "yes"){
-                //Tell the user
-                this.tell("<p>Ok, you have chosen to play alone for both player 1 and 2!</p>");
-                playerState = "OnePlayer";
+            //Set player state
+            playerState = "OnePlayer";
 
-                //Ask the user's name
-                let speech = '<p>Since you are playing for both players, can you please tell me what to call you by?</p>';
-                let reprompt = Reprompt();
-                this.ask(speech, reprompt);
-            }else if(userAnswer == "no"){
-                //Tell the user
-                this.tell("<p>Ok, there are two players!</p>");
-                playerState = "TwoPlayer";
+            //Ask user for their name
+            this.$speech.addText("<p>Since you are playing for both players, can you please tell me what to call you by?</p>");
+            this.$reprompt.addText(Reprompt());
+            this.followUpState('GetSingleNameState').ask(this.$speech, this.$reprompt);
+        },
+        NoIntent(){
+            currentState = "gettingNames";
+            //Set player state
+            playerState = "TwoPlayer";
 
-                //Ask the two user's names
-                let speech = '<p>Since there are two players, can you please tell me what to call you both by?</p>';
-                let reprompt = Reprompt();
-                this.ask(speech, reprompt);
-            }
-        }
+            //Ask users for their names
+            this.$speech.addText("<p>Since there are two players, can you please tell me what to call you both by?</p>");
+            this.$reprompt.addText(Reprompt());
+            this.followUpState('GetDoubleNameState').ask(this.$speech, this.$reprompt);
+        },
+        Unhandled(){
+            //Try again
+            this.$speech.addText("<p>Sorry, I could not understand you.</p>" + Reprompt());
+            this.$reprompt.addText(Reprompt());
+
+            this.followUpState('StartState').ask(this.$speech, this.$reprompt);
+        },
     },
 
-    GiveMenuIntent(){
+    //Get name state: Only one name is acceptable
+    GetSingleNameState: {
+        //Name Intent
+        NameIntent(){
+            //Get the name of one player
+            player1Name = this.$inputs.playerName.value;
+            return this.toStatelessIntent('GiveMenu');
+        },
+    },
+
+    //Get double name state: Only two names are acceptable
+    GetDoubleNameState: {
+        //Double Name Intent
+        DoubleNameIntent(){
+            //Get the name of two players
+            player1Name = this.$inputs.firstPlayerName.value;
+            player2Name = this.$inputs.secondPlayerName.value;
+            return this.toStatelessIntent('GiveMenu');
+        },
+    },
+
+    GiveMenu(){
         //Current state is the tutorial
         currentState = "mainMenu";
         //Set player response
         let speech = "";
         if(playerState == "OnePlayer"){
-            speech = 'Nice to meet you '+ player1Name+'<break time="1" /> ';
+            speech = 'Nice to meet you '+ this.$inputs.playerName.value+'<break time="1" /> ';
         }else if(playerState == "TwoPlayer"){
-            speech = 'Nice to meet you; '+player1Name+' and '+player2Name+'<break time="1" /> ';
+            speech = 'Nice to meet you; '+this.$inputs.firstPlayerName.value+' and '+this.$inputs.secondPlayerName.value+'<break time="1" /> ';
         }
         //if it's the players first time logging in, then play a slightly larger introduction to the menu
         if(numberOfTimesLoggedIn == 0){
@@ -149,7 +167,7 @@ module.exports.app = app;
 function Reprompt(){
     let text = "";
     if(currentState === "start"){
-        text = "Do you want to play as one player or with two players?";
+        text = "Do you want to play as one player or with two players? Please Answer with a yes or a no!";
     }else if(currentState === "mainMenu"){
         text = "Please select a main menu option from either: Start, show my rank, ask for help or exit the game!";
     }else if(currentState === "gettingNames"){
@@ -175,12 +193,12 @@ function ContextualHelp()
     }
     else if(currentState === "mainMenu")
     {
-        helpText = "This is the main menu, from this menu you can choose to either start the game, show your rank compared to others globaly and locally, access the advanced help menu, or exit the game";//What does the help option in the main menu do?? 
-    }     
+        helpText = "This is the main menu, from this menu you can choose to either start the game, show your rank compared to others globaly and locally, access the advanced help menu, or exit the game";//What does the help option in the main menu do??
+    }
     else if(currentState === "soundSelect")
     {
         helpText = "This is the sound select menu, from this menu you can choose which sound package to use, for example you can select the 'Farm animal' package to play with."
-        + "To select a sound package say either the package number, or the package name. For example you could say 'one' to " 
+        + "To select a sound package say either the package number, or the package name. For example you could say 'one' to "
         + "select the farm animal pack, or you could say 'farm animals' to select the farm animal pack.";
     }
     else if(currentState === "levelSelect")

@@ -9,13 +9,13 @@
 					"isList": false,
 					"name": "firstPlayerName",
 					"value": "$firstPlayerName",
-					"dataType": "@sys.any"
+					"dataType": "@sys.person"
 				},
 				{
 					"isList": false,
 					"name": "secondPlayerName",
 					"value": "$secondPlayerName",
-					"dataType": "@sys.any"
+					"dataType": "@sys.person"
 				}
 			]
 		}

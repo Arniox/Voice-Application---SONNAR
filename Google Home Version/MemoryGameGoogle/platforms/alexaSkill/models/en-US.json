@@ -4,48 +4,6 @@
 			"invocationName": "memory game",
 			"types": [
 				{
-					"name": "inputAnswer",
-					"values": [
-						{
-							"id": null,
-							"name": {
-								"value": "yes",
-								"synonyms": [
-									"kay",
-									"yes",
-									"k",
-									"okay",
-									"ok",
-									"yes please",
-									"yas",
-									"yu",
-									"yup",
-									"yea",
-									"yep"
-								]
-							}
-						},
-						{
-							"id": null,
-							"name": {
-								"value": "no",
-								"synonyms": [
-									"none",
-									"nope",
-									"noor",
-									"nah",
-									"nah thanks",
-									"no thanks",
-									"no",
-									"nein",
-									"nu",
-									"no, fuck off"
-								]
-							}
-						}
-					]
-				},
-				{
 					"name": "menuOption",
 					"values": [
 						{
@@ -184,20 +142,35 @@
 					]
 				},
 				{
-					"name": "GetResponseIntent",
+					"name": "YesIntent",
 					"samples": [
-						"{inputAnswer}",
-						"{inputAnswer} please",
-						"ah {inputAnswer} thank you",
-						"{inputAnswer} thank you",
-						"{inputAnswer} thanks",
-						"I'll say {inputAnswer}"
-					],
-					"slots": [
-						{
-							"name": "inputAnswer",
-							"type": "inputAnswer"
-						}
+						"kay",
+						"yes",
+						"k",
+						"okay",
+						"ok",
+						"yes please",
+						"yas",
+						"yu",
+						"yup",
+						"yea",
+						"yah",
+						"yep"
+					]
+				},
+				{
+					"name": "NoIntent",
+					"samples": [
+						"none",
+						"nope",
+						"noor",
+						"nah",
+						"nah thanks",
+						"no thanks",
+						"no",
+						"nein",
+						"nu",
+						"no, fuck off"
 					]
 				},
 				{
