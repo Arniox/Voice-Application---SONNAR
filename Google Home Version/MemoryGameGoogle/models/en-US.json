@@ -4,6 +4,7 @@
 		{
 			"name": "NameIntent",
 			"phrases": [
+				"{playerName}",
 				"My name is {playerName}",
 				"I am {playerName}",
 				"You can call me {playerName}",
@@ -16,7 +17,7 @@
 					"name": "playerName",
 					"type": {
 						"alexa": "AMAZON.US_FIRST_NAME",
-						"dialogflow": "@sys.person"
+						"dialogflow": "@sys.given-name"
 					}
 				}
 			]
@@ -24,6 +25,7 @@
 		{
 			"name": "DoubleNameIntent",
 			"phrases": [
+				"{firstPlayerName}, {secondPlayerName}",
 				"Our names are {firstPlayerName} and {secondPlayerName}",
 				"I am {firstPlayerName} and this is {secondPlayerName}",
 				"You can call us {firstPlayerName} and {secondPlayerName}",
@@ -37,14 +39,14 @@
 					"name": "firstPlayerName",
 					"type": {
 						"alexa": "AMAZON.US_FIRST_NAME",
-						"dialogflow": "@sys.person"
+						"dialogflow": "@sys.given-name"
 					}
 				},
 				{
 					"name": "secondPlayerName",
 					"type": {
 						"alexa": "AMAZON.US_FIRST_NAME",
-						"dialogflow": "@sys.person"
+						"dialogflow": "@sys.given-name"
 					}
 				}
 			]
@@ -116,7 +118,8 @@
 				"lets {menuOption}",
 				"I think i'll {menuOption}",
 				"we should {menuOption}",
-				"{menuOption} thanks"
+				"{menuOption} thanks",
+				"{menuOption}"
 			],
 			"inputs": [
 				{

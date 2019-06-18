@@ -24,13 +24,13 @@ app.use(
 // APP LOGIC
 // ------------------------------------------------------------------
 //States and user data
-let currentState = ""; //Current game state
-let playerState = ""; //Current player state (2 players or 1)
+var currentState = ""; //Current game state
+var playerState = ""; //Current player state (2 players or 1)
 
-let player1Name = "";
-let player2Name = "";
-let numberOfTimesLoggedIn = 0;
-let userAnswer = "";
+var player1Name = "";
+var player2Name = "";
+var numberOfTimesLoggedIn = 0;
+var userAnswer = "";
 
 //Current States
 // - Start: Beginning state. Only a yes or a no are acceptable for playing either one or two players
@@ -113,13 +113,13 @@ app.setHandler({
         //Set player response
         let speech = "";
         if(playerState == "OnePlayer"){
-            speech = 'Nice to meet you '+ this.$inputs.playerName.value+'<break time="1" /> ';
+            speech = 'Nice to meet you '+ player1Name+'.<break time="1" /> ';
         }else if(playerState == "TwoPlayer"){
-            speech = 'Nice to meet you; '+this.$inputs.firstPlayerName.value+' and '+this.$inputs.secondPlayerName.value+'<break time="1" /> ';
+            speech = 'Nice to meet you; '+player1Name+' and '+player2Name+'.<break time="1" /> ';
         }
         //if it's the players first time logging in, then play a slightly larger introduction to the menu
         if(numberOfTimesLoggedIn == 0){
-            speech += '<p>When playing the memory game, from the main menu you can select to either</p><break time="0.1" />'+
+            speech += '<p>When playing the memory game, from the main menu you can select to either</p>'+
                       '<p>Start!</p><break time="0.1" />'+
                       '<p>Show my rank!</p><break time="0.1" />'+
                       '<p>Ask for help via the tutorial</p><break time="0.1" />'+
@@ -132,29 +132,54 @@ app.setHandler({
         }
 
         //set reprompt
-        let reprompt = Reprompt();
-        this.ask(speech, reprompt);
+        this.$speech.addText(speech);
+        this.$reprompt.addText(Reprompt());
+        this.followUpState('MenuSelectionState').ask(this.$speech, this.$reprompt);
     },
 
-    MenuSelectionIntent(){
-        //Current state is the main menu
-        currentState = "mainMenu";
-        //Set player response
-        let speech = "";
-        let chosenMenuOption = this.$inputs.menuOption.value;
+    MenuSelectionState: {
+        MenuSelectionIntent(){
+            //Current state is the main menu
+            currentState = "mainMenu";
+            //Set player response
+            let speech = "";
+            let chosenMenuOption = this.$inputs.menuOption.value;
 
-        if(chosenMenuOption == "exit"){
-            speech = "You have chosen to exit";
-        }else if(chosenMenuOption == "help"){
-            speech = "You have chosen to go to the help menu";
-        }else if(chosenMenuOption == "rank"){
-            speech = "You have chosen to go to the ranking menu";
-        }else if(chosenMenuOption == "play"){
-            speech = "You have chosen to play";
-        }
+            if(chosenMenuOption == "exit"){
+                if(playerState == "OnePlayer"){
+                    speech = "Thank you and have a good day " + player1Name + ". We hope you enjoyed our memory game";
+                }else{
+                    speech = "Thank you and have a good day " + player1Name + " and " + player2Name + ". We hope you enjoyed our memory game";
+                }
+            }else if(chosenMenuOption == "help"){
+                //TO-DO: Add preset help. This ISN'T the contextual help but rather a tutorial for the game
+                //Need to fix up the language used in the contextual help function
 
-        //tell user
-        this.tell(speech);
+                speech = "You have chosen to go to the help menu";
+            }else if(chosenMenuOption == "rank"){
+                //TO-DO: Add ranking menu - Needs to be a variable for ranking/scoring.
+                //User needs to be able to go back to main menu from the ranking menu or exit the game or
+                //return to the stateless GiveMenu function
+
+                speech = "You have chosen to go to the ranking menu";
+            }else if(chosenMenuOption == "play"){
+                //TO-DO: Add game fuinctions and intents. The user must be able to go back
+                //to the main menu at any point
+
+                speech = "You have chosen to play";
+            }
+
+            //tell user
+            this.$speech.addText(speech);
+            this.tell(this.$speech);
+        },
+        Unhandled(){
+            //Try again
+            this.$speech.addText("<p>Sorry, I could not understand you.</p>" + Reprompt());
+            this.$reprompt.addText(Reprompt());
+
+            this.followUpState('MenuSelectionState').ask(this.$speech, this.$reprompt);
+        },
     },
 });
 

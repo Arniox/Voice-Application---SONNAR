@@ -142,5 +142,17 @@
 		],
 		"isTemplate": false,
 		"count": 0
+	},
+	{
+		"data": [
+			{
+				"text": "menuOption",
+				"userDefined": true,
+				"alias": "menuOption",
+				"meta": "@menuOption"
+			}
+		],
+		"isTemplate": false,
+		"count": 0
 	}
 ]

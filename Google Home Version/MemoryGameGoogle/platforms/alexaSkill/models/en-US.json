@@ -84,6 +84,7 @@
 				{
 					"name": "NameIntent",
 					"samples": [
+						"{playerName}",
 						"My name is {playerName}",
 						"I am {playerName}",
 						"You can call me {playerName}",
@@ -101,6 +102,7 @@
 				{
 					"name": "DoubleNameIntent",
 					"samples": [
+						"{firstPlayerName}, {secondPlayerName}",
 						"Our names are {firstPlayerName} and {secondPlayerName}",
 						"I am {firstPlayerName} and this is {secondPlayerName}",
 						"You can call us {firstPlayerName} and {secondPlayerName}",
@@ -184,7 +186,8 @@
 						"lets {menuOption}",
 						"I think i'll {menuOption}",
 						"we should {menuOption}",
-						"{menuOption} thanks"
+						"{menuOption} thanks",
+						"{menuOption}"
 					],
 					"slots": [
 						{

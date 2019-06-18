@@ -9,7 +9,7 @@
 					"isList": false,
 					"name": "playerName",
 					"value": "$playerName",
-					"dataType": "@sys.person"
+					"dataType": "@sys.given-name"
 				}
 			]
 		}

@@ -2,6 +2,18 @@
 	{
 		"data": [
 			{
+				"text": "playerName",
+				"userDefined": true,
+				"alias": "playerName",
+				"meta": "@sys.given-name"
+			}
+		],
+		"isTemplate": false,
+		"count": 0
+	},
+	{
+		"data": [
+			{
 				"text": "My name is ",
 				"userDefined": false
 			},
@@ -9,7 +21,7 @@
 				"text": "playerName",
 				"userDefined": true,
 				"alias": "playerName",
-				"meta": "@sys.person"
+				"meta": "@sys.given-name"
 			}
 		],
 		"isTemplate": false,
@@ -25,7 +37,7 @@
 				"text": "playerName",
 				"userDefined": true,
 				"alias": "playerName",
-				"meta": "@sys.person"
+				"meta": "@sys.given-name"
 			}
 		],
 		"isTemplate": false,
@@ -41,7 +53,7 @@
 				"text": "playerName",
 				"userDefined": true,
 				"alias": "playerName",
-				"meta": "@sys.person"
+				"meta": "@sys.given-name"
 			}
 		],
 		"isTemplate": false,
@@ -57,7 +69,7 @@
 				"text": "playerName",
 				"userDefined": true,
 				"alias": "playerName",
-				"meta": "@sys.person"
+				"meta": "@sys.given-name"
 			}
 		],
 		"isTemplate": false,
@@ -69,7 +81,7 @@
 				"text": "playerName",
 				"userDefined": true,
 				"alias": "playerName",
-				"meta": "@sys.person"
+				"meta": "@sys.given-name"
 			},
 			{
 				"text": " is my name",
@@ -89,7 +101,7 @@
 				"text": "playerName",
 				"userDefined": true,
 				"alias": "playerName",
-				"meta": "@sys.person"
+				"meta": "@sys.given-name"
 			}
 		],
 		"isTemplate": false,

@@ -2,6 +2,28 @@
 	{
 		"data": [
 			{
+				"text": "firstPlayerName",
+				"userDefined": true,
+				"alias": "firstPlayerName",
+				"meta": "@sys.given-name"
+			},
+			{
+				"text": ", ",
+				"userDefined": false
+			},
+			{
+				"text": "secondPlayerName",
+				"userDefined": true,
+				"alias": "secondPlayerName",
+				"meta": "@sys.given-name"
+			}
+		],
+		"isTemplate": false,
+		"count": 0
+	},
+	{
+		"data": [
+			{
 				"text": "Our names are ",
 				"userDefined": false
 			},
@@ -9,7 +31,7 @@
 				"text": "firstPlayerName",
 				"userDefined": true,
 				"alias": "firstPlayerName",
-				"meta": "@sys.person"
+				"meta": "@sys.given-name"
 			},
 			{
 				"text": " and ",
@@ -19,7 +41,7 @@
 				"text": "secondPlayerName",
 				"userDefined": true,
 				"alias": "secondPlayerName",
-				"meta": "@sys.person"
+				"meta": "@sys.given-name"
 			}
 		],
 		"isTemplate": false,
@@ -35,7 +57,7 @@
 				"text": "firstPlayerName",
 				"userDefined": true,
 				"alias": "firstPlayerName",
-				"meta": "@sys.person"
+				"meta": "@sys.given-name"
 			},
 			{
 				"text": " and this is ",
@@ -45,7 +67,7 @@
 				"text": "secondPlayerName",
 				"userDefined": true,
 				"alias": "secondPlayerName",
-				"meta": "@sys.person"
+				"meta": "@sys.given-name"
 			}
 		],
 		"isTemplate": false,
@@ -61,7 +83,7 @@
 				"text": "firstPlayerName",
 				"userDefined": true,
 				"alias": "firstPlayerName",
-				"meta": "@sys.person"
+				"meta": "@sys.given-name"
 			},
 			{
 				"text": " and ",
@@ -71,7 +93,7 @@
 				"text": "secondPlayerName",
 				"userDefined": true,
 				"alias": "secondPlayerName",
-				"meta": "@sys.person"
+				"meta": "@sys.given-name"
 			}
 		],
 		"isTemplate": false,
@@ -87,7 +109,7 @@
 				"text": "firstPlayerName",
 				"userDefined": true,
 				"alias": "firstPlayerName",
-				"meta": "@sys.person"
+				"meta": "@sys.given-name"
 			},
 			{
 				"text": " and ",
@@ -97,7 +119,7 @@
 				"text": "secondPlayerName",
 				"userDefined": true,
 				"alias": "secondPlayerName",
-				"meta": "@sys.person"
+				"meta": "@sys.given-name"
 			}
 		],
 		"isTemplate": false,
@@ -109,7 +131,7 @@
 				"text": "firstPlayerName",
 				"userDefined": true,
 				"alias": "firstPlayerName",
-				"meta": "@sys.person"
+				"meta": "@sys.given-name"
 			},
 			{
 				"text": " and ",
@@ -119,7 +141,7 @@
 				"text": "secondPlayerName",
 				"userDefined": true,
 				"alias": "secondPlayerName",
-				"meta": "@sys.person"
+				"meta": "@sys.given-name"
 			},
 			{
 				"text": " are our names",
@@ -139,7 +161,7 @@
 				"text": "firstPlayerName",
 				"userDefined": true,
 				"alias": "firstPlayerName",
-				"meta": "@sys.person"
+				"meta": "@sys.given-name"
 			},
 			{
 				"text": " and my friend is ",
@@ -149,7 +171,7 @@
 				"text": "secondPlayerName",
 				"userDefined": true,
 				"alias": "secondPlayerName",
-				"meta": "@sys.person"
+				"meta": "@sys.given-name"
 			}
 		],
 		"isTemplate": false,
@@ -161,7 +183,7 @@
 				"text": "firstPlayerName",
 				"userDefined": true,
 				"alias": "firstPlayerName",
-				"meta": "@sys.person"
+				"meta": "@sys.given-name"
 			},
 			{
 				"text": " and ",
@@ -171,7 +193,7 @@
 				"text": "secondPlayerName",
 				"userDefined": true,
 				"alias": "secondPlayerName",
-				"meta": "@sys.person"
+				"meta": "@sys.given-name"
 			}
 		],
 		"isTemplate": false,
