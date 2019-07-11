@@ -27,15 +27,10 @@ app.use(
 var currentState = ""; //Current game state
 var playerState = ""; //Current player state (2 players or 1)
 
-//Player names
 var player1Name = "";
 var player2Name = "";
-
-//Count number of times logged in/activated application
 var numberOfTimesLoggedIn = 0;
-
-//Highest Score
-var bestScore = 0;
+var userAnswer = "";
 
 //Current States
 // - Start: Beginning state. Only a yes or a no are acceptable for playing either one or two players
@@ -185,10 +180,6 @@ app.setHandler({
 
             this.followUpState('MenuSelectionState').ask(this.$speech, this.$reprompt);
         },
-    },
-
-    HelpMenuState: {
-        
     },
 });
 
