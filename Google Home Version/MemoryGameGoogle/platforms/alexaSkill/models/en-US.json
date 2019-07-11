@@ -2,84 +2,7 @@
 	"interactionModel": {
 		"languageModel": {
 			"invocationName": "memory game",
-			"types": [
-				{
-					"name": "menuOption",
-					"values": [
-						{
-							"id": null,
-							"name": {
-								"value": "exit",
-								"synonyms": [
-									"exit please",
-									"please exit",
-									"exit",
-									"close",
-									"close it",
-									"escape",
-									"break",
-									"end it",
-									"end"
-								]
-							}
-						},
-						{
-							"id": null,
-							"name": {
-								"value": "help",
-								"synonyms": [
-									"help",
-									"help please",
-									"please help",
-									"help me",
-									"I need help",
-									"tutorial",
-									"tutorial please"
-								]
-							}
-						},
-						{
-							"id": null,
-							"name": {
-								"value": "rank",
-								"synonyms": [
-									"rank please",
-									"show me my score",
-									"scores please",
-									"scores",
-									"ranks",
-									"rank",
-									"score",
-									"show me my rank",
-									"show me my ranking",
-									"ranking",
-									"ranking board",
-									"leader boards",
-									"scoreboard",
-									"scores list",
-									"ranking list"
-								]
-							}
-						},
-						{
-							"id": null,
-							"name": {
-								"value": "play",
-								"synonyms": [
-									"play",
-									"start",
-									"start it",
-									"play it",
-									"begin",
-									"begin anew",
-									"complete",
-									"go"
-								]
-							}
-						}
-					]
-				}
-			],
+			"types": [],
 			"intents": [
 				{
 					"name": "NameIntent",
@@ -96,50 +19,6 @@
 						{
 							"name": "playerName",
 							"type": "AMAZON.US_FIRST_NAME"
-						}
-					]
-				},
-				{
-					"name": "DoubleNameIntent",
-					"samples": [
-						"{firstPlayerName}, {secondPlayerName}",
-						"Our names are {firstPlayerName} and {secondPlayerName}",
-						"I am {firstPlayerName} and this is {secondPlayerName}",
-						"You can call us {firstPlayerName} and {secondPlayerName}",
-						"Call us {firstPlayerName} and {secondPlayerName}",
-						"{firstPlayerName} and {secondPlayerName} are our names",
-						"My name is {firstPlayerName} and my friend is {secondPlayerName}",
-						"{firstPlayerName} and {secondPlayerName}"
-					],
-					"slots": [
-						{
-							"name": "firstPlayerName",
-							"type": "AMAZON.US_FIRST_NAME"
-						},
-						{
-							"name": "secondPlayerName",
-							"type": "AMAZON.US_FIRST_NAME"
-						}
-					]
-				},
-				{
-					"name": "BoxIntent",
-					"samples": [
-						"{boxNumber}",
-						"I will choose {boxNumber}",
-						"I'll go for {boxNumber}",
-						"I'll select {boxNumber}",
-						"My selection will be {boxNumber}",
-						"box {boxNumber}",
-						"box number {boxNumber}",
-						"number {boxNumber}",
-						"sound {boxNumber}",
-						"sound number {boxNumber}"
-					],
-					"slots": [
-						{
-							"name": "boxNumber",
-							"type": "AMAZON.NUMBER"
 						}
 					]
 				},
@@ -176,23 +55,113 @@
 					]
 				},
 				{
-					"name": "MenuSelectionIntent",
+					"name": "ExitIntent",
 					"samples": [
-						"I would like to {menuOption}",
-						"please {menuOption}",
-						"go to {menuOption}",
-						"{menuOption} please",
-						"give me {menuOption}",
-						"lets {menuOption}",
-						"I think i'll {menuOption}",
-						"we should {menuOption}",
-						"{menuOption} thanks",
-						"{menuOption}"
+						"exit",
+						"exit please",
+						"please exit the game",
+						"quit",
+						"leave the game",
+						"quit now",
+						"quit please",
+						"please escape",
+						"escape",
+						"leave",
+						"please leave",
+						"close please",
+						"close",
+						"force close"
+					]
+				},
+				{
+					"name": "HelpIntent",
+					"samples": [
+						"help please",
+						"help",
+						"help me",
+						"help me please",
+						"assist",
+						"assist me",
+						"assist me please",
+						"I need help",
+						"tutorial",
+						"tutorial please",
+						"please give me information"
+					]
+				},
+				{
+					"name": "RankIntent",
+					"samples": [
+						"what is my highest score",
+						"what is my score",
+						"score",
+						"rank",
+						"rank please",
+						"score please",
+						"scoreboard",
+						"rank list",
+						"ranking tiers",
+						"ranks",
+						"what is my rank",
+						"what is my highest tank",
+						"ranking",
+						"what is my best score",
+						"what is my best rank"
+					]
+				},
+				{
+					"name": "PlayIntent",
+					"samples": [
+						"Play",
+						"play please",
+						"start",
+						"start please",
+						"start the game",
+						"start game",
+						"play the game",
+						"play game",
+						"go"
+					]
+				},
+				{
+					"name": "BackToMenuIntent",
+					"samples": [
+						"go back",
+						"back to menu",
+						"back to main menu",
+						"please go to menu",
+						"back please",
+						"go back to menu",
+						"go back to main menu",
+						"please go back",
+						"please go back to menu",
+						"please go back to main menu",
+						"please menu",
+						"menu",
+						"menu please",
+						"main menu please",
+						"main menu please",
+						"main menu"
+					]
+				},
+				{
+					"name": "BoxIntent",
+					"samples": [
+						"{boxNumber}",
+						"I will choose {boxNumber}",
+						"I'll go for {boxNumber}",
+						"I'll select {boxNumber}",
+						"My selection will be {boxNumber}",
+						"box {boxNumber}",
+						"box number {boxNumber}",
+						"number {boxNumber}",
+						"sound {boxNumber}",
+						"sound number {boxNumber}"
 					],
 					"slots": [
 						{
-							"name": "menuOption",
-							"type": "menuOption"
+							"name": "boxNumber",
+							"type": "AMAZON.NUMBER"
 						}
 					]
 				},

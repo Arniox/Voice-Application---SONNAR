@@ -23,59 +23,6 @@
 			]
 		},
 		{
-			"name": "DoubleNameIntent",
-			"phrases": [
-				"{firstPlayerName}, {secondPlayerName}",
-				"Our names are {firstPlayerName} and {secondPlayerName}",
-				"I am {firstPlayerName} and this is {secondPlayerName}",
-				"You can call us {firstPlayerName} and {secondPlayerName}",
-				"Call us {firstPlayerName} and {secondPlayerName}",
-				"{firstPlayerName} and {secondPlayerName} are our names",
-				"My name is {firstPlayerName} and my friend is {secondPlayerName}",
-				"{firstPlayerName} and {secondPlayerName}"
-			],
-			"inputs": [
-				{
-					"name": "firstPlayerName",
-					"type": {
-						"alexa": "AMAZON.US_FIRST_NAME",
-						"dialogflow": "@sys.given-name"
-					}
-				},
-				{
-					"name": "secondPlayerName",
-					"type": {
-						"alexa": "AMAZON.US_FIRST_NAME",
-						"dialogflow": "@sys.given-name"
-					}
-				}
-			]
-		},
-		{
-			"name": "BoxIntent",
-			"phrases": [
-				"{boxNumber}",
-				"I will choose {boxNumber}",
-				"I'll go for {boxNumber}",
-				"I'll select {boxNumber}",
-				"My selection will be {boxNumber}",
-				"box {boxNumber}",
-				"box number {boxNumber}",
-				"number {boxNumber}",
-				"sound {boxNumber}",
-				"sound number {boxNumber}"
-			],
-			"inputs": [
-				{
-					"name": "boxNumber",
-					"type": {
-						"alexa": "AMAZON.NUMBER",
-						"dialogflow": "@sys.number"
-					}
-				}
-			]
-		},
-		{
 			"name": "YesIntent",
 			"phrases": [
 				"kay",
@@ -108,24 +55,72 @@
 			]
 		},
 		{
-			"name": "MenuSelectionIntent",
+			"name": "ExitIntent",
 			"phrases": [
-				"I would like to {menuOption}",
-				"please {menuOption}",
-				"go to {menuOption}",
-				"{menuOption} please",
-				"give me {menuOption}",
-				"lets {menuOption}",
-				"I think i'll {menuOption}",
-				"we should {menuOption}",
-				"{menuOption} thanks",
-				"{menuOption}"
-			],
-			"inputs": [
-				{
-					"name": "menuOption",
-					"type": "menuOption"
-				}
+				"exit",
+				"exit please",
+				"please exit the game",
+				"quit",
+				"leave the game",
+				"quit now",
+				"quit please",
+				"please escape",
+				"escape",
+				"leave",
+				"please leave",
+				"close please",
+				"close",
+				"force close"
+			]
+		},
+		{
+			"name": "HelpIntent",
+			"phrases": [
+				"help please",
+				"help",
+				"help me",
+				"help me please",
+				"assist",
+				"assist me",
+				"assist me please",
+				"I need help",
+				"tutorial",
+				"tutorial please",
+				"please give me information"
+			]
+		},
+		{
+			"name": "RankIntent",
+			"phrases": [
+				"what is my highest score",
+				"what is my score",
+				"score",
+				"rank",
+				"rank please",
+				"score please",
+				"scoreboard",
+				"rank list",
+				"ranking tiers",
+				"ranks",
+				"what is my rank",
+				"what is my highest tank",
+				"ranking",
+				"what is my best score",
+				"what is my best rank"
+			]
+		},
+		{
+			"name": "PlayIntent",
+			"phrases": [
+				"Play",
+				"play please",
+				"start",
+				"start please",
+				"start the game",
+				"start game",
+				"play the game",
+				"play game",
+				"go"
 			]
 		},
 		{
@@ -147,6 +142,30 @@
 				"main menu please",
 				"main menu please",
 				"main menu"
+			]
+		},
+		{
+			"name": "BoxIntent",
+			"phrases": [
+				"{boxNumber}",
+				"I will choose {boxNumber}",
+				"I'll go for {boxNumber}",
+				"I'll select {boxNumber}",
+				"My selection will be {boxNumber}",
+				"box {boxNumber}",
+				"box number {boxNumber}",
+				"number {boxNumber}",
+				"sound {boxNumber}",
+				"sound number {boxNumber}"
+			],
+			"inputs": [
+				{
+					"name": "boxNumber",
+					"type": {
+						"alexa": "AMAZON.NUMBER",
+						"dialogflow": "@sys.number"
+					}
+				}
 			]
 		},
 		{
@@ -187,75 +206,6 @@
 				"please skip it",
 				"skip tutorial",
 				"skip"
-			]
-		}
-	],
-	"inputTypes": [
-		{
-			"name": "menuOption",
-			"dialogflow": {
-				"automatedExpansion": true
-			},
-			"values": [
-				{
-					"value": "exit",
-					"synonyms": [
-						"exit please",
-						"please exit",
-						"exit",
-						"close",
-						"close it",
-						"escape",
-						"break",
-						"end it",
-						"end"
-					]
-				},
-				{
-					"value": "help",
-					"synonyms": [
-						"help",
-						"help please",
-						"please help",
-						"help me",
-						"I need help",
-						"tutorial",
-						"tutorial please"
-					]
-				},
-				{
-					"value": "rank",
-					"synonyms": [
-						"rank please",
-						"show me my score",
-						"scores please",
-						"scores",
-						"ranks",
-						"rank",
-						"score",
-						"show me my rank",
-						"show me my ranking",
-						"ranking",
-						"ranking board",
-						"leader boards",
-						"scoreboard",
-						"scores list",
-						"ranking list"
-					]
-				},
-				{
-					"value": "play",
-					"synonyms": [
-						"play",
-						"start",
-						"start it",
-						"play it",
-						"begin",
-						"begin anew",
-						"complete",
-						"go"
-					]
-				}
 			]
 		}
 	],

@@ -25,30 +25,17 @@ app.use(
 // ------------------------------------------------------------------
 //States and user data
 let currentState = ""; //Current game state
-let playerState = ""; //Current player state (2 players or 1)
-
-let player1Name = "";
-let player2Name = "";
 let numberOfTimesLoggedIn = 0;
 
-<<<<<<< HEAD
-=======
 //Player names
-var player1Name = "";
-var player2Name = "";
-
-//Count number of times logged in/activated application
-var numberOfTimesLoggedIn = 0;
+var playerName = "";
 
 //Highest Score
 var bestScore = 0;
->>>>>>> 6147cd13667192b39c7458c72133625d735a40f2
 
 //Current States
 // - Start: Beginning state. Only a yes or a no are acceptable for playing either one or two players
 // -
-
-
 app.setHandler({
     LAUNCH() {
         //Current state is the start
@@ -57,8 +44,8 @@ app.setHandler({
         //Set speech and reprompt
         this.$speech.addText(
             '<audio src="https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/bgm.mp3"/>'+
-            '<p><s>Welcome to the Memory Game!</s><s>It is advised to play this game with two players.</s></p>'+
-            '<p><s>Do you want to play by yourself?</s>Please answer with a yes or no!</p>'
+            '<p>Welcome to the Memory Game! </p>'+
+            '<p>Are you ready to test your memory?</p>'
         );
         this.$reprompt.addText(Reprompt());
 
@@ -71,23 +58,19 @@ app.setHandler({
         //Yes/no answers
         YesIntent(){
             currentState = "gettingNames";
-            //Set player state
-            playerState = "OnePlayer";
 
             //Ask user for their name
-            this.$speech.addText("<p>Since you are playing for both players, can you please tell me what to call you by?</p>");
+            this.$speech.addText("<p>I hope your excited, but before we can start, can you please tell me what to call you by?</p>");
             this.$reprompt.addText(Reprompt());
             this.followUpState('GetSingleNameState').ask(this.$speech, this.$reprompt);
         },
         NoIntent(){
             currentState = "gettingNames";
-            //Set player state
-            playerState = "TwoPlayer";
 
             //Ask users for their names
-            this.$speech.addText("<p>Since there are two players, can you please tell me what to call you both by?</p>");
+            this.$speech.addText("<p>Ok then, have an exciting day. Good bye!</p>");
             this.$reprompt.addText(Reprompt());
-            this.followUpState('GetDoubleNameState').ask(this.$speech, this.$reprompt);
+            this.tell(this.$speech, this.$reprompt);
         },
         Unhandled(){
             //Try again
@@ -103,36 +86,30 @@ app.setHandler({
         //Name Intent
         NameIntent(){
             //Get the name of one player
-            player1Name = this.$inputs.playerName.value;
+            playerName = this.$inputs.playerName.value;
             return this.toStatelessIntent('GiveMenu');
+        },
+        Unhandled(){
+            //Try again
+            this.$speech.addText("<p>Sorry, I could not understand you.</p>" + Reprompt());
+            this.$reprompt.addText(Reprompt());
+
+            this.followUpState('GetSingleNameState').ask(this.$speech, this.$reprompt);
         },
     },
 
-    //Get double name state: Only two names are acceptable
-    GetDoubleNameState: {
-        //Double Name Intent
-        DoubleNameIntent(){
-            //Get the name of two players
-            player1Name = this.$inputs.firstPlayerName.value;
-            player2Name = this.$inputs.secondPlayerName.value;
-            return this.toStatelessIntent('GiveMenu');
-        },
-    },
-
+    //Stateless intent for giving menu
     GiveMenu(){
         //Current state is the tutorial
         currentState = "mainMenu";
         //Set player response
         let speech = "";
-        if(playerState == "OnePlayer"){
-            speech = 'Nice to meet you '+ this.$inputs.playerName.value+'<break time="1" /> ';
-        }
-        else if(playerState == "TwoPlayer"){
-            speech = 'Nice to meet you; '+this.$inputs.firstPlayerName.value+' and '+this.$inputs.secondPlayerName.value+'<break time="1" /> ';
-        }
+
         //if it's the players first time logging in, then play a slightly larger introduction to the menu
         if(numberOfTimesLoggedIn == 0){
-            speech += '<p>When playing the memory game, from the main menu you can select to either</p><break time="0.1" />'+
+            speech = 'Nice to meet you ' + playerName + '<break time="1" /> ';
+
+            speech += '<p>When playing the memory game, from the main menu you can select to either</p>'+
                       '<p>Start the game!</p><break time="0.1" />'+
                       '<p>Show my rank!</p><break time="0.1" />'+
                       '<p>Ask for help</p><break time="0.1" />'+
@@ -140,12 +117,66 @@ app.setHandler({
                       'Which option would you like to select?';
             numberOfTimesLoggedIn++;
         }else{
-            speech += '<p>Please select either Start!, Show my rank!, Ask for help!, or exit the game';
+            speech += '<p>Welcome back ' + playerName + '</p>'+
+                      '<p>Please select either Start!</p>'+
+                      '<p>Show my rank!</p>'+
+                      '<p>Ask for help!</p>'+
+                      '<p>or exit the game</p>';
             numberOfTimesLoggedIn++;
         }
         //set reprompt
-        let reprompt = Reprompt();
-        this.ask(speech, reprompt);
+        this.$speech.addText(speech);
+        this.$reprompt.addText(Reprompt());
+        this.followUpState('MenuSelectionState').ask(this.$speech, this.$reprompt);
+    },
+
+    MenuSelectionState: {
+        ExitIntent(){
+            //Current state is the main menu
+            currentState = "exitGame";
+            //Set player response
+            this.$speech.addText("Thank you for playing our animal memory game, good bye!");
+            this.tell(this.$speech);
+        },
+        HelpIntent(){
+            //Current state is the main menu
+            currentState = "helpMenuState";
+            //Set player response
+            this.$speech.addText("<p>To play this game you will be given a set amount of noise boxes to open.</p>"+
+                                 "<p>Each one will contain an animal sound that will match up to one other box in the set</p>"+
+                                 "<p>Your job is to give me a pair of boxes to match up and I will open them and let you listen to the sounds within</p>"+
+                                 "<p>If they match up, you will get a point and those two boxes will be closed and unable to open again</p>"+
+                                 "<p>If they do not match up, you will hear a buzzer and be told you where incorrect</p>"+
+                                 "<p>The goal of each level is to match up all the boxes to their correct counterparts</p>"+
+                                 "<p>Good luck and have fun.</p>"+
+                                 "<p>Please say back to go to the main menu!</p>");
+            this.$reprompt.addText(Reprompt());
+
+            this.followUpState('BackToMainMenuState').ask(this.$speech, this.$reprompt);
+        },
+        RankIntent(){
+            //Current state is the main menu
+            currentState = "rankMenuState";
+            this.$speech.addText("<p>Your current highest score in our Animal Memory Game is:</p>" +
+                                 "<p>" + bestScore + "</p>" +
+                                 "<p>Please say back to go to the main menu!</p>");
+            this.$reprompt.addText(Reprompt());
+
+            this.followUpState('BackToMainMenuState').ask(this.$speech, this.$reprompt);
+        },
+    },
+
+    BackToMainMenuState: {
+        BackToMenuIntent() {
+            return this.toStatelessIntent('GiveMenu');
+        },
+        Unhandled(){
+            //Try again
+            this.$speech.addText("<p>Sorry, I could not understand you.</p>" + Reprompt());
+            this.$reprompt.addText(Reprompt());
+
+            this.followUpState('BackToMainMenuState').ask(this.$speech, this.$reprompt);
+        },
     },
 
     MenuSelectionIntent(){
@@ -168,8 +199,6 @@ app.setHandler({
         //tell user
         this.tell(speech);
     },
-
-<<<<<<< HEAD
     InGameState:
     {
         BoxIntent()
@@ -235,17 +264,12 @@ app.setHandler({
             let player2Score = 0;
 
             //Assign animal objects to boxes and then randomize them
-            let speech = ""; 
+            let speech = "";
 
             speech = 'lets begin!' + this.$inputs.firstPlayerName.value+" will start first, Please select a box from 1 to <num of animal sounds * 2>";
-        },       
+        },
 
-    }
-=======
-    HelpMenuState: {
-        
     },
->>>>>>> 6147cd13667192b39c7458c72133625d735a40f2
 });
 
 module.exports.app = app;
@@ -257,19 +281,18 @@ module.exports.app = app;
 function Reprompt(){
     let text = "";
     if(currentState === "start"){
-        text = "Do you want to play as one player or with two players? Please Answer with a yes or a no!";
+        text = "Are you ready to play the animal memory game?";
     }else if(currentState === "mainMenu"){
         text = "Please select a main menu option from either: Start, show my rank, ask for help or exit the game!";
     }else if(currentState === "gettingNames"){
         text = "Please give me a name to call you by!"
-    }
-    else if(currentState === "soundSelect"){
+    }else if(currentState === "helpMenuState" || currentState === "rankMenuState"){
+        text = "Please let me know if you wish to go back"
+    }else if(currentState === "soundSelect"){
         text = "Please choose a sound package to play!, the available sound packages are: <list packages>"
-    }
-    else if(currentState === "levelSelect"){
+    }else if(currentState === "levelSelect"){
         text = "Please choose a level to play!, the levels available are: <list available levels>"
-    }
-    else if(currentState === "inGame"){
+    }else if(currentState === "inGame"){
         text = "Please choose a box and then another one to match it, the unopen boxes are: <list unopened boxes>"
     }
     return text;
