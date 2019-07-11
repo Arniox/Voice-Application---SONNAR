@@ -29,13 +29,93 @@ let numberOfTimesLoggedIn = 0;
 
 //Player names
 var playerName = "";
-
 //Highest Score
 var bestScore = 0;
 
+//levels unlocked
+const levelsUnlocked = [
+    {
+        name: "level 1",
+        unlocked: true
+    },{
+        name: "level 2",
+        unlocked: false
+    },{
+        name: "level 3",
+        unlocked: true
+    },{
+        name: "level 4",
+        unlocked: false
+    },{
+        name: "level 5",
+        unlocked: false
+    },{
+        name: "level 6",
+        unlocked: true
+    }
+];
+
+//create an array of animal objects
+const animals = [
+    {
+        name: "dog",
+        resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/dog.mp3' />",
+        opened: false
+    },{
+        name: "cat",
+        resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/cat.mp3' />",
+        opened: false
+    },{
+        name: "chicken",
+        resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/chicken.mp3' />",
+        opened: false
+    },{
+        name: "cow",
+        resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/cow.mp3' />",
+        opened: false
+    },{
+        name: "turkey",
+        resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/turkey.mp3' />",
+        opened: false
+    },{
+        name: "frog",
+        resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/frog.mp3' />",
+        opened: false
+    },{
+        name: "goat",
+        resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/goat.mp3' />",
+        opened: false
+    },{
+        name: "goose",
+        resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/goose.mp3' />",
+        opened: false
+    },{
+        name: "horse",
+        resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/horse.mp3' />",
+        opened: false
+    },{
+        name: "pig",
+        resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/pig.mp3' />",
+        opened: false
+    },{
+        name: "sheep",
+        resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/sheep.mp3' />",
+        opened: false
+    },{
+        name: "elephant",
+        resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/elephant.mp3' />",
+        opened: false
+    }
+];
+
 //Current States
-// - Start: Beginning state. Only a yes or a no are acceptable for playing either one or two players
-// -
+// - start: Beginning state. Only a yes or a no are acceptable for playing either one or two players
+// - gettingNames: The program is looking for a users name. Only a common name is accpetable
+// - mainMenu: The stateless main menu intent is just to give the user information
+// - exitGame: Exit game intent and state. Nothing is required from the user.
+// - helpMenuState: The help menu. The game expects the user to go back to main menu and nothing else
+// - rankMenuState: Rank menu. The game expects the user to go back to the main menu and nothing else
+
 app.setHandler({
     LAUNCH() {
         //Current state is the start
@@ -164,6 +244,27 @@ app.setHandler({
 
             this.followUpState('BackToMainMenuState').ask(this.$speech, this.$reprompt);
         },
+        PlayIntent(){
+            //Current state is the main menu
+            currentState = "playingGame";
+            let speech = "<p>We hope you are ready for our memory game.</p>"+
+                         "<p>You have, so far, unlocked:</p>";
+            for(const level of levelsUnlocked){
+                if(level.unlocked == true){
+                    speech += level.name + ", "
+                }
+            }
+            this.$speech.addText(speech);
+            this.tell(this.$speech);
+
+        },
+        Unhandled(){
+            //Try again
+            this.$speech.addText("<p>Sorry, I could not understand you.</p>" + Reprompt());
+            this.$reprompt.addText(Reprompt());
+
+            this.followUpState('MenuSelectionState').ask(this.$speech, this.$reprompt);
+        },
     },
 
     BackToMainMenuState: {
@@ -199,76 +300,22 @@ app.setHandler({
         //tell user
         this.tell(speech);
     },
+
     InGameState:
     {
         BoxIntent()
         {
             currentState = "inGame";
 
-            //create an array of animal objects
-            const animals = [
-                {
-                name: "dog",
-                resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/dog.mp3' />",
-                opened: false
-                },{
-                name: "cat",
-                resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/cat.mp3' />",
-                opened: false
-                },{
-                name: "chicken",
-                resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/chicken.mp3' />",
-                opened: false
-                },{
-                name: "cow",
-                resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/cow.mp3' />",
-                opened: false
-                },{
-                name: "turkey",
-                resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/turkey.mp3' />",
-                opened: false
-                },{
-                name: "frog",
-                resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/frog.mp3' />",
-                opened: false
-                },{
-                name: "goat",
-                resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/goat.mp3' />",
-                opened: false
-                },{
-                name: "goose",
-                resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/goose.mp3' />",
-                opened: false
-                },{
-                name: "horse",
-                resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/horse.mp3' />",
-                opened: false
-                },{
-                name: "pig",
-                resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/pig.mp3' />",
-                opened: false
-                },{
-                name: "sheep",
-                resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/sheep.mp3' />",
-                opened: false
-                },{
-                name: "elephant",
-                resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/elephant.mp3' />",
-                opened: false
-                }
-            ];
-
             let firstBoxChoice = 0;
             let secondBoxChoice = 0;
-            let player1Score = 0;
-            let player2Score = 0;
+            let playerScore = 0;
 
             //Assign animal objects to boxes and then randomize them
             let speech = "";
 
             speech = 'lets begin!' + this.$inputs.firstPlayerName.value+" will start first, Please select a box from 1 to <num of animal sounds * 2>";
         },
-
     },
 });
 
@@ -298,9 +345,8 @@ function Reprompt(){
     return text;
 }
 
-/*
-    ContextualHelp() function will give help only relative to the current state the game is in.
-*/
+
+//ContextualHelp() function will give help only relative to the current state the game is in.
 function ContextualHelp()
 {
     let helpText
