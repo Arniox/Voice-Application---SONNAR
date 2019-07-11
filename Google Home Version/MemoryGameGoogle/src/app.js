@@ -24,13 +24,25 @@ app.use(
 // APP LOGIC
 // ------------------------------------------------------------------
 //States and user data
-var currentState = ""; //Current game state
-var playerState = ""; //Current player state (2 players or 1)
+let currentState = ""; //Current game state
+let playerState = ""; //Current player state (2 players or 1)
 
+let player1Name = "";
+let player2Name = "";
+let numberOfTimesLoggedIn = 0;
+
+<<<<<<< HEAD
+=======
+//Player names
 var player1Name = "";
 var player2Name = "";
+
+//Count number of times logged in/activated application
 var numberOfTimesLoggedIn = 0;
-var userAnswer = "";
+
+//Highest Score
+var bestScore = 0;
+>>>>>>> 6147cd13667192b39c7458c72133625d735a40f2
 
 //Current States
 // - Start: Beginning state. Only a yes or a no are acceptable for playing either one or two players
@@ -113,74 +125,127 @@ app.setHandler({
         //Set player response
         let speech = "";
         if(playerState == "OnePlayer"){
-            speech = 'Nice to meet you '+ player1Name+'.<break time="1" /> ';
-        }else if(playerState == "TwoPlayer"){
-            speech = 'Nice to meet you; '+player1Name+' and '+player2Name+'.<break time="1" /> ';
+            speech = 'Nice to meet you '+ this.$inputs.playerName.value+'<break time="1" /> ';
+        }
+        else if(playerState == "TwoPlayer"){
+            speech = 'Nice to meet you; '+this.$inputs.firstPlayerName.value+' and '+this.$inputs.secondPlayerName.value+'<break time="1" /> ';
         }
         //if it's the players first time logging in, then play a slightly larger introduction to the menu
         if(numberOfTimesLoggedIn == 0){
-            speech += '<p>When playing the memory game, from the main menu you can select to either</p>'+
-                      '<p>Start!</p><break time="0.1" />'+
+            speech += '<p>When playing the memory game, from the main menu you can select to either</p><break time="0.1" />'+
+                      '<p>Start the game!</p><break time="0.1" />'+
                       '<p>Show my rank!</p><break time="0.1" />'+
-                      '<p>Ask for help via the tutorial</p><break time="0.1" />'+
+                      '<p>Ask for help</p><break time="0.1" />'+
                       '<p>Or exit the game</p><break time="0.1" />'+
                       'Which option would you like to select?';
             numberOfTimesLoggedIn++;
         }else{
-            speech += '<p>Please select either Start!, Show my rank!, Ask for help via the tutorial!, or exit the game';
+            speech += '<p>Please select either Start!, Show my rank!, Ask for help!, or exit the game';
             numberOfTimesLoggedIn++;
         }
-
         //set reprompt
-        this.$speech.addText(speech);
-        this.$reprompt.addText(Reprompt());
-        this.followUpState('MenuSelectionState').ask(this.$speech, this.$reprompt);
+        let reprompt = Reprompt();
+        this.ask(speech, reprompt);
     },
 
-    MenuSelectionState: {
-        MenuSelectionIntent(){
-            //Current state is the main menu
-            currentState = "mainMenu";
-            //Set player response
-            let speech = "";
-            let chosenMenuOption = this.$inputs.menuOption.value;
+    MenuSelectionIntent(){
+        //Current state is the main menu
+        currentState = "mainMenu";
+        //Set player response
+        let speech = "";
+        let chosenMenuOption = this.$inputs.menuOption.value;
 
-            if(chosenMenuOption == "exit"){
-                if(playerState == "OnePlayer"){
-                    speech = "Thank you and have a good day " + player1Name + ". We hope you enjoyed our memory game";
-                }else{
-                    speech = "Thank you and have a good day " + player1Name + " and " + player2Name + ". We hope you enjoyed our memory game";
+        if(chosenMenuOption == "exit"){
+            speech = "You have chosen to exit";
+        }else if(chosenMenuOption == "help"){
+            speech = "You have chosen to go to the help menu";
+        }else if(chosenMenuOption == "rank"){
+            speech = "You have chosen to go to the ranking menu";
+        }else if(chosenMenuOption == "play"){
+            speech = "You have chosen to play";
+        }
+
+        //tell user
+        this.tell(speech);
+    },
+
+<<<<<<< HEAD
+    InGameState:
+    {
+        BoxIntent()
+        {
+            currentState = "inGame";
+
+            //create an array of animal objects
+            const animals = [
+                {
+                name: "dog",
+                resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/dog.mp3' />",
+                opened: false
+                },{
+                name: "cat",
+                resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/cat.mp3' />",
+                opened: false
+                },{
+                name: "chicken",
+                resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/chicken.mp3' />",
+                opened: false
+                },{
+                name: "cow",
+                resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/cow.mp3' />",
+                opened: false
+                },{
+                name: "turkey",
+                resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/turkey.mp3' />",
+                opened: false
+                },{
+                name: "frog",
+                resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/frog.mp3' />",
+                opened: false
+                },{
+                name: "goat",
+                resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/goat.mp3' />",
+                opened: false
+                },{
+                name: "goose",
+                resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/goose.mp3' />",
+                opened: false
+                },{
+                name: "horse",
+                resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/horse.mp3' />",
+                opened: false
+                },{
+                name: "pig",
+                resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/pig.mp3' />",
+                opened: false
+                },{
+                name: "sheep",
+                resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/sheep.mp3' />",
+                opened: false
+                },{
+                name: "elephant",
+                resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/elephant.mp3' />",
+                opened: false
                 }
-            }else if(chosenMenuOption == "help"){
-                //TO-DO: Add preset help. This ISN'T the contextual help but rather a tutorial for the game
-                //Need to fix up the language used in the contextual help function
+            ];
 
-                speech = "You have chosen to go to the help menu";
-            }else if(chosenMenuOption == "rank"){
-                //TO-DO: Add ranking menu - Needs to be a variable for ranking/scoring.
-                //User needs to be able to go back to main menu from the ranking menu or exit the game or
-                //return to the stateless GiveMenu function
+            let firstBoxChoice = 0;
+            let secondBoxChoice = 0;
+            let player1Score = 0;
+            let player2Score = 0;
 
-                speech = "You have chosen to go to the ranking menu";
-            }else if(chosenMenuOption == "play"){
-                //TO-DO: Add game fuinctions and intents. The user must be able to go back
-                //to the main menu at any point
+            //Assign animal objects to boxes and then randomize them
+            let speech = ""; 
 
-                speech = "You have chosen to play";
-            }
+            speech = 'lets begin!' + this.$inputs.firstPlayerName.value+" will start first, Please select a box from 1 to <num of animal sounds * 2>";
+        },       
 
-            //tell user
-            this.$speech.addText(speech);
-            this.tell(this.$speech);
-        },
-        Unhandled(){
-            //Try again
-            this.$speech.addText("<p>Sorry, I could not understand you.</p>" + Reprompt());
-            this.$reprompt.addText(Reprompt());
-
-            this.followUpState('MenuSelectionState').ask(this.$speech, this.$reprompt);
-        },
+    }
+=======
+    HelpMenuState: {
+        
     },
+>>>>>>> 6147cd13667192b39c7458c72133625d735a40f2
 });
 
 module.exports.app = app;
@@ -197,6 +262,15 @@ function Reprompt(){
         text = "Please select a main menu option from either: Start, show my rank, ask for help or exit the game!";
     }else if(currentState === "gettingNames"){
         text = "Please give me a name to call you by!"
+    }
+    else if(currentState === "soundSelect"){
+        text = "Please choose a sound package to play!, the available sound packages are: <list packages>"
+    }
+    else if(currentState === "levelSelect"){
+        text = "Please choose a level to play!, the levels available are: <list available levels>"
+    }
+    else if(currentState === "inGame"){
+        text = "Please choose a box and then another one to match it, the unopen boxes are: <list unopened boxes>"
     }
     return text;
 }
@@ -234,7 +308,8 @@ function ContextualHelp()
     }
     else if(currentState === "inGame")
     {
-        helpText = "........."
+        helpText = "To play this game you must select a box that will contain an animal sound and match it with another one that contains the same sound. To select a box just choose a number when asked, and then choose"
+        +" another box that you think will contain the same sound of your first chosen box.";
     }
 
     return helpText;

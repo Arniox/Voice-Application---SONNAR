@@ -129,6 +129,27 @@
 			]
 		},
 		{
+			"name": "BackToMenuIntent",
+			"phrases": [
+				"go back",
+				"back to menu",
+				"back to main menu",
+				"please go to menu",
+				"back please",
+				"go back to menu",
+				"go back to main menu",
+				"please go back",
+				"please go back to menu",
+				"please go back to main menu",
+				"please menu",
+				"menu",
+				"menu please",
+				"main menu please",
+				"main menu please",
+				"main menu"
+			]
+		},
+		{
 			"name": "OpenedIntent",
 			"phrases": [
 				"check opened",
