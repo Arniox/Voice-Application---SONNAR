@@ -31,27 +31,41 @@ let numberOfTimesLoggedIn = 0;
 var playerName = "";
 //Highest Score
 var bestScore = 0;
+//Number of times played
+var numOfTimesPlayed = 0;
 
 //levels unlocked
 const levelsUnlocked = [
     {
+        id: 1,
         name: "level 1",
-        unlocked: true
+        unlocked: true,
+        numberOfSounds: 3
     },{
+        id: 2,
         name: "level 2",
-        unlocked: false
+        unlocked: false,
+        numberOfSounds: 4
     },{
+        id: 3,
         name: "level 3",
-        unlocked: true
+        unlocked: false,
+        numberOfSounds: 6
     },{
+        id: 4,
         name: "level 4",
-        unlocked: false
+        unlocked: false,
+        numberOfSounds: 8
     },{
+        id: 5,
         name: "level 5",
-        unlocked: false
+        unlocked: false,
+        numberOfSounds: 10
     },{
+        id: 6,
         name: "level 6",
-        unlocked: true
+        unlocked: false,
+        numberOfSounds: 12
     }
 ];
 
@@ -245,18 +259,8 @@ app.setHandler({
             this.followUpState('BackToMainMenuState').ask(this.$speech, this.$reprompt);
         },
         PlayIntent(){
-            //Current state is the main menu
-            currentState = "playingGame";
-            let speech = "<p>We hope you are ready for our memory game.</p>"+
-                         "<p>You have, so far, unlocked:</p>";
-            for(const level of levelsUnlocked){
-                if(level.unlocked == true){
-                    speech += level.name + ", "
-                }
-            }
-            this.$speech.addText(speech);
-            this.tell(this.$speech);
-
+            //Return to the stateless playintent menu giver so that the level selection can be reused
+            return this.toStatelessIntent('PlayIntentMenuGiver');
         },
         Unhandled(){
             //Try again
@@ -264,6 +268,68 @@ app.setHandler({
             this.$reprompt.addText(Reprompt());
 
             this.followUpState('MenuSelectionState').ask(this.$speech, this.$reprompt);
+        },
+    },
+
+    //Stateless play intent
+    PlayIntentMenuGiver(){
+        currentState = "playingGame";
+        let speech = "";
+        //If num of times played equal to 0 then introduce the player
+        if(numOfTimesPlayed == 0){
+            speech += "<p>We hope you are ready for our memory game.</p>";
+        }
+
+        //Else just continue
+        speech += "<p>You have, so far, unlocked:</p>";
+        for(const level of levelsUnlocked){
+            if(level.unlocked == true){
+                speech += level.name + ", ";
+            }
+        }
+        speech += "<p>Which level would you like to play?</p>";
+        this.$speech.addText(speech);
+        this.$reprompt.addText(Reprompt());
+        this.followUpState('LevelSelectionState').ask(this.$speech, this.$reprompt);
+    },
+
+    LevelSelectionState: {
+        LevelSelectionIntent(){
+            let userLevelSelected = this.$inputs.levelNumber.value;
+            //Check if the user has selected a non-existant level
+            if(!(userLevelSelected > 6 || userLevelSelected < 1)){
+                //Check if the user has selected a locked level
+                if(levelsUnlocked[userLevelSelected-1].unlocked == true){
+                    //Instructions
+                    let speech = "<p>At any point in time during the level; you can say exit to quit the game,"+
+                                 " back to go back to level selection or score to check your current score</p>"+
+                                 "<p>You will also be asked for two boxes to match up together!</p>";
+                    //Level info
+                    speech += "<p>" + levelsUnlocked[userLevelSelected-1].name + " has " +
+                              levelsUnlocked[userLevelSelected-1].numberOfSounds + " sounds to discover. Meaning a total of " +
+                              (levelsUnlocked[userLevelSelected-1].numberOfSounds*2) + " pairs to match up!</p>";
+                    //Query
+                    speech += "<p>Ok, are you ready to play " + levelsUnlocked[userLevelSelected-1].name + "?</p>";
+                    this.$speech.addText(speech);
+                    this.$reprompt.addText(Reprompt());
+                    this.tell(this.$speech);
+                }else{
+                    this.$speech.addText("<p>Sorry this level needs to be unlocked by playing the prior levels in order.</p>" + Reprompt());
+                    this.$reprompt.addText(Reprompt());
+                    this.followUpState('LevelSelectionState').ask(this.$speech, this.$reprompt);
+                }
+            }else{
+                this.$speech.addText("<p>Sorry this level does not exist.</p>" + Reprompt());
+                this.$reprompt.addText(Reprompt());
+                this.followUpState('LevelSelectionState').ask(this.$speech, this.$reprompt);
+            }
+        },
+        Unhandled(){
+            //Try again
+            this.$speech.addText("<p>Sorry, I could not understand you.</p>" + Reprompt());
+            this.$reprompt.addText(Reprompt());
+
+            this.followUpState('LevelSelectionState').ask(this.$speech, this.$reprompt);
         },
     },
 
@@ -280,29 +346,7 @@ app.setHandler({
         },
     },
 
-    MenuSelectionIntent(){
-        //Current state is the main menu
-        currentState = "mainMenu";
-        //Set player response
-        let speech = "";
-        let chosenMenuOption = this.$inputs.menuOption.value;
-
-        if(chosenMenuOption == "exit"){
-            speech = "You have chosen to exit";
-        }else if(chosenMenuOption == "help"){
-            speech = "You have chosen to go to the help menu";
-        }else if(chosenMenuOption == "rank"){
-            speech = "You have chosen to go to the ranking menu";
-        }else if(chosenMenuOption == "play"){
-            speech = "You have chosen to play";
-        }
-
-        //tell user
-        this.tell(speech);
-    },
-
-    InGameState:
-    {
+    InGameState: {
         BoxIntent()
         {
             currentState = "inGame";
@@ -315,6 +359,13 @@ app.setHandler({
             let speech = "";
 
             speech = 'lets begin!' + this.$inputs.firstPlayerName.value+" will start first, Please select a box from 1 to <num of animal sounds * 2>";
+        },
+        Unhandled(){
+            //Try again
+            this.$speech.addText("<p>Sorry, I could not understand you.</p>" + Reprompt());
+            this.$reprompt.addText(Reprompt());
+
+            this.followUpState('BackToMainMenuState').ask(this.$speech, this.$reprompt);
         },
     },
 });
@@ -332,15 +383,17 @@ function Reprompt(){
     }else if(currentState === "mainMenu"){
         text = "Please select a main menu option from either: Start, show my rank, ask for help or exit the game!";
     }else if(currentState === "gettingNames"){
-        text = "Please give me a name to call you by!"
+        text = "Please give me a name to call you by!";
     }else if(currentState === "helpMenuState" || currentState === "rankMenuState"){
-        text = "Please let me know if you wish to go back"
+        text = "Please let me know if you wish to go back";
     }else if(currentState === "soundSelect"){
-        text = "Please choose a sound package to play!, the available sound packages are: <list packages>"
+        text = "Please choose a sound package to play!, the available sound packages are: <list packages>";
     }else if(currentState === "levelSelect"){
-        text = "Please choose a level to play!, the levels available are: <list available levels>"
+        text = "Please choose a level to play!, the levels available are: <list available levels>";
     }else if(currentState === "inGame"){
-        text = "Please choose a box and then another one to match it, the unopen boxes are: <list unopened boxes>"
+        text = "Please choose a box and then another one to match it, the unopen boxes are: <list unopened boxes>";
+    }else if(currentState === "playingGame"){
+        text = "Please choose a level to select and play";
     }
     return text;
 }

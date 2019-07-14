@@ -145,6 +145,45 @@
 			]
 		},
 		{
+			"name": "LevelSelectionIntent",
+			"phrases": [
+				"I would like to play level {levelNumber}",
+				"please play level {levelNumber}",
+				"level {levelNumber}",
+				"{levelNumber}",
+				"{levelNumber} please",
+				"play level {levelNumber}",
+				"play {levelNumber}",
+				"please level {levelNumber}",
+				"please {levelNumber}",
+				"I think level {levelNumber} could be fun",
+				"I think I'll play level {levelNumber}",
+				"I think level {levelNumber}",
+				"maybe level {levelNumber}",
+				"maybe {levelNumber}",
+				"I think I will play level {levelNumber}",
+				"possibly level {levelNumber}",
+				"lets go with level {levelNumber}",
+				"lets go level {levelNumber}",
+				"lets go {levelNumber}",
+				"ok, level {levelNumber}",
+				"level {levelNumber} thanks",
+				"level {levelNumber} thank you",
+				"go level {levelNumber} please",
+				"go {levelNumber} thanks",
+				"go {levelNumber} please"
+			],
+			"inputs": [
+				{
+					"name": "levelNumber",
+					"type": {
+						"alexa": "AMAZON.NUMBER",
+						"dialogflow": "@sys.number"
+					}
+				}
+			]
+		},
+		{
 			"name": "BoxIntent",
 			"phrases": [
 				"{boxNumber}",
