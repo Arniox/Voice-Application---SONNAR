@@ -145,6 +145,30 @@
 					]
 				},
 				{
+					"name": "BackToLevelSelectionIntent",
+					"samples": [
+						"go back to level selection please",
+						"level select",
+						"level select please",
+						"select level please",
+						"select level",
+						"choose level",
+						"change level",
+						"quit level",
+						"quit to level select",
+						"go to level select",
+						"level selection please",
+						"level selection",
+						"head to level selection",
+						"I would like to choose a new level",
+						"I would like to change the level",
+						"I want to change level",
+						"I want to choose a new level",
+						"new level please",
+						"new level"
+					]
+				},
+				{
 					"name": "LevelSelectionIntent",
 					"samples": [
 						"I would like to play level {levelNumber}",
@@ -183,20 +207,25 @@
 				{
 					"name": "BoxIntent",
 					"samples": [
-						"{boxNumber}",
-						"I will choose {boxNumber}",
-						"I'll go for {boxNumber}",
-						"I'll select {boxNumber}",
-						"My selection will be {boxNumber}",
-						"box {boxNumber}",
-						"box number {boxNumber}",
-						"number {boxNumber}",
-						"sound {boxNumber}",
-						"sound number {boxNumber}"
+						"{boxNumberONE}, {boxNumberTWO}",
+						"I will choose {boxNumberONE} and {boxNumberTWO}",
+						"I'll go for {boxNumberONE} and {boxNumberTWO}",
+						"I'll select {boxNumberONE} and {boxNumberTWO}",
+						"My selection will be {boxNumberONE} and {boxNumberTWO}",
+						"box {boxNumberONE} and {boxNumberTWO}",
+						"box number {boxNumberONE} and {boxNumberTWO}",
+						"number {boxNumberONE} and {boxNumberTWO}",
+						"sound {boxNumberONE} and {boxNumberTWO}",
+						"sound number {boxNumberONE} and {boxNumberTWO}",
+						"I choose {boxNumberONE} and {boxNumberTWO}"
 					],
 					"slots": [
 						{
-							"name": "boxNumber",
+							"name": "boxNumberONE",
+							"type": "AMAZON.NUMBER"
+						},
+						{
+							"name": "boxNumberTWO",
 							"type": "AMAZON.NUMBER"
 						}
 					]
@@ -216,29 +245,6 @@
 						"what have I completed",
 						"completed",
 						"completed boxes"
-					]
-				},
-				{
-					"name": "ResetIntent",
-					"samples": [
-						"please reset",
-						"reset please",
-						"reset",
-						"start again",
-						"repeat again",
-						"begin again",
-						"begin a new"
-					]
-				},
-				{
-					"name": "SkipIntent",
-					"samples": [
-						"please skip",
-						"skip it",
-						"nah skip it",
-						"please skip it",
-						"skip tutorial",
-						"skip"
 					]
 				},
 				{

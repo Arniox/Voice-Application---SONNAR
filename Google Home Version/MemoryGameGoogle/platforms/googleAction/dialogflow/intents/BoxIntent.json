@@ -7,8 +7,14 @@
 			"parameters": [
 				{
 					"isList": false,
-					"name": "boxNumber",
-					"value": "$boxNumber",
+					"name": "boxNumberONE",
+					"value": "$boxNumberONE",
+					"dataType": "@sys.number"
+				},
+				{
+					"isList": false,
+					"name": "boxNumberTWO",
+					"value": "$boxNumberTWO",
 					"dataType": "@sys.number"
 				}
 			]

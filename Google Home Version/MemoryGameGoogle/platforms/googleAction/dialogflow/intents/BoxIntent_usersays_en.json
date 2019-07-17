@@ -2,9 +2,19 @@
 	{
 		"data": [
 			{
-				"text": "boxNumber",
+				"text": "boxNumberONE",
 				"userDefined": true,
-				"alias": "boxNumber",
+				"alias": "boxNumberONE",
+				"meta": "@sys.number"
+			},
+			{
+				"text": ", ",
+				"userDefined": false
+			},
+			{
+				"text": "boxNumberTWO",
+				"userDefined": true,
+				"alias": "boxNumberTWO",
 				"meta": "@sys.number"
 			}
 		],
@@ -18,9 +28,19 @@
 				"userDefined": false
 			},
 			{
-				"text": "boxNumber",
+				"text": "boxNumberONE",
 				"userDefined": true,
-				"alias": "boxNumber",
+				"alias": "boxNumberONE",
+				"meta": "@sys.number"
+			},
+			{
+				"text": " and ",
+				"userDefined": false
+			},
+			{
+				"text": "boxNumberTWO",
+				"userDefined": true,
+				"alias": "boxNumberTWO",
 				"meta": "@sys.number"
 			}
 		],
@@ -34,9 +54,19 @@
 				"userDefined": false
 			},
 			{
-				"text": "boxNumber",
+				"text": "boxNumberONE",
 				"userDefined": true,
-				"alias": "boxNumber",
+				"alias": "boxNumberONE",
+				"meta": "@sys.number"
+			},
+			{
+				"text": " and ",
+				"userDefined": false
+			},
+			{
+				"text": "boxNumberTWO",
+				"userDefined": true,
+				"alias": "boxNumberTWO",
 				"meta": "@sys.number"
 			}
 		],
@@ -50,9 +80,19 @@
 				"userDefined": false
 			},
 			{
-				"text": "boxNumber",
+				"text": "boxNumberONE",
 				"userDefined": true,
-				"alias": "boxNumber",
+				"alias": "boxNumberONE",
+				"meta": "@sys.number"
+			},
+			{
+				"text": " and ",
+				"userDefined": false
+			},
+			{
+				"text": "boxNumberTWO",
+				"userDefined": true,
+				"alias": "boxNumberTWO",
 				"meta": "@sys.number"
 			}
 		],
@@ -66,9 +106,19 @@
 				"userDefined": false
 			},
 			{
-				"text": "boxNumber",
+				"text": "boxNumberONE",
 				"userDefined": true,
-				"alias": "boxNumber",
+				"alias": "boxNumberONE",
+				"meta": "@sys.number"
+			},
+			{
+				"text": " and ",
+				"userDefined": false
+			},
+			{
+				"text": "boxNumberTWO",
+				"userDefined": true,
+				"alias": "boxNumberTWO",
 				"meta": "@sys.number"
 			}
 		],
@@ -82,9 +132,19 @@
 				"userDefined": false
 			},
 			{
-				"text": "boxNumber",
+				"text": "boxNumberONE",
 				"userDefined": true,
-				"alias": "boxNumber",
+				"alias": "boxNumberONE",
+				"meta": "@sys.number"
+			},
+			{
+				"text": " and ",
+				"userDefined": false
+			},
+			{
+				"text": "boxNumberTWO",
+				"userDefined": true,
+				"alias": "boxNumberTWO",
 				"meta": "@sys.number"
 			}
 		],
@@ -98,9 +158,19 @@
 				"userDefined": false
 			},
 			{
-				"text": "boxNumber",
+				"text": "boxNumberONE",
 				"userDefined": true,
-				"alias": "boxNumber",
+				"alias": "boxNumberONE",
+				"meta": "@sys.number"
+			},
+			{
+				"text": " and ",
+				"userDefined": false
+			},
+			{
+				"text": "boxNumberTWO",
+				"userDefined": true,
+				"alias": "boxNumberTWO",
 				"meta": "@sys.number"
 			}
 		],
@@ -114,9 +184,19 @@
 				"userDefined": false
 			},
 			{
-				"text": "boxNumber",
+				"text": "boxNumberONE",
 				"userDefined": true,
-				"alias": "boxNumber",
+				"alias": "boxNumberONE",
+				"meta": "@sys.number"
+			},
+			{
+				"text": " and ",
+				"userDefined": false
+			},
+			{
+				"text": "boxNumberTWO",
+				"userDefined": true,
+				"alias": "boxNumberTWO",
 				"meta": "@sys.number"
 			}
 		],
@@ -130,9 +210,19 @@
 				"userDefined": false
 			},
 			{
-				"text": "boxNumber",
+				"text": "boxNumberONE",
 				"userDefined": true,
-				"alias": "boxNumber",
+				"alias": "boxNumberONE",
+				"meta": "@sys.number"
+			},
+			{
+				"text": " and ",
+				"userDefined": false
+			},
+			{
+				"text": "boxNumberTWO",
+				"userDefined": true,
+				"alias": "boxNumberTWO",
 				"meta": "@sys.number"
 			}
 		],
@@ -146,9 +236,45 @@
 				"userDefined": false
 			},
 			{
-				"text": "boxNumber",
+				"text": "boxNumberONE",
 				"userDefined": true,
-				"alias": "boxNumber",
+				"alias": "boxNumberONE",
+				"meta": "@sys.number"
+			},
+			{
+				"text": " and ",
+				"userDefined": false
+			},
+			{
+				"text": "boxNumberTWO",
+				"userDefined": true,
+				"alias": "boxNumberTWO",
+				"meta": "@sys.number"
+			}
+		],
+		"isTemplate": false,
+		"count": 0
+	},
+	{
+		"data": [
+			{
+				"text": "I choose ",
+				"userDefined": false
+			},
+			{
+				"text": "boxNumberONE",
+				"userDefined": true,
+				"alias": "boxNumberONE",
+				"meta": "@sys.number"
+			},
+			{
+				"text": " and ",
+				"userDefined": false
+			},
+			{
+				"text": "boxNumberTWO",
+				"userDefined": true,
+				"alias": "boxNumberTWO",
 				"meta": "@sys.number"
 			}
 		],
