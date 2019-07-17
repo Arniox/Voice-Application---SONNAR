@@ -19,7 +19,6 @@ app.use(
     new FileDb()
 );
 
-
 // ------------------------------------------------------------------
 // APP LOGIC
 // ------------------------------------------------------------------
@@ -33,6 +32,13 @@ var playerName = "";
 var bestScore = 0;
 //Number of times played
 var numOfTimesPlayed = 0;
+
+//Users first and second box choice
+var firstBoxChoice = 0;
+var secondBoxChoice = 0;
+
+//players current ingame score
+var playerScore = 0;
 
 //levels unlocked
 const levelsUnlocked = [
@@ -300,19 +306,23 @@ app.setHandler({
             if(!(userLevelSelected > 6 || userLevelSelected < 1)){
                 //Check if the user has selected a locked level
                 if(levelsUnlocked[userLevelSelected-1].unlocked == true){
-                    //Instructions
-                    let speech = "<p>At any point in time during the level; you can say exit to quit the game,"+
-                                 " back to go back to level selection or score to check your current score</p>"+
-                                 "<p>You will also be asked for two boxes to match up together!</p>";
+                    //Instructions - only needed for new players
+                    if(numberOfTimesLoggedIn < 3){
+                        let speech = "<p>At any point in time during the level; you can say exit to quit the game,"+
+                        " back to go back to level selection or score to check your current score</p>"+
+                        "<p>You will also be asked for two boxes to match up together!</p>";
+                    }   
                     //Level info
                     speech += "<p>" + levelsUnlocked[userLevelSelected-1].name + " has " +
-                              levelsUnlocked[userLevelSelected-1].numberOfSounds + " sounds to discover. Meaning a total of " +
-                              (levelsUnlocked[userLevelSelected-1].numberOfSounds*2) + " pairs to match up!</p>";
+                    levelsUnlocked[userLevelSelected-1].numberOfSounds + " sounds to discover. Meaning a total of " +
+                    (levelsUnlocked[userLevelSelected-1].numberOfSounds*2) + " pairs to match up!</p>";                 
                     //Query
                     speech += "<p>Ok, are you ready to play " + levelsUnlocked[userLevelSelected-1].name + "?</p>";
                     this.$speech.addText(speech);
                     this.$reprompt.addText(Reprompt());
                     this.tell(this.$speech);
+                    //Create boxes with animals in them
+                    
                 }else{
                     this.$speech.addText("<p>Sorry this level needs to be unlocked by playing the prior levels in order.</p>" + Reprompt());
                     this.$reprompt.addText(Reprompt());
@@ -332,10 +342,17 @@ app.setHandler({
             this.followUpState('LevelSelectionState').ask(this.$speech, this.$reprompt);
         },
     },
+    
 
-    BackToMainMenuState: {
-        BackToMenuIntent() {
-            return this.toStatelessIntent('GiveMenu');
+    InGameState: {
+        BoxIntent()
+        {
+            currentState = "inGame";            
+
+            //Assign animal objects to boxes and then randomize them
+            let speech = "";
+
+            speech = "lets begin! Please select a box from 1 to" + (levelsUnlocked[userLevelSelected-1].numberOfSounds*2);
         },
         Unhandled(){
             //Try again
@@ -346,19 +363,9 @@ app.setHandler({
         },
     },
 
-    InGameState: {
-        BoxIntent()
-        {
-            currentState = "inGame";
-
-            let firstBoxChoice = 0;
-            let secondBoxChoice = 0;
-            let playerScore = 0;
-
-            //Assign animal objects to boxes and then randomize them
-            let speech = "";
-
-            speech = 'lets begin!' + this.$inputs.firstPlayerName.value+" will start first, Please select a box from 1 to <num of animal sounds * 2>";
+    BackToMainMenuState: {
+        BackToMenuIntent() {
+            return this.toStatelessIntent('GiveMenu');
         },
         Unhandled(){
             //Try again
@@ -396,43 +403,4 @@ function Reprompt(){
         text = "Please choose a level to select and play";
     }
     return text;
-}
-
-
-//ContextualHelp() function will give help only relative to the current state the game is in.
-function ContextualHelp()
-{
-    let helpText
-
-    if(currentState === "start")
-    {
-        helpText = "This game can be played either alone or with a friend. The current menu you are in is asking if you want to play the game in either 1 player, or 2 player mode."; //Start menu is only choosing between either 1 player or 2 players??
-    }
-    else if(currentState === "gettingNames")
-    {
-        helpText = "This menu will ask you for a name to be assigned to player 1 and player 2."
-    }
-    else if(currentState === "mainMenu")
-    {
-        helpText = "This is the main menu, from this menu you can choose to either start the game, show your rank compared to others globaly and locally, access the advanced help menu, or exit the game";//What does the help option in the main menu do??
-    }
-    else if(currentState === "soundSelect")
-    {
-        helpText = "This is the sound select menu, from this menu you can choose which sound package to use, for example you can select the 'Farm animal' package to play with."
-        + "To select a sound package say either the package number, or the package name. For example you could say 'one' to "
-        + "select the farm animal pack, or you could say 'farm animals' to select the farm animal pack.";
-    }
-    else if(currentState === "levelSelect")
-    {
-        helpText = "This is the level select menu, from this menu you can choose the level/diffuculty to play on. A higher level will require you to match more sounds than a lower level would."
-        + "Each sound pack has it's own amount of levels unlocked, so if you unlocked"
-        + "more levels with with the farm animals pack, it will only be unlocked on the farm animals pack.";
-    }
-    else if(currentState === "inGame")
-    {
-        helpText = "To play this game you must select a box that will contain an animal sound and match it with another one that contains the same sound. To select a box just choose a number when asked, and then choose"
-        +" another box that you think will contain the same sound of your first chosen box.";
-    }
-
-    return helpText;
 }
