@@ -554,13 +554,27 @@ const HelpHandler = {
   },
   handle(handlerInput) {
     const attributes = handlerInput.attributesManager.getSessionAttributes();
-    var speechOutput = "this game needs two players to play. there are pairs of animals in boxes! On your turn, you choose two boxes. if there're same animals inside two boxes, you will get one score. The boxes will stay opened. You will need to choose not opened boxes. Your turn will be continued until you make the wrong boxes. The wrong boxes with different animals will be closed at the next turn. The game will be continued until one player wins. A player with higher score will be the winner. during the game, to check the score, say score. to check opened boxes, say opened. To reset the game, in the other person's turn, say reset. for more help, say help. "; 
+    var speechOutput = "To go back, say, back. To exit the game, say, exit. For help, say, help."; 
     var repromptText = RepromptText(attributes);
-    if(attributes.state === "tutorial"){
-      attributes.state = "naming";
-      speechOutput += "are you ready to play the game? "+RepromptText(attributes);      
-    }else{
-      speechOutput += RepromptText(attributes);
+
+    switch(attributes.state){
+      case "menu":
+        speechOutput = "You will be asked to choose the level of the game. The level will be unlocked as you clear the previous level. During the game, you will be asked for two boxes to match up together. If you choose two boxes with same animal's sound, the box will stay opened. The game will be finished when all the boxes are opened." + speechOutput;
+        speechOutput += "are you ready to play the game? "+RepromptText(attributes);      
+        break;
+      case "inGame":
+        speechOutput = "There are " + attributes.numOfanimals*2 + " boxes with animal hidden inside. You need to match two boxes with identical animals. When you found the same two animals, those boxes will stay open. As soon as all the boxes are matched and opened, the game will be finished. To check score, say, Score. To check opened boxes, say, opened. " + speechOutput;
+        speechOutput += "are you ready to continue the game? " +RepromptText(attributes);
+        break;
+      case "levelSelect":
+        speechOutput = "You need to select the level to start a game. The level will be unlocked when you clear the previous level." + speechOutput;
+        speechOutput += RepromptText(attributes);
+        break;
+      case "rank":
+        speechOutput += RepromptText(attributes);
+        break;
+      default:
+        speechOutput += RepromptText(attributes);
     }
     
     return handlerInput.responseBuilder
@@ -671,7 +685,32 @@ const ErrorHandler = {
   },
 };
 
-
+const RankHandler = {
+  canHandle(handlerInput){
+    const attributes = handlerInput.attributesManager.getSessionAttributes();
+    const request = handlerInput.requestEnvelope.request;
+    return request.type === 'IntentRequest'
+        && request.intent.name === 'RankIntent';
+  },
+  handle(handlerInput){
+    const attributes = handlerInput.attributesManager.getSessionAttributes();
+    var speechOutput = "";
+    var repromptText = "";
+    if(attributes.state === "rank"){
+      speechOutput = "Do you really want to reset the game?";
+      repromptText = "really? reset?";
+      attributes.state="reset";
+    }else{
+      speechOutput = RepromptText(attributes);
+      repromptText = RepromptText(attributes);
+    }
+    return handlerInput.responseBuilder
+      .speak(speechOutput)
+      .reprompt(repromptText)
+      .getResponse();
+  },
+  },
+};
 
 const skillBuilder = Alexa.SkillBuilders.standard();
 
