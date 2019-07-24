@@ -3,6 +3,92 @@
 
 const Alexa = require('ask-sdk');
 
+//animal array
+const animals = [
+  {
+    name: "dog",
+    resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/dog.mp3' />",
+    opened: false
+  },{
+    name: "cat",
+    resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/cat.mp3' />",
+    opened: false
+  },{
+    name: "chicken",
+    resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/chicken.mp3' />",
+    opened: false
+  },{
+    name: "cow",
+    resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/cow.mp3' />",
+    opened: false
+  },{
+    name: "turkey",
+    resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/turkey.mp3' />",
+    opened: false
+  },{
+    name: "frog",
+    resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/frog.mp3' />",
+    opened: false
+  },{
+    name: "goat",
+    resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/goat.mp3' />",
+    opened: false
+  },{
+    name: "goose",
+    resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/goose.mp3' />",
+    opened: false
+  },{
+    name: "horse",
+    resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/horse.mp3' />",
+    opened: false
+  },{
+    name: "pig",
+    resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/pig.mp3' />",
+    opened: false
+  },{
+    name: "sheep",
+    resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/sheep.mp3' />",
+    opened: false
+  },{
+    name: "elephant",
+    resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/elephant.mp3' />",
+    opened: false
+  }
+];
+const levelsUnlocked = [
+    {
+        id: 1,
+        name: "level 1",
+        unlocked: true,
+        numberOfSounds: 3
+    },{
+        id: 2,
+        name: "level 2",
+        unlocked: false,
+        numberOfSounds: 4
+    },{
+        id: 3,
+        name: "level 3",
+        unlocked: false,
+        numberOfSounds: 6
+    },{
+        id: 4,
+        name: "level 4",
+        unlocked: false,
+        numberOfSounds: 8
+    },{
+        id: 5,
+        name: "level 5",
+        unlocked: false,
+        numberOfSounds: 10
+    },{
+        id: 6,
+        name: "level 6",
+        unlocked: false,
+        numberOfSounds: 12
+    }
+];
+
 
 const LaunchHandler = {
   canHandle(handlerInput) {
@@ -14,15 +100,20 @@ const LaunchHandler = {
     const request = handlerInput.requestEnvelope.request;
     var speechOutput = "";
     var repromptText = "";
-    speechOutput="<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/bgm.mp3'/> Welcome to the Memory Game! this game needs two players to play. You want to play yourself? Don't worry! <amazon:effect name=\"whispered\">I will not tell anyone if you played both player1 and 2.</amazon:effect> Do you need tutorial?";
+    speechOutput="<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/bgm.mp3'/>Welcome to the Memory Game! ";  
     //Reset Session attributes
     handlerInput.attributesManager.setSessionAttributes({});
     const attributes = handlerInput.attributesManager.getSessionAttributes();
-    attributes.state = "tutorial";
-    attributes.errorCount = 0;
+    if(typeof attributes.player === 'undefined'){
+      attributes.state = "naming";
+      speechOutput += "I hope you're excited, but before we can start, can you please tell me what to call you by?";
+    }else{
+      attributes.state = "menu";
+      speechOutput += "Welcome back, "+ attributes.player +"!" +"Please select either Start! Show my rank! Ask for help! or exit the game. ";
+    }
     handlerInput.attributesManager.setSessionAttributes(attributes);
     repromptText = RepromptText(attributes);
-
+    
     return handlerInput.responseBuilder
       .speak(speechOutput)
       .reprompt(repromptText)
@@ -36,32 +127,32 @@ const NameHandler = {
     const attributes = handlerInput.attributesManager.getSessionAttributes();
     const request = handlerInput.requestEnvelope.request;
     return request.type === 'IntentRequest'
-        && request.intent.name === 'NameIntent'
-        && attributes.state !== "tutorial"
-        && (typeof attributes.playerOne === 'undefined'
-        || typeof attributes.playerTwo ==='undefined');
+        && request.intent.name === 'NameIntent';
   },
   handle(handlerInput) {
     //Get request obj
     const request = handlerInput.requestEnvelope.request;
     //Get Session attributes
     const attributes = handlerInput.attributesManager.getSessionAttributes();
-    attributes.state = "naming";
     var speechOutput="";
     var repromptText="";
-    //Check it is the name of the player one
-    if(typeof attributes.playerOne === 'undefined'){
-      attributes.playerOne = request.intent.slots.name.value;
-      speechOutput = "Thank you, "+attributes.playerOne+"! and player two! what's your name? ";
+    if(attributes.state === "naming"){
+      attributes.state = "menu";
+      attributes.player = request.intent.slots.name.value;
+      speechOutput = "Nice to meet you, "+attributes.player
+      +"! When playing the memory game, from the main menu you can select to either "
+      +"Start the game! "
+      +"Show my rank! "
+      +"Ask for help! "
+      +"Or exit the game. "
+      +"Which option would you like to select? ";
     }else{
-      attributes.playerTwo = request.intent.slots.name.value;
-      speechOutput = "Thank you, "+attributes.playerTwo+"! Now, Let's play the game!! How many pairs of animals do you want to play with? you can choose an odd number between 3 and 11. ";
-      attributes.state = "leveling";
+      speechOutput = RepromptText(attributes);
     }
-    repromptText = RepromptText(repromptText);
+    repromptText = RepromptText(attributes);
     //Save Session attributes
     handlerInput.attributesManager.setSessionAttributes(attributes);
-
+ 
     return handlerInput.responseBuilder
       .speak(speechOutput)
       .reprompt(repromptText)
@@ -70,98 +161,46 @@ const NameHandler = {
 };
 
 const InitiateGame = function(attributes){
-
-  //turn tells who's turn it is
-  attributes.turn = attributes.playerOne;
-  //boxChoose tells it is about to choose first box or second box.
-  attributes.boxTurn = "first";
-  //animal array
-  const animals = [
-    {
-      name: "dog",
-      resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/dog.mp3' />",
-      opened: false
-    },{
-      name: "cat",
-      resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/cat.mp3' />",
-      opened: false
-    },{
-      name: "chicken",
-      resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/chicken.mp3' />",
-      opened: false
-    },{
-      name: "cow",
-      resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/cow.mp3' />",
-      opened: false
-    },{
-      name: "turkey",
-      resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/turkey.mp3' />",
-      opened: false
-    },{
-      name: "frog",
-      resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/frog.mp3' />",
-      opened: false
-    },{
-      name: "goat",
-      resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/goat.mp3' />",
-      opened: false
-    },{
-      name: "goose",
-      resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/goose.mp3' />",
-      opened: false
-    },{
-      name: "horse",
-      resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/horse.mp3' />",
-      opened: false
-    },{
-      name: "pig",
-      resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/pig.mp3' />",
-      opened: false
-    },{
-      name: "sheep",
-      resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/sheep.mp3' />",
-      opened: false
-    },{
-      name: "elephant",
-      resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/elephant.mp3' />",
-      opened: false
-    }
-  ];
-  // attributes.boxopened = [false,false,false,false,false,false,false,false,false,false];
-  // attributes.boxes = ["spade ace","heart ace","clover ace","diamond ace","spade two","spade ace","heart ace","clover ace","diamond ace","spade two"];
-  attributes.boxes = animals.sort((a,b) => 0.5 - Math.random());
-  attributes.boxes = attributes.boxes.slice(0,attributes.numOfanimals);
-  attributes.boxes = attributes.boxes.concat(attributes.boxes);
-  //shuffle boxes
-  attributes.boxes = attributes.boxes.sort((a,b) => 0.5 - Math.random());
+  attributes.boxes = shuffleSounds(attributes.numOfanimals);
   attributes.firstBox = 0;
   attributes.secondBox = 0;
-  attributes.scoreOne = 0;
-  attributes.scoreTwo = 0;
-  attributes.gameover = false;
-  attributes.winScore = parseInt(attributes.numOfanimals/2)+1;
+  attributes.score = 0;
+  attributes.win = false;
+  //boxChoose tells it is about to choose first box or second box.
+  attributes.boxTurn = "first";
 };
 
 const ResetGame = function(attributes){
-  attributes.boxes.forEach(function(item){item.opened = false;});
-  attributes.scoreOne = 0;
-  attributes.scoreTwo = 0;
-  attributes.gameover = false;
+  attributes.boxes= shuffleSounds(attributes.numOfanimals);
+  attributes.score = 0;
+  attributes.win = false;
   attributes.boxTurn = "first";
+}
+
+const shuffleSounds = function(numOfanimals){
+  var boxes = animals.sort((a,b) => 0.5 - Math.random());
+  boxes = boxes.slice(0,numOfanimals);
+  boxes = boxes.concat(boxes);
+  boxes = boxes.sort((a,b) => 0.5 - Math.random());
+  return boxes;
 }
 
 const RepromptText = function(attributes){
   var text = "";
   if(attributes.state === "tutorial"){
     text = "Do you need tutorial?";
-  }else if(attributes.state === "naming" && typeof attributes.playerOne === 'undefined'){
-    text = "player one! please tell me your name.";
-  }else if(attributes.state === "naming" && typeof attributes.playerTwo ==='undefined'){
-    text = "player two! "+ attributes.playerOne +" is waiting for you. please tell me your name.";
-  }else if(attributes.state === "leveling"){
-    text = "How many pairs of animals do you want to play with? ";
-  }else if(attributes.state === "in game"){
-    text = attributes.turn+", please choose the "+attributes.boxTurn+" box!";
+  }else if(attributes.state === "naming"){
+    text = "Please give me a name to call you by! ";
+  }else if(attributes.state === "menu"){
+    text = "Please select a option from: Start, show my rank, ask for help or exit the game! ";
+  }else if(attributes.state === "levelSelect"){
+    text = "you have, so far, unlocked: level one ";
+    if(attributes.maxLevel> 1){
+      text += "to "+attributes.maxLevel+". ";
+    }
+    text += "Please choose a level to play. ";
+  }else if(attributes.state === "inGame"){
+    text = attributes.player+", please choose the "+attributes.boxTurn+" box!";
   }else if(attributes.gameover){
     text = GameOverPrompt(attributes);
   }
@@ -172,14 +211,100 @@ const GameOverPrompt = function(attributes){
   return "Game is over. The winner is " + attributes.turn +". Do you want to play again? Please say yes or no.";
 };
 
+
+const StartHandler = {
+  canHandle(handlerInput) {
+    //Get Session attributes
+    const attributes = handlerInput.attributesManager.getSessionAttributes();
+    const request = handlerInput.requestEnvelope.request;
+    return request.type === 'IntentRequest'
+        && request.intent.name === 'StartIntent';
+  },
+  handle(handlerInput) {
+    //Get request obj
+    const request = handlerInput.requestEnvelope.request;
+    //Get Session attributes
+    const attributes = handlerInput.attributesManager.getSessionAttributes();
+    var speechOutput="";
+    var repromptText="";
+    if(typeof attributes.player !== 'undefined'){
+      attributes.state = "levelSelect";
+      speechOutput += "We hope you are ready for our memory game. ";
+      speechOutput += "You have, so far, unlocked: ";
+      attributes.maxLevel = 1;
+      for(var i=0;i<levelsUnlocked.length;i++){
+        if(!levelsUnlocked[i].unlocked){
+          attributes.maxLevel = i;
+          break;
+        }
+      }
+      if(attributes.maxLevel > 1){
+        speechOutput += "level one to "+attributes.maxLevel+". ";
+      }else{
+        speechOutput += "level one. ";
+      }
+      speechOutput += "Which level would you like to play?";
+    }else{
+      attributes.state = "naming";
+      speechOutput = "before we start the game, can you please tell me what to call you by? ";
+    }
+    repromptText = RepromptText(attributes);
+    
+    return handlerInput.responseBuilder
+      .speak(speechOutput)
+      .reprompt(repromptText)
+      .getResponse();
+  },
+};
+
+const LevelHandler = {
+  canHandle(handlerInput) {
+    //Get Session attributes
+    const attributes = handlerInput.attributesManager.getSessionAttributes();
+    const request = handlerInput.requestEnvelope.request;
+    return request.type === 'IntentRequest'
+        && request.intent.name === 'LevelIntent';
+  },
+  handle(handlerInput) {
+    //Get request obj
+    const request = handlerInput.requestEnvelope.request;
+    //Get Session attributes
+    const attributes = handlerInput.attributesManager.getSessionAttributes();
+    var speechOutput="";
+    var repromptText="";
+    var userInput = request.intent.slots.level.value;
+    if(userInput<1 || userInput>attributes.maxLevel){
+      speechOutput += "please select a valid level. ";
+      speechOutput += RepromptText(attributes);
+    }else{
+      attributes.state = "inGame";
+      attributes.numOfanimals = levelsUnlocked[userInput-1].numberOfSounds;
+      InitiateGame(attributes);  
+      speechOutput += levelsUnlocked[userInput-1].name + " has " 
+      + (levelsUnlocked[userInput-1].numberOfSounds*2) 
+      + " sounds to discover. Meaning a total of " 
+      + levelsUnlocked[userInput-1].numberOfSounds + " pairs to match up!";
+      speechOutput += "Ok please choose the first box to start off between 1 and "+attributes.boxes.length;
+    }
+    
+    
+    repromptText = RepromptText(attributes);
+    
+    return handlerInput.responseBuilder
+      .speak(speechOutput)
+      .reprompt(repromptText)
+      .getResponse();
+  },
+};
+
+
 const BoxHandler = {
   canHandle(handlerInput) {
     const request = handlerInput.requestEnvelope.request;
     //Get Session attributes
     const attributes = handlerInput.attributesManager.getSessionAttributes();
     return request.type === 'IntentRequest'
-        && (request.intent.name === 'BoxIntent'
-        && (attributes.state === 'leveling' || attributes.state === 'in game'));
+        && request.intent.name === 'BoxIntent';
   },
   handle(handlerInput) {
     //Get Session attributes
@@ -189,21 +314,8 @@ const BoxHandler = {
     var repromptText="";
     var userInput = request.intent.slots.boxNumber.value;
     var choosedIndex = userInput-1;
-    if(attributes.state === "leveling"){
-      if((userInput<12 && userInput>=3)&& userInput%2 === 1){
-        attributes.state = "in game";
-        attributes.numOfanimals = parseInt(userInput);
-        InitiateGame(attributes);
-        speechOutput = "Alright! let's start with " + userInput
-        +" pairs of animals! Our adorable animals are hidden in "
-        + userInput*2 + " boxes. please choose the box between one and "+userInput*2+". "
-        +RepromptText(attributes);
-
-      }else{
-        speechOutput = "Choose an odd number between 3 and 11. "+RepromptText(attributes);
-      }
-
-    }else{
+    
+    if(attributes.state === "inGame"){
       //if the game is not over, keep going
       if(!attributes.gameover){
         if(userInput>=1&&userInput<=attributes.numOfanimals*2){
@@ -246,22 +358,26 @@ const BoxHandler = {
                 //Change the player turn
                 attributes.turn = attributes.turn===attributes.playerOne?attributes.playerTwo:attributes.playerOne;
                 speechOutput += "now, it's "+attributes.turn+"'s turn! ";
-              }//Check selected boxes are the same End
+              }//Check selected boxes are the same End 
               //Change the box turn
               attributes.boxTurn ="first";
             }//Check the box turn End
           }//Check box opened End
         }else{//Check user input
           speechOutput = "Choose from 1 to "+ attributes.numOfanimals*2 +". ";
-        }
+        } 
         speechOutput += attributes.gameover? "" : RepromptText(attributes);
         repromptText = attributes.gameover? "" : RepromptText(attributes);
       }else{// Check Game over End
         speechOutput = GameOverPrompt(attributes);
       }
+    // if the state is not "inGame" or 'levelSelect'
+    }else{
+      speechOutput = RepromptText(attributes);
+      repromptText = RepromptText(attributes);
     }
-
-
+      
+      
     //Save Session attributes
     handlerInput.attributesManager.setSessionAttributes(attributes);
     return handlerInput.responseBuilder
@@ -277,21 +393,21 @@ const ScoreHandler = {
     const request = handlerInput.requestEnvelope.request;
     //Get Session attributes
     const attributes = handlerInput.attributesManager.getSessionAttributes();
-    return request.type === 'IntentRequest'
-    && request.intent.name === 'ScoreIntent'&& attributes.state === 'in game';
+    return request.type === 'IntentRequest' 
+    && request.intent.name === 'ScoreIntent';
   },
   handle(handlerInput) {
     //Get Session attributes
     const attributes = handlerInput.attributesManager.getSessionAttributes();
     var speechOutput = "";
     var repromptText = "";
-    if(typeof attributes.playerOne !== 'undefined' &&typeof attributes.playerTwo !=='undefined'){
+    if(attributes.state === "inGame"){
       speechOutput = "the score for "+attributes.playerOne+" is, "+attributes.scoreOne+". and the score for "+attributes.playerTwo+" is, "+attributes.scoreTwo+". To win the game, you need to get "+attributes.winScore+" first. Okay, then, good luck! ";
     }else{
       speechOutput = "You didn't start the game yet! ";
     }
     speechOutput += RepromptText(attributes);
-    repromptText = RepromptText(attributes);
+    repromptText = RepromptText(attributes); 
     return handlerInput.responseBuilder
       .speak(speechOutput)
       .reprompt(repromptText)
@@ -302,7 +418,7 @@ const SkipHandler = {
   canHandle(handlerInput) {
     //Get request obj
     const request = handlerInput.requestEnvelope.request;
-    return request.type === 'IntentRequest'
+    return request.type === 'IntentRequest' 
     && request.intent.name === 'SkipIntent';
   },
   handle(handlerInput) {
@@ -310,9 +426,9 @@ const SkipHandler = {
     const attributes = handlerInput.attributesManager.getSessionAttributes();
     var speechOutput = "";
     var repromptText = "";
-
+   
     speechOutput += RepromptText(attributes);
-    repromptText += RepromptText(attributes);
+    repromptText += RepromptText(attributes); 
     return handlerInput.responseBuilder
       .speak(speechOutput)
       .reprompt(repromptText)
@@ -326,15 +442,14 @@ const OpenedHandler = {
     const request = handlerInput.requestEnvelope.request;
     //Get Session attributes
     const attributes = handlerInput.attributesManager.getSessionAttributes();
-    return request.type === 'IntentRequest'
-    && request.intent.name === 'OpenedIntent' && attributes.state === 'in game';
+    return request.type === 'IntentRequest' 
+    && request.intent.name === 'OpenedIntent';
   },
   handle(handlerInput) {
     //Get Session attributes
     const attributes = handlerInput.attributesManager.getSessionAttributes();
     var speechOutput = "";
-    if(typeof attributes.playerOne !== 'undefined' &&typeof attributes.playerTwo !=='undefined'){
-
+    if(attributes.state === "inGame"){
       var opened = [];
       for (var i = 0; i < attributes.boxes.length; i++)
       {
@@ -366,10 +481,10 @@ const YesHandler = {
     const request = handlerInput.requestEnvelope.request;
     //Get Session attributes
     const attributes = handlerInput.attributesManager.getSessionAttributes();
-    return request.type === 'IntentRequest'
+    return request.type === 'IntentRequest' 
     && request.intent.name === 'AMAZON.YesIntent'
     && attributes.state !== "tutorial"
-    && ((attributes.gameover && attributes.state === 'in game')
+    && ((attributes.gameover && attributes.state === "inGame")
     || attributes.state === 'reset');
   },
   handle(handlerInput) {
@@ -377,11 +492,11 @@ const YesHandler = {
     const attributes = handlerInput.attributesManager.getSessionAttributes();
     var speechOutput = "";
     if(attributes.state === 'reset'){
-      attributes.state = 'in game';
+      attributes.state = "inGame";
       ResetGame(attributes);
       speechOutput = "The game is reset. you know what? <amazon:effect name=\"whispered\"> boxes are still in the same order. </amazon:effect> ";
-    }else if(attributes.gameover&&attributes.state==="in game"){
-      attributes.state = "leveling";
+    }else if(attributes.gameover&&attributes.state==="inGame"){
+      attributes.state = "levelSelect";
       speechOutput = "Let's play the game!! ";
     }else{
       speechOutput = 'Yes yes yes, ';
@@ -401,32 +516,27 @@ const NoHandler = {
     const request = handlerInput.requestEnvelope.request;
     //Get Session attributes
     const attributes = handlerInput.attributesManager.getSessionAttributes();
-    return request.type === 'IntentRequest'
-    && (request.intent.name === 'AMAZON.NoIntent'
-    && (attributes.state === "tutorial" //Check the state is tutorial
-    || attributes.state === "reset"
-    ||(typeof attributes.gameover ==='undefined' //Check the game is over
-    ||(typeof attributes.gameover !=='undefined'
-    &&!attributes.gameover))));
+    return request.type === 'IntentRequest'  
+    && request.intent.name === 'AMAZON.NoIntent' && (attributes.gameover === 'undefined' || !attributes.gameover);
   },
   handle(handlerInput) {
     //Get Session attributes
     const attributes = handlerInput.attributesManager.getSessionAttributes();
     var speechOutput = "";
     var repromptText = "";
-
+    
     if(attributes.state === "tutorial"){
       attributes.state = "naming";
       speechOutput = RepromptText(attributes);
       repromptText = RepromptText(attributes);
     }else if(attributes.state === "reset"){
-      attributes.state = "in game";
+      attributes.state = "inGame";
       speechOutput = "Okay, the game continues! "+RepromptText(attributes);
     }else{
       speechOutput = 'No no no, '+RepromptText(attributes);
       repromptText = RepromptText(attributes);
     }
-
+    
     handlerInput.attributesManager.setSessionAttributes(attributes);
     return handlerInput.responseBuilder
       .speak(speechOutput)
@@ -440,19 +550,19 @@ const HelpHandler = {
     const attributes = handlerInput.attributesManager.getSessionAttributes();
     const request = handlerInput.requestEnvelope.request;
     return request.type === 'IntentRequest'
-      && (request.intent.name === 'AMAZON.HelpIntent' || request.intent.name === "AMAZON.YesIntent" && attributes.state === "tutorial");
+      && (request.intent.name === 'AMAZON.HelpIntent' || (request.intent.name === "AMAZON.YesIntent" && attributes.state === "tutorial"));
   },
   handle(handlerInput) {
     const attributes = handlerInput.attributesManager.getSessionAttributes();
-    var speechOutput = "this game needs two players to play. there are pairs of animals in boxes! On your turn, you choose two boxes. if there're same animals inside two boxes, you will get one score. The boxes will stay opened. You will need to choose not opened boxes. Your turn will be continued until you make the wrong boxes. The wrong boxes with different animals will be closed at the next turn. The game will be continued until one player wins. A player with higher score will be the winner. during the game, to check the score, say score. to check opened boxes, say opened. To reset the game, in the other person's turn, say reset. for more help, say help. ";
+    var speechOutput = "this game needs two players to play. there are pairs of animals in boxes! On your turn, you choose two boxes. if there're same animals inside two boxes, you will get one score. The boxes will stay opened. You will need to choose not opened boxes. Your turn will be continued until you make the wrong boxes. The wrong boxes with different animals will be closed at the next turn. The game will be continued until one player wins. A player with higher score will be the winner. during the game, to check the score, say score. to check opened boxes, say opened. To reset the game, in the other person's turn, say reset. for more help, say help. "; 
     var repromptText = RepromptText(attributes);
     if(attributes.state === "tutorial"){
       attributes.state = "naming";
-      speechOutput += "are you ready to play the game? "+RepromptText(attributes);
+      speechOutput += "are you ready to play the game? "+RepromptText(attributes);      
     }else{
       speechOutput += RepromptText(attributes);
     }
-
+    
     return handlerInput.responseBuilder
       .speak(speechOutput)
       .reprompt(repromptText)
@@ -466,19 +576,19 @@ const ExitHandler = {
     const attributes = handlerInput.attributesManager.getSessionAttributes();
     return request.type === 'IntentRequest'
       && (request.intent.name === 'AMAZON.CancelIntent'
-        || request.intent.name === 'AMAZON.StopIntent'
+        || request.intent.name === 'AMAZON.StopIntent' 
         || (request.intent.name === 'AMAZON.NoIntent' && attributes.gameover));
   },
   handle(handlerInput) {
     const attributes = handlerInput.attributesManager.getSessionAttributes();
     var speechOutput = "See you next time";
-    if(attributes.state === "in game" || attributes.state === "leveling"){
+    if(attributes.state === "inGame" || attributes.state === "levelSelect"){
       speechOutput += ", "+attributes.playerOne+" and "+attributes.playerTwo+". ";
     }else{
       speechOutput += ". ";
     }
-
-
+    
+    
     return handlerInput.responseBuilder
       .speak(speechOutput)
       .withShouldEndSession(true)
@@ -492,16 +602,22 @@ const ResetHandler = {
     const request = handlerInput.requestEnvelope.request;
     //Get Session attributes
     const attributes = handlerInput.attributesManager.getSessionAttributes();
-    return request.type === 'IntentRequest'
-    && request.intent.name === 'ResetIntent'
-    && attributes.state === "in game";
+    return request.type === 'IntentRequest' 
+    && request.intent.name === 'ResetIntent';
   },
   handle(handlerInput) {
     //Get Session attributes
     const attributes = handlerInput.attributesManager.getSessionAttributes();
-    var speechOutput = "Do you really want to reset the game?";
-    var repromptText = "really? reset?";
-    attributes.state="reset";
+    var speechOutput = "";
+    var repromptText = "";
+    if(attributes.state ==="inGame"){
+      speechOutput = "Do you really want to reset the game?";
+      repromptText = "really? reset?";
+      attributes.state="reset";
+    }else{
+      speechOutput = RepromptText(attributes);
+      repromptText = RepromptText(attributes);
+    }
     return handlerInput.responseBuilder
       .speak(speechOutput)
       .reprompt(repromptText)
@@ -539,15 +655,15 @@ const ErrorHandler = {
       speechOutput += "Please say yes or no. ";
     }else if(attributes.state === "naming"){
       speechOutput += "";
-    }else if(attributes.state === "leveling"){
+    }else if(attributes.state === "levelSelect"){
       speechOutput += "Please choose an odd number between 3 and 11. ";
-    }else if(attributes.state === "in game"){
+    }else if(attributes.state === "inGame"){
       speechOutput += "Please tell me a number from 1 to "+attributes.numOfanimals*2+". ";
     }
-
-
+    
+    
     speechOutput += RepromptText(attributes);
-
+    
     return handlerInput.responseBuilder
       .speak(speechOutput)
       .reprompt(repromptText)
@@ -565,11 +681,14 @@ exports.handler = skillBuilder
     NameHandler,
     YesHandler,
     NoHandler,
+    SkipHandler,
     OpenedHandler,
     ScoreHandler,
     ResetHandler,
     BoxHandler,
     HelpHandler,
+    StartHandler,
+    LevelHandler,
     ExitHandler,
     SessionEndedRequestHandler
   )
