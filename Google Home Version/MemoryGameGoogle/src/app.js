@@ -397,61 +397,67 @@ app.setHandler({
             let indexSelected1 = this.$inputs.boxNumberONE.value-1;
             let indexSelected2 = this.$inputs.boxNumberTWO.value-1;
 
-            //Check if boxes exist
-            if(!(indexSelected1+1 > inGameSounds.length || indexSelected2+1 > inGameSounds.length)){
-                //Check that the user didn't choose the same boxes
-                if(!(indexSelected1 == indexSelected2)){
-                    //Check if either box picked is already opened
-                    if(inGameSounds[indexSelected1].opened == true && inGameSounds[indexSelected2].opened == true){
-                        speech = "<p>both boxes have already opened. </p>";
+            //Check if values where entered at all
+            if(isEmpty(indexSelected1) || isEmpty(indexSelected2)){
+                speech = "<p>You only chose one box. Please select two boxes to open. </p>";
+            }else{
+                //Check if boxes exist
+                if(!(indexSelected1+1 > inGameSounds.length || indexSelected2+1 > inGameSounds.length)){
+                    //Check that the user didn't choose the same boxes
+                    if(!(indexSelected1 == indexSelected2)){
+                        //Check if either box picked is already opened
+                        if(inGameSounds[indexSelected1].opened == true && inGameSounds[indexSelected2].opened == true){
+                            speech = "<p>both boxes have already opened. </p>";
 
-                    }else if(inGameSounds[indexSelected1].opened == true){
-                        speech = "<p>box "+(indexSelected1+1)+
-                                  " is already opened. </p>";
-                    }else if(inGameSounds[indexSelected2].opened == true){
-                        speech = "<p>box "+(indexSelected2+1)+
-                                  " is already opened. </p>";
-                    }else{
-                        //Play animal sounds
-                        speech += "<p>"+inGameSounds[indexSelected1].resource+" </p>"+
-                                  "<p>"+inGameSounds[indexSelected2].resource+" </p>";
-
-                        //Check now if they match or not
-                        if(inGameSounds[indexSelected1].name == inGameSounds[indexSelected2].name){
-                            //Tell user they where correct
-                            speech += "<p>NICE <audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/success.mp3'/>"+
-                                      " Good work! you found a pair of "+inGameSounds[indexSelected1].name+"s! </p>";
-                            //Set now opened boxes to true
-                            inGameSounds[indexSelected1].opened = true;
-                            inGameSounds[indexSelected2].opened = true;
-
-                            //Increase score
-                            playerScore++;
-
-                            //Check if every box has now finished
-                            if(checkEveryBox() == inGameSounds.length){
-                                //Save last sounds to play in stateless intent
-                                outSideSpeech = "<p>"+inGameSounds[indexSelected1].resource+" </p>"+
-                                                "<p>"+inGameSounds[indexSelected2].resource+" </p>";
-                                //Go to win state
-                                return this.toStatelessIntent('WinStatelessFunction');
-                            }
+                        }else if(inGameSounds[indexSelected1].opened == true){
+                            speech = "<p>box "+(indexSelected1+1)+
+                                      " is already opened. </p>";
+                        }else if(inGameSounds[indexSelected2].opened == true){
+                            speech = "<p>box "+(indexSelected2+1)+
+                                      " is already opened. </p>";
                         }else{
-                            //Tell user they where incorrect
-                            speech += "<p>WRONG <audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/fail2.mp3'/>"+
-                                      " animals from two boxes were not same. </p>";
-                            //Decrement score
-                            playerScore--;
+                            //Play animal sounds
+                            speech += "<p>"+inGameSounds[indexSelected1].resource+" </p>"+
+                                      "<p>"+inGameSounds[indexSelected2].resource+" </p>";
+
+                            //Check now if they match or not
+                            if(inGameSounds[indexSelected1].name == inGameSounds[indexSelected2].name){
+                                //Tell user they where correct
+                                speech += "<p>NICE <audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/success.mp3'/>"+
+                                          " Good work! you found a pair of "+inGameSounds[indexSelected1].name+"s! </p>";
+                                //Set now opened boxes to true
+                                inGameSounds[indexSelected1].opened = true;
+                                inGameSounds[indexSelected2].opened = true;
+
+                                //Increase score
+                                playerScore++;
+
+                                //Check if every box has now finished
+                                if(checkEveryBox() == inGameSounds.length){
+                                    //Save last sounds to play in stateless intent
+                                    outSideSpeech = "<p>"+inGameSounds[indexSelected1].resource+" </p>"+
+                                                    "<p>"+inGameSounds[indexSelected2].resource+" </p>";
+                                    //Go to win state
+                                    return this.toStatelessIntent('WinStatelessFunction');
+                                }
+                            }else{
+                                //Tell user they where incorrect
+                                speech += "<p>WRONG <audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/fail2.mp3'/>"+
+                                          " animals from two boxes were not same. </p>";
+                                //Decrement score
+                                playerScore--;
+                            }
                         }
+                    }else{
+                        speech = "<p>Sorry, your two choices are the same. No cheating! </p>";
                     }
                 }else{
-                    speech = "<p>Sorry, your two choices are the same. No cheating! </p>";
+                    speech = "<p>One of your box choices does not exist. </p>";
                 }
-            }else{
-                speech = "<p>One of your box choices does not exist. </p>";
             }
 
-            speech += "<p>Ok please choose two boxes to continue between 1 and "+inGameSounds.length+" </p>";
+
+            speech += "<p>please select two boxes to continue between 1 and "+inGameSounds.length+" </p>";
             //Send out prompt
             this.$speech.addText(speech);
             this.$reprompt.addText(Reprompt());
@@ -488,7 +494,7 @@ app.setHandler({
             }
 
             //Reprompt the user
-            speech += "<p>Ok please choose two boxes to continue between 1 and "+inGameSounds.length;
+            speech += "<p>please select two boxes to continue between 1 and "+inGameSounds.length;
             this.$speech.addText(speech);
             this.$reprompt.addText(Reprompt());
             this.followUpState('InGameState').ask(this.$speech, this.$reprompt);
@@ -499,7 +505,7 @@ app.setHandler({
             speech += "<p>At any point in time during the level; you can say exit to quit the game,"+
                       " back to go back to level selection, help to ask for help or score to check your current score! </p>";
             speech += "<p>You will also be asked for two boxes to match up together! </p>";
-            speech += "<p>Ok please choose two boxes to continue between 1 and "+inGameSounds.length;
+            speech += "<p>please select two boxes to continue between 1 and "+inGameSounds.length;
 
             this.$speech.addText(speech);
             this.$reprompt.addText(Reprompt());
@@ -586,6 +592,11 @@ module.exports.app = app;
 // ------------------------------------------------------------------
 // FUNCTIONS
 // ------------------------------------------------------------------
+//Is empty function
+function isEmpty(value){
+  return (value == null || value.length === 0 || typeof value == 'undefined');
+}
+
 //Check if every box has been Opened
 function checkEveryBox(){
     //Go through all boxes and check how many are opened
