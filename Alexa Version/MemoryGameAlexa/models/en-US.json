@@ -1,7 +1,7 @@
 {
     "interactionModel": {
         "languageModel": {
-            "invocationName": "hackathon memory game",
+            "invocationName": "memory game",
             "intents": [
                 {
                     "name": "AMAZON.FallbackIntent",
@@ -17,7 +17,10 @@
                 },
                 {
                     "name": "AMAZON.StopIntent",
-                    "samples": []
+                    "samples": [
+                        "exit",
+                        "quit"
+                    ]
                 },
                 {
                     "name": "AMAZON.NavigateHomeIntent",
@@ -115,6 +118,43 @@
                         "skip it",
                         "skip tutorial",
                         "skip"
+                    ]
+                },
+                {
+                    "name": "StartIntent",
+                    "slots": [],
+                    "samples": [
+                        "Start new game",
+                        "Play new game",
+                        "Play game",
+                        "Play the game",
+                        "Start the game",
+                        "Start",
+                        "Start game"
+                    ]
+                },
+                {
+                    "name": "LevelIntent",
+                    "slots": [
+                        {
+                            "name": "level",
+                            "type": "AMAZON.NUMBER"
+                        }
+                    ],
+                    "samples": [
+                        "I will select level {level}",
+                        "{level} level",
+                        "Go with {level}",
+                        "level {level}"
+                    ]
+                },
+                {
+                    "name": "MenuIntent",
+                    "slots": [],
+                    "samples": [
+                        "go to menu",
+                        "main menu",
+                        "menu"
                     ]
                 }
             ],
