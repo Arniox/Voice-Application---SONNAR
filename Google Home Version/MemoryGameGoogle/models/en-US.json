@@ -2,27 +2,6 @@
 	"invocation": "memory game",
 	"intents": [
 		{
-			"name": "NameIntent",
-			"phrases": [
-				"{playerName}",
-				"My name is {playerName}",
-				"I am {playerName}",
-				"You can call me {playerName}",
-				"Call me {playerName}",
-				"{playerName} is my name",
-				"call me {playerName}"
-			],
-			"inputs": [
-				{
-					"name": "playerName",
-					"type": {
-						"alexa": "AMAZON.US_FIRST_NAME",
-						"dialogflow": "@sys.given-name"
-					}
-				}
-			]
-		},
-		{
 			"name": "YesIntent",
 			"phrases": [
 				"kay",
@@ -36,7 +15,11 @@
 				"yup",
 				"yea",
 				"yah",
-				"yep"
+				"yep",
+				"yass",
+				"yass queen",
+				"queen yass",
+				"queen yes"
 			]
 		},
 		{

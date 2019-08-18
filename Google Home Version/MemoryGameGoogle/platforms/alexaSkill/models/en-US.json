@@ -5,24 +5,6 @@
 			"types": [],
 			"intents": [
 				{
-					"name": "NameIntent",
-					"samples": [
-						"{playerName}",
-						"My name is {playerName}",
-						"I am {playerName}",
-						"You can call me {playerName}",
-						"Call me {playerName}",
-						"{playerName} is my name",
-						"call me {playerName}"
-					],
-					"slots": [
-						{
-							"name": "playerName",
-							"type": "AMAZON.US_FIRST_NAME"
-						}
-					]
-				},
-				{
 					"name": "YesIntent",
 					"samples": [
 						"kay",
@@ -36,7 +18,11 @@
 						"yup",
 						"yea",
 						"yah",
-						"yep"
+						"yep",
+						"yass",
+						"yass queen",
+						"queen yass",
+						"queen yes"
 					]
 				},
 				{

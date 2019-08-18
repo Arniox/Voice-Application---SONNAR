@@ -42,6 +42,39 @@ var outSideSpeech = "";
 //players current ingame score
 var playerScore = 0;
 
+//Current state object
+const currentStateOb = [
+    {
+        state: 0,
+        stateName: "START",
+        userAttempts: 0
+    }
+]
+//All states
+const states = [
+    {
+        state: 0,
+        stateName: "START",
+        userAttempts: 0
+    },{
+        state: 1,
+        stateName: "MAIN_MENU",
+        userAttempts: 0
+    },{
+        state: 2,
+        stateName: "EXIT_GAME",
+        userAttempts: 0
+    },{
+        state: 3,
+        stateName: "HELP_MENU",
+        userAttempts: 0
+    },{
+        state: 4,
+        stateName: "RANK_MEMU",
+        userAttempts: 0
+    }
+]
+
 //levels unlocked
 const levelsUnlocked = [
     {
@@ -135,7 +168,6 @@ let inGameSounds = [];
 
 //Current States
 // - start: Beginning state. Only a yes or a no are acceptable for playing either one or two players
-// - gettingNames: The program is looking for a users name. Only a common name is accpetable
 // - mainMenu: The stateless main menu intent is just to give the user information
 // - exitGame: Exit game intent and state. Nothing is required from the user.
 // - helpMenuState: The help menu. The game expects the user to go back to main menu and nothing else
@@ -143,15 +175,26 @@ let inGameSounds = [];
 
 app.setHandler({
     LAUNCH() {
-        //Current state is the start
-        currentState = "start";
+        //Current state is START
+        currentStateOb.state = states[0].state;
+        currentStateOb.stateName = states[0].stateName;
+        currentStateOb.userAttempts = states[0].userAttempts;
 
-        //Set speech and reprompt
-        this.$speech.addText(
-            '<audio src="https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/bgm.mp3"/>'+
-            '<p>Welcome to the Memory Game! </p>'+
-            '<p>Are you ready to test your memory?</p>'
-        );
+        //Grab data from data base
+
+        if(numberOfTimesLoggedIn > 3){
+            this.$speech.addText(
+                '<audio src="https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/bgm.mp3"/>'+
+                '<p>Welcome back!. Are you ready to play?</p>'
+            );
+        }else{
+            this.$speech.addText(
+                '<audio src="https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/bgm.mp3"/>'+
+                '<p>Hello and welcome. We have recieved a new supply of crates and your goal is to match the '+
+                'crates up so that the pair of animals gets shipped off together!</p> '+
+                '<p>Are you ready to help ship them off?</p>'
+            );
+        }
         this.$reprompt.addText(Reprompt());
 
         //Ask user about how many players are playing with state promise
@@ -162,71 +205,59 @@ app.setHandler({
     StartState: {
         //Yes/no answers
         YesIntent(){
-            currentState = "gettingNames";
-
-            //Ask user for their name
-            this.$speech.addText("<p>I hope you're excited, but before we can start, can you please tell me what to call you by?</p>");
-            this.$reprompt.addText(Reprompt());
-            this.followUpState('GetSingleNameState').ask(this.$speech, this.$reprompt);
-        },
-        NoIntent(){
-            currentState = "gettingNames";
-
-            //Ask users for their names
-            this.$speech.addText("<p>Ok then, have an exciting day. Good bye!</p>");
-            this.$reprompt.addText(Reprompt());
-            this.tell(this.$speech, this.$reprompt);
-        },
-        Unhandled(){
-            //Try again
-            this.$speech.addText("<p>Sorry, I could not understand you.</p>" + Reprompt());
-            this.$reprompt.addText(Reprompt());
-
-            this.followUpState('StartState').ask(this.$speech, this.$reprompt);
-        },
-    },
-
-    //Get name state: Only one name is acceptable
-    GetSingleNameState: {
-        //Name Intent
-        NameIntent(){
-            //Get the name of one player
-            playerName = this.$inputs.playerName.value;
             return this.toStatelessIntent('GiveMenu');
         },
+        NoIntent(){
+            //Exit game
+            this.$speech.addText("<p>Ok then, have an exciting day. Good bye!</p>");
+            this.tell(this.$speech);
+        },
         Unhandled(){
-            //Try again
-            this.$speech.addText("<p>Sorry, I could not understand you.</p>" + Reprompt());
-            this.$reprompt.addText(Reprompt());
+            switch(currentStateOb.userAttempts){
+                case(0):
+                    this.$speech.addText("<p>Sorry, did you want to begin the game or not?</p>");
+                    this.$reprompt.addText("<p>Sorry, did you want to begin the game or not?</p>");
+                    break;
+                case(1):
+                    this.$speech.addText("<p>Please answer with a YES or a NO!</p>");
+                    this.$reprompt.addText("<p>Please answer with a YES or a NO!</p>");
+                    break;
+                case(2):
+                    this.$speech.addText("<p>Sorry, maybe you are getting confused. You can try again later. Have a good day!</p>");
+            }
+            currentStateOb.userAttempts++;
 
-            this.followUpState('GetSingleNameState').ask(this.$speech, this.$reprompt);
+            if(currentStateOb.userAttempts >= 3){
+                this.tell(this.$speech);
+            }else{
+                this.followUpState('StartState').ask(this.$speech, this.$reprompt);
+            }
         },
     },
 
     //Stateless intent for giving menu
     GiveMenu(){
-        //Current state is the tutorial
-        currentState = "mainMenu";
+        //Current state is the MAIN_MENU
+        currentStateOb.state = states[1].state;
+        currentStateOb.stateName = states[1].stateName;
+        currentStateOb.userAttempts = states[1].userAttempts;
         //Set player response
         let speech = "";
 
-        //if it's the players first time logging in, then play a slightly larger introduction to the menu
-        if(numberOfTimesLoggedIn == 0){
-            speech = 'Nice to meet you ' + playerName + '<break time="1" /> ';
-
-            speech += '<p>When playing the memory game, from the main menu you can select to either</p>'+
-                      '<p>Start the game!</p><break time="0.1" />'+
-                      '<p>Show my rank!</p><break time="0.1" />'+
-                      '<p>Ask for help</p><break time="0.1" />'+
-                      '<p>Or exit the game</p><break time="0.1" />'+
-                      'Which option would you like to select?';
+        //if it's the players first, second or third time logging in, then play a slightly larger introduction to the menu
+        if(numberOfTimesLoggedIn < 3){
+            speech += '<p>From the main menu you can either choose to: '+
+                      '<p>Start the game! </p>'+
+                      '<p>Show my rank! </p>'+
+                      '<p>Ask for help! </p>'+
+                      '<p>Or quit the game! </p>'+
+                      '<p>Which option would you like to select?</p>';
             numberOfTimesLoggedIn++;
         }else{
-            speech += '<p>Welcome back ' + playerName + '</p>'+
-                      '<p>Please select either Start!</p>'+
-                      '<p>Show my rank!</p>'+
-                      '<p>Ask for help!</p>'+
-                      '<p>or exit the game</p>';
+            speech += '<p>Please choose either to play, </p>'+
+                      '<p>Show my rank! </p>'+
+                      '<p>Ask for help! </p>'+
+                      '<p>or quit the game</p>';
             numberOfTimesLoggedIn++;
         }
         //set reprompt
@@ -628,8 +659,6 @@ function Reprompt(){
         text = "Are you ready to play the animal memory game?";
     }else if(currentState === "mainMenu"){
         text = "Please select a main menu option from either: Start, show my rank, ask for help or exit the game!";
-    }else if(currentState === "gettingNames"){
-        text = "Please give me a name to call you by!";
     }else if(currentState === "helpMenuState" || currentState === "rankMenuState"){
         text = "Please let me know if you wish to go back";
     }else if(currentState === "soundSelect"){
