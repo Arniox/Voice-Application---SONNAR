@@ -128,69 +128,6 @@
 			]
 		},
 		{
-			"name": "BackToLevelSelectionIntent",
-			"phrases": [
-				"go back to level selection please",
-				"level select",
-				"level select please",
-				"select level please",
-				"select level",
-				"choose level",
-				"change level",
-				"quit level",
-				"quit to level select",
-				"go to level select",
-				"level selection please",
-				"level selection",
-				"head to level selection",
-				"I would like to choose a new level",
-				"I would like to change the level",
-				"I want to change level",
-				"I want to choose a new level",
-				"new level please",
-				"new level"
-			]
-		},
-		{
-			"name": "LevelSelectionIntent",
-			"phrases": [
-				"I would like to play level {levelNumber}",
-				"please play level {levelNumber}",
-				"level {levelNumber}",
-				"{levelNumber}",
-				"{levelNumber} please",
-				"play level {levelNumber}",
-				"play {levelNumber}",
-				"please level {levelNumber}",
-				"please {levelNumber}",
-				"I think level {levelNumber} could be fun",
-				"I think I'll play level {levelNumber}",
-				"I think level {levelNumber}",
-				"maybe level {levelNumber}",
-				"maybe {levelNumber}",
-				"I think I will play level {levelNumber}",
-				"possibly level {levelNumber}",
-				"lets go with level {levelNumber}",
-				"lets go level {levelNumber}",
-				"lets go {levelNumber}",
-				"ok, level {levelNumber}",
-				"level {levelNumber} thanks",
-				"level {levelNumber} thank you",
-				"go level {levelNumber} please",
-				"go {levelNumber} thanks",
-				"go {levelNumber} please"
-			],
-			"inputs": [
-				{
-					"name": "levelNumber",
-					"type": {
-						"alexa": "AMAZON.NUMBER",
-						"dialogflow": "@sys.number"
-					}
-				}
-			]
-		},
-		{
 			"name": "BoxIntent",
 			"phrases": [
 				"{boxNumberONE}, {boxNumberTWO}",
@@ -220,23 +157,6 @@
 						"dialogflow": "@sys.number"
 					}
 				}
-			]
-		},
-		{
-			"name": "OpenedIntent",
-			"phrases": [
-				"check opened",
-				"what have I already opened",
-				"opened",
-				"check my revealed boxes",
-				"revealed",
-				"check opened boxes",
-				"revealed boxes",
-				"opened boxes",
-				"what have I revealed",
-				"what have I completed",
-				"completed",
-				"completed boxes"
 			]
 		}
 	],
