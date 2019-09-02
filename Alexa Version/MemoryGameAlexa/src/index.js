@@ -168,7 +168,7 @@ const LaunchHandler = {
     const request = handlerInput.requestEnvelope.request;
     var speechOutput = "";
     var repromptText = "";
-    speechOutput="<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/bgm.mp3'/>";  
+    speechOutput="<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/bgm.mp3'/>";
     //Reset Session attributes
     const p_attributes = await handlerInput.attributesManager.getPersistentAttributes() || {};
     if(Object.keys(p_attributes).length === 0){
@@ -179,8 +179,8 @@ const LaunchHandler = {
     }
     handlerInput.attributesManager.setSessionAttributes(p_attributes);
     const attributes = handlerInput.attributesManager.getSessionAttributes();
-    
-  
+
+
     if(attributes.logInTimes<3){
       attributes.state = "launch";
       speechOutput += "Hello and welcome. We have recieved a new supply of crates and your goal is to match the "+
@@ -190,7 +190,7 @@ const LaunchHandler = {
       speechOutput += "Welcome back! Are you ready to play?";
     }
     repromptText = RepromptText(attributes);
-    
+
     return handlerInput.responseBuilder
       .speak(speechOutput)
       .reprompt(repromptText)
@@ -231,8 +231,8 @@ const NameHandler = {
     repromptText = RepromptText(attributes);
     //Save Session attributes
     handlerInput.attributesManager.setSessionAttributes(attributes);
-    
- 
+
+
     return handlerInput.responseBuilder
       .speak(speechOutput)
       .reprompt(repromptText)
@@ -265,13 +265,13 @@ const StartHandler = {
       InitiateGame(attributes);
       speechOutput += attributes.currentLevel.resource;
       speechOutput += "please choose the first box to start off between 1 and "+attributes.boxes.length;
-      
+
     }else{
       attributes.state = "naming";
       speechOutput = "before we start the game, can you please tell me what to call you by? ";
     }
     repromptText = RepromptText(attributes);
-    
+
     return handlerInput.responseBuilder
       .speak(speechOutput)
       .reprompt(repromptText)
@@ -312,9 +312,9 @@ const MenuHandler = {
       attributes.state = "menu";
       speechOutput += RepromptText(attributes);
     }
-    
+
     repromptText = RepromptText(attributes);
-    
+
     return handlerInput.responseBuilder
       .speak(speechOutput)
       .reprompt(repromptText)
@@ -378,7 +378,7 @@ const BoxHandler = {
                 attributes.score++;
                 //Check the player finished the current level
                 attributes.win = (attributes.score === attributes.currentLevel.numberOfSounds);
-               
+
                 if(attributes.win){
                   speechOutput +=  "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/win2.mp3' />"
                   +"Congradulations on winning "+attributes.currentLevel.name
@@ -403,7 +403,7 @@ const BoxHandler = {
                 speechOutput += "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/fail2.mp3' />"
                 +"<audio src='https://alexa-hackathon-memory-game-assets.s3.amazonaws.com/sounds/Boxes/door_slam.mp3' />"
                 +"<audio src='https://alexa-hackathon-memory-game-assets.s3.amazonaws.com/sounds/Boxes/door_slam.mp3' />";
-              }//Check selected boxes are the same End 
+              }//Check selected boxes are the same End
               //Change the box turn
               attributes.boxTurn ="first";
             }//Check the box turn End
@@ -415,9 +415,9 @@ const BoxHandler = {
     }
     speechOutput += RepromptText(attributes);
     repromptText = RepromptText(attributes);
-    
-      
-      
+
+
+
     //Save Session attributes
     handlerInput.attributesManager.setSessionAttributes(attributes);
     return handlerInput.responseBuilder
@@ -433,7 +433,7 @@ const ScoreHandler = {
     const request = handlerInput.requestEnvelope.request;
     //Get Session attributes
     const attributes = handlerInput.attributesManager.getSessionAttributes();
-    return request.type === 'IntentRequest' 
+    return request.type === 'IntentRequest'
     && request.intent.name === 'ScoreIntent';
   },
   handle(handlerInput) {
@@ -449,7 +449,7 @@ const ScoreHandler = {
       speechOutput = "You didn't start the game yet! ";
     }
     speechOutput += RepromptText(attributes);
-    repromptText = RepromptText(attributes); 
+    repromptText = RepromptText(attributes);
     return handlerInput.responseBuilder
       .speak(speechOutput)
       .reprompt(repromptText)
@@ -460,7 +460,7 @@ const SkipHandler = {
   canHandle(handlerInput) {
     //Get request obj
     const request = handlerInput.requestEnvelope.request;
-    return request.type === 'IntentRequest' 
+    return request.type === 'IntentRequest'
     && request.intent.name === 'SkipIntent';
   },
   handle(handlerInput) {
@@ -471,7 +471,7 @@ const SkipHandler = {
     // Reset Error Count
     errorCount = 0;
     speechOutput += RepromptText(attributes);
-    repromptText += RepromptText(attributes); 
+    repromptText += RepromptText(attributes);
     return handlerInput.responseBuilder
       .speak(speechOutput)
       .reprompt(repromptText)
@@ -485,7 +485,7 @@ const OpenedHandler = {
     const request = handlerInput.requestEnvelope.request;
     //Get Session attributes
     const attributes = handlerInput.attributesManager.getSessionAttributes();
-    return request.type === 'IntentRequest' 
+    return request.type === 'IntentRequest'
     && request.intent.name === 'OpenedIntent';
   },
   handle(handlerInput) {
@@ -526,15 +526,15 @@ const YesHandler = {
     const request = handlerInput.requestEnvelope.request;
     //Get Session attributes
     const attributes = handlerInput.attributesManager.getSessionAttributes();
-    return request.type === 'IntentRequest' 
+    return request.type === 'IntentRequest'
     && request.intent.name === 'AMAZON.YesIntent';
   },
   handle(handlerInput) {
     //Get Session attributes
     const attributes = handlerInput.attributesManager.getSessionAttributes();
-    
+
     var speechOutput = "";
-    
+
     // Reset Error Count
     errorCount = 0;
     if(attributes.state === 'reset'){
@@ -574,7 +574,7 @@ const NoHandler = {
     const request = handlerInput.requestEnvelope.request;
     //Get Session attributes
     const attributes = handlerInput.attributesManager.getSessionAttributes();
-    return request.type === 'IntentRequest'  
+    return request.type === 'IntentRequest'
     && request.intent.name === 'AMAZON.NoIntent' && attributes.state !== "launch";
   },
   handle(handlerInput) {
@@ -582,10 +582,10 @@ const NoHandler = {
     const attributes = handlerInput.attributesManager.getSessionAttributes();
     var speechOutput = "";
     var repromptText = "";
-    
+
     // Reset Error Count
     errorCount = 0;
-    
+
     if(attributes.state === "reset"){
       attributes.state = "inGame";
       speechOutput = "Okay, the game continues! "+RepromptText(attributes);
@@ -593,7 +593,7 @@ const NoHandler = {
       speechOutput = 'No no no, '+RepromptText(attributes);
       repromptText = RepromptText(attributes);
     }
-    
+
     handlerInput.attributesManager.setSessionAttributes(attributes);
     return handlerInput.responseBuilder
       .speak(speechOutput)
@@ -611,16 +611,16 @@ const HelpHandler = {
   },
   handle(handlerInput) {
     const attributes = handlerInput.attributesManager.getSessionAttributes();
-    var speechOutput = ""; 
+    var speechOutput = "";
     var repromptText = "";
-    
+
     // Reset Error Count
     errorCount = 0;
 
     switch(attributes.state){
       case "menu":
         speechOutput = "You will be asked to choose the level of the game. The level will be unlocked as you clear the previous level. During the game, you will be asked for two boxes to match up together. If you choose two boxes with same animal's sound, the box will stay opened. The game will be finished when all the boxes are opened. ";
-        speechOutput += "are you ready to play the game? "+RepromptText(attributes);      
+        speechOutput += "are you ready to play the game? "+RepromptText(attributes);
         break;
       case "inGame":
         speechOutput = "There are " + attributes.boxes.length + " boxes with animal hidden inside. You need to match two boxes with identical animals. When you found the same two animals, those boxes will stay open. As soon as all the boxes are matched and opened, the game will be finished. To check score, say, Score. To check opened boxes, say, opened. ";
@@ -651,29 +651,29 @@ const ExitHandler = {
     const attributes = handlerInput.attributesManager.getSessionAttributes();
     return request.type === 'IntentRequest'
       && (request.intent.name === 'AMAZON.CancelIntent'
-        || request.intent.name === 'AMAZON.StopIntent' 
+        || request.intent.name === 'AMAZON.StopIntent'
         || (request.intent.name === 'AMAZON.NoIntent' && (attributes.win|| attributes.state === "launch")));
   },
   async handle(handlerInput) {
     const attributes = handlerInput.attributesManager.getSessionAttributes();
-    
+
     if(attributes.state === "in game"){
       RecordScore(attributes);
     }
-    
+
     handlerInput.attributesManager.setPersistentAttributes(attributes);
     await handlerInput.attributesManager.savePersistentAttributes();
-    
+
     var speechOutput = "Thank you for playing";
     if(attributes.totalScore > 0){
-      if(attributes.state === "inGame" || attributes.state === "win"){ 
+      if(attributes.state === "inGame" || attributes.state === "win"){
         speechOutput +="Your score is "+attributes.totalScore
         +". Your rank is number 1. "
         +"See you next time!";
       }
     }
-    
-    
+
+
     return handlerInput.responseBuilder
       .speak(speechOutput)
       .withShouldEndSession(true)
@@ -687,7 +687,7 @@ const ResetHandler = {
     const request = handlerInput.requestEnvelope.request;
     //Get Session attributes
     const attributes = handlerInput.attributesManager.getSessionAttributes();
-    return request.type === 'IntentRequest' 
+    return request.type === 'IntentRequest'
     && request.intent.name === 'ResetIntent';
   },
   handle(handlerInput) {
@@ -695,10 +695,10 @@ const ResetHandler = {
     const attributes = handlerInput.attributesManager.getSessionAttributes();
     var speechOutput = "";
     var repromptText = "";
-    
+
     // Reset Error Count
     errorCount = 0;
-    
+
     if(attributes.state ==="inGame"){
       speechOutput = "Do you really want to reset the game?";
       repromptText = "really? reset?";
@@ -720,12 +720,12 @@ const SessionEndedRequestHandler = {
     return request.type === 'SessionEndedRequest';
   },
   handle(handlerInput) {
-    
+
     const attributes = handlerInput.attributesManager.getSessionAttributes();
     var speechOutput = "Thank you for playing,";
     if(typeof attributes.player !== 'undefined'){
       speechOutput += attributes.player+"! "
-      if(attributes.state === "inGame" || attributes.state === "win"){ 
+      if(attributes.state === "inGame" || attributes.state === "win"){
         speechOutput +="Your score is "+attributes.totalScore
         +". Your rank is number 1. "
         +"See you next time!";
@@ -768,8 +768,8 @@ const ErrorHandler = {
       .withShouldEndSession(true)
       .getResponse();
     }
-    
-    
+
+
     return handlerInput.responseBuilder
       .speak(speechOutput)
       .reprompt(repromptText)
@@ -777,7 +777,7 @@ const ErrorHandler = {
   },
 };
 
-const skillBuilder = Alexa.SkillBuilders.custom();    
+const skillBuilder = Alexa.SkillBuilders.custom();
 
 exports.handler = skillBuilder
   .addRequestHandlers(

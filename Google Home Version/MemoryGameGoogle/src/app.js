@@ -33,8 +33,10 @@ var currentLevel = 1;
 var fromMenu = true;
 
 //Users first and second box choice
-var firstBoxChoice = 0;
-var secondBoxChoice = 0;
+var firstBoxChoice = 9999;
+var secondBoxChoice = 9999;
+var hasFirstSelected = false;
+
 var userLevelSelected;
 var outSideSpeech = "";
 
@@ -80,32 +82,44 @@ const levelsUnlocked = [
         id: 1,
         name: "level 1",
         unlocked: true,
-        numberOfSounds: 3
+        numberOfSounds: 3,
+        minimumTries: 3,
+        tries: 0
     },{
         id: 2,
         name: "level 2",
         unlocked: false,
-        numberOfSounds: 4
+        numberOfSounds: 4,
+        minimumTries: 4,
+        tries: 0
     },{
         id: 3,
         name: "level 3",
         unlocked: false,
-        numberOfSounds: 6
+        numberOfSounds: 6,
+        minimumTries: 6,
+        tries: 0
     },{
         id: 4,
         name: "level 4",
         unlocked: false,
-        numberOfSounds: 8
+        numberOfSounds: 8,
+        minimumTries: 6,
+        tries: 0
     },{
         id: 5,
         name: "level 5",
         unlocked: false,
-        numberOfSounds: 10
+        numberOfSounds: 10,
+        minimumTries: 6,
+        tries: 0
     },{
         id: 6,
         name: "level 6",
         unlocked: false,
-        numberOfSounds: 12
+        numberOfSounds: 12,
+        minimumTries: 6,
+        tries: 0
     }
 ];
 
@@ -196,6 +210,8 @@ app.setHandler({
         }
         this.$reprompt.addText(Reprompt());
 
+        numberOfTimesLoggedIn++;
+        console.log("Number of times logged in: "+numberOfTimesLoggedIn);
         //Ask user about how many players are playing with state promise
         this.followUpState('StartState').ask(this.$speech, this.$reprompt);
     },
@@ -307,8 +323,8 @@ app.setHandler({
         Unhandled(){
             switch(currentStateOb.userAttempts){
                 case(0):
-                    this.$speech.addText("<p>Sorry, I may have missheard, can you please choose an main menu option?</p>");
-                    this.$reprompt.addText("<p>Sorry, I may have missheard, can you please choose an main menu option?</p>");
+                    this.$speech.addText("<p>Sorry, I may have miss-heard, can you please choose an main menu option?</p>");
+                    this.$reprompt.addText("<p>Sorry, I may have miss-heard, can you please choose an main menu option?</p>");
                     break;
                 case(1):
                     this.$speech.addText("<p>Please select either to play, show my rank, ask for help or quit the game!</p>");
@@ -333,14 +349,10 @@ app.setHandler({
         currentStateOb.state = states[4].state;
         currentStateOb.stateName = states[4].stateName;
         currentStateOb.userAttempts = states[4].userAttempts;
-        //Set up speech
-        let speech = "";
-        //If num of times played less than 3, then introduce the player
-        if(fromMenu){
-            speech += "<p>We hope you are ready for our memory game. </p>";
-        }
 
         //Initialise things first
+        //Set up speech
+        let speech = "";
         //Set up random boxes
         let animalNoises = levelsUnlocked[currentLevel-1].numberOfSounds;
         shuffle(animals); //shuffle animal array to pick from
@@ -364,94 +376,140 @@ app.setHandler({
         //Shuffle new const
         shuffle(inGameSounds);
 
-        //Instructions - only needed for new players
-        if(numberOfTimesLoggedIn < 5 && fromMenu){
+        console.log("inGameSounds length: " + inGameSounds.length);
+
+        //----------------Intro---------------------
+        if(numberOfTimesLoggedIn < 5){
+            if(fromMenu){
+                //Welcome from the menu to the game
+                speech += "<p>We hope you are ready for our memory game. </p>";
+            }
+            //Introduction to the game
             speech += "<p>At any point in time during the level; you can say exit to quit the game, "+
                       "ask for help, check your score, restart the game, or go back to the main menu. </p>"+
                       "<p>You must also pick a box to play! </p>";
+        }else{
+            if(fromMenu){
+                //Welcome from the menu to the game
+                speech += "<p>Welcome back player! </p>";
+            }
         }
-        //Level info
-        speech += "<p>" + levelsUnlocked[currentLevel-1].name + " has " +
-        (levelsUnlocked[currentLevel-1].numberOfSounds*2) + " sounds to discover. Meaning a total of " +
-        levelsUnlocked[currentLevel-1].numberOfSounds + " pairs to match up! </p>";
-        //Query
-        speech += "<p>Please choose a box to start off between 1 and "+inGameSounds.length;
-        //Reset current player score
-        playerScore = 0;
+
+        //-------------Level Info-------------------
+        if(numberOfTimesLoggedIn < 5){
+            //Level info
+            speech += "<p> " + levelsUnlocked[currentLevel-1].name + " has " +
+            (levelsUnlocked[currentLevel-1].numberOfSounds*2) + " sounds to discover. Meaning a total of " +
+            levelsUnlocked[currentLevel-1].numberOfSounds + " pairs to match up! </p>";
+
+            speech += "<p>Please choose a box to start off between 1 and "+inGameSounds.length;
+        }else{
+            speech += "<p> " + levelsUnlocked[currentLevel-1].name + "! </p>" +
+            "<p>" + (levelsUnlocked[currentLevel-1].numberOfSounds*2) + " sounds! </p>" +
+            "<p>" + levelsUnlocked[currentLevel-1].numberOfSounds + " pairs! Ready, set, GO! </p>";
+        }
+
+        //Reset current player score if from menu
+        if(currentLevel == 1){
+            playerScore = 0;
+        }else{
+            //Player score = (1000*currentLevel.minimumTries/currentLevel.tries)
+            playerScore = 0;
+            for(let i=0;i < currentLevel; i++){
+                playerScore += 1000 * (levelsUnlocked[currentLevel-1].minimumTries/levelsUnlocked[currentLevel-1].tries);
+            }
+        }
+
+        fromMenu = false;
         this.$speech.addText(speech);
         this.$reprompt.addText(Reprompt());
         this.followUpState('InGameState').ask(this.$speech, this.$reprompt);
     },
 
     InGameState: {
-        BoxIntent()
-        {
-            //Assign animal objects to boxes and then randomize them
+        BoxIntent(){
             let speech = "";
-            let indexSelected1 = this.$inputs.boxNumberONE.value-1;
-            let indexSelected2 = this.$inputs.boxNumberTWO.value-1;
 
-            //Check if values where entered at all
-            if(isEmpty(indexSelected1) || isEmpty(indexSelected2)){
-                speech = "<p>You only chose one box. Please select two boxes to open. </p>";
+            //Check if first box or second box is being chosen
+            if(!hasFirstSelected){
+                firstBoxChoice = this.$inputs.boxNumberSelected.value-1;
             }else{
-                //Check if boxes exist
-                if(!(indexSelected1+1 > inGameSounds.length || indexSelected2+1 > inGameSounds.length)){
-                    //Check that the user didn't choose the same boxes
-                    if(!(indexSelected1 == indexSelected2)){
-                        //Check if either box picked is already opened
-                        if(inGameSounds[indexSelected1].opened == true && inGameSounds[indexSelected2].opened == true){
-                            speech = "<p>both boxes have already opened. </p>";
+                secondBoxChoice = this.$inputs.boxNumberSelected.value-1;
+            }
 
-                        }else if(inGameSounds[indexSelected1].opened == true){
-                            speech = "<p>box "+(indexSelected1+1)+
-                                      " is already opened. </p>";
-                        }else if(inGameSounds[indexSelected2].opened == true){
-                            speech = "<p>box "+(indexSelected2+1)+
-                                      " is already opened. </p>";
+            //Log
+            console.log("Has the first box been selected: " + hasFirstSelected);
+            console.log("First box choice: " + firstBoxChoice);
+            console.log("Second box choice: " + secondBoxChoice);
+
+            //Check if box exists
+            if(!(firstBoxChoice+1 > inGameSounds.length || (!hasFirstSelected ? false : secondBoxChoice+1 > inGameSounds.length))){
+                //Open first box
+                if(!hasFirstSelected){
+                    //Check if FIRST box has been opened or not
+                    if(inGameSounds[firstBoxChoice].opened){
+                        speech += inGameSounds[firstBoxChoice].resource + "<p> This box has already been opened! </p>";
+                    }else{
+                        speech += "<audio src='https://alexa-hackathon-memory-game-assets.s3.amazonaws.com/sounds/Boxes/door_open.mp3'/>";
+                        speech += inGameSounds[firstBoxChoice].resource;
+                        //Move onto second box
+                        hasFirstSelected = true;
+                        //If logged in less than 5
+                        (numberOfTimesLoggedIn < 5 ? speech += "<p>Please select a box to continue between 1 and "+inGameSounds.length+" </p>" : speech);
+                    }
+                }else{
+                    //Check if you picked the same box
+                    if(!(firstBoxChoice == secondBoxChoice)){
+                        //Check if SECOND box has been opened or not
+                        if(inGameSounds[secondBoxChoice].opened){
+                            speech += inGameSounds[secondBoxChoice].resource + "<p> This box has already been opened! </p>";
                         }else{
-                            //Play animal sounds
-                            speech += "<p>"+inGameSounds[indexSelected1].resource+" </p>"+
-                                      "<p>"+inGameSounds[indexSelected2].resource+" </p>";
+                            speech += "<audio src='https://alexa-hackathon-memory-game-assets.s3.amazonaws.com/sounds/Boxes/door_open.mp3'/>";
+                            speech += inGameSounds[secondBoxChoice].resource;
 
+                            //Move on to checking the two boxes
                             //Check now if they match or not
-                            if(inGameSounds[indexSelected1].name == inGameSounds[indexSelected2].name){
+                            if(inGameSounds[firstBoxChoice].name == inGameSounds[secondBoxChoice].name){
                                 //Tell user they where correct
-                                speech += "<p>NICE <audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/success.mp3'/>"+
-                                          " Good work! you found a pair of "+inGameSounds[indexSelected1].name+"s! </p>";
-                                //Set now opened boxes to true
-                                inGameSounds[indexSelected1].opened = true;
-                                inGameSounds[indexSelected2].opened = true;
+                                speech += "<p><audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/success.mp3'/>"+
+                                          " Good work! you found a pair of "+inGameSounds[firstBoxChoice].name+"s! </p>";
+                                inGameSounds[firstBoxChoice].opened = true;
+                                inGameSounds[secondBoxChoice].opened = true;
 
-                                //Increase score
-                                playerScore++;
-
-                                //Check if every box has now finished
-                                if(checkEveryBox() == inGameSounds.length){
-                                    //Save last sounds to play in stateless intent
-                                    outSideSpeech = "<p>"+inGameSounds[indexSelected1].resource+" </p>"+
-                                                    "<p>"+inGameSounds[indexSelected2].resource+" </p>";
-                                    //Go to win state
-                                    return this.toStatelessIntent('WinStatelessFunction');
-                                }
+                                //Tell user
+                                (numberOfTimesLoggedIn < 5 ? speech += "<p>Now onto the next pair! </p>" : speech);
+                                resetSelection();
                             }else{
                                 //Tell user they where incorrect
-                                speech += "<p>WRONG <audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/fail2.mp3'/>"+
-                                          " animals from two boxes were not same. </p>";
-                                //Decrement score
-                                playerScore--;
+                                speech += "<p><audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/fail2.mp3'/>"+
+                                          "<audio src='https://alexa-hackathon-memory-game-assets.s3.amazonaws.com/sounds/Boxes/door_slam.mp3'/>"+
+                                          "<audio src='https://alexa-hackathon-memory-game-assets.s3.amazonaws.com/sounds/Boxes/door_slam.mp3'/></p>";
+
+                                //Tell user
+                                (numberOfTimesLoggedIn < 5 ? speech += "<p>Sorry, these crates do not match! Pick a new pair to continue!</p>" : speech);
+                                resetSelection();
+                            }
+                            //Increment tries
+                            levelsUnlocked[currentLevel-1].tries++;
+
+                            console.log("Total tries for "+levelsUnlocked[currentLevel-1].name+": "+levelsUnlocked[currentLevel-1].tries);
+
+                            //Check if every box has now finished
+                            if(checkEveryBox() == inGameSounds.length){
+                                //Go to win state
+                                return this.toStatelessIntent('WinStatelessFunction');
                             }
                         }
                     }else{
-                        speech = "<p>Sorry, your two choices are the same. No cheating! </p>";
+                        speech += "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/fail2.mp3'/>";
+                        speech += "<p>No cheating! Your two choices must be different crates! </p>";
                     }
-                }else{
-                    speech = "<p>One of your box choices does not exist. </p>";
                 }
+            }else{
+                speech += "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/fail2.mp3'/>";
+                speech += "<p>Sorry, this box does not exist! </p>";
             }
 
-
-            speech += "<p>please select two boxes to continue between 1 and "+inGameSounds.length+" </p>";
             //Send out prompt
             this.$speech.addText(speech);
             this.$reprompt.addText(Reprompt());
@@ -582,11 +640,8 @@ app.setHandler({
 
         this.followUpState('BackToMainMenuState').ask(this.$speech, this.$reprompt);
     },
+
     END() {
-        let reason = this.getEndReason();
-
-        console.log(reason);
-
         this.$speech.addText("Sorry to see you go. Good bye!");
         this.tell(this.$speech);
     },
@@ -625,6 +680,14 @@ function shuffle(array){
         array[i] = array[j];
         array[j] = temp;
     }
+}
+
+//Reset selection
+function resetSelection(){
+    //Reset selections
+    firstBoxChoice = 9999;
+    secondBoxChoice = 9999;
+    hasFirstSelected = false;
 }
 
 //Dynamic reprompt function

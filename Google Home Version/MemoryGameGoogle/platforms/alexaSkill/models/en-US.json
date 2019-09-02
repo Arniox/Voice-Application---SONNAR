@@ -133,25 +133,32 @@
 				{
 					"name": "BoxIntent",
 					"samples": [
-						"{boxNumberONE}, {boxNumberTWO}",
-						"I will choose {boxNumberONE} and {boxNumberTWO}",
-						"I'll go for {boxNumberONE} and {boxNumberTWO}",
-						"I'll select {boxNumberONE} and {boxNumberTWO}",
-						"My selection will be {boxNumberONE} and {boxNumberTWO}",
-						"box {boxNumberONE} and {boxNumberTWO}",
-						"box number {boxNumberONE} and {boxNumberTWO}",
-						"number {boxNumberONE} and {boxNumberTWO}",
-						"sound {boxNumberONE} and {boxNumberTWO}",
-						"sound number {boxNumberONE} and {boxNumberTWO}",
-						"I choose {boxNumberONE} and {boxNumberTWO}"
+						"{boxNumberSelected}",
+						"{boxNumberSelected} please",
+						"I will choose {boxNumberSelected}",
+						"I will choose {boxNumberSelected} please",
+						"I'll go for {boxNumberSelected}",
+						"I'll go for {boxNumberSelected} please",
+						"I'll select {boxNumberSelected}",
+						"I'll select {boxNumberSelected} please",
+						"My selection will be {boxNumberSelected}",
+						"My selection will be {boxNumberSelected} please",
+						"box {boxNumberSelected}",
+						"box {boxNumberSelected} please",
+						"box number {boxNumberSelected}",
+						"box number {boxNumberSelected} please",
+						"number {boxNumberSelected}",
+						"number {boxNumberSelected} please",
+						"sound {boxNumberSelected}",
+						"sound {boxNumberSelected} please",
+						"sound number {boxNumberSelected}",
+						"sound number {boxNumberSelected} please",
+						"I choose {boxNumberSelected}",
+						"I choose {boxNumberSelected} please"
 					],
 					"slots": [
 						{
-							"name": "boxNumberONE",
-							"type": "AMAZON.NUMBER"
-						},
-						{
-							"name": "boxNumberTWO",
+							"name": "boxNumberSelected",
 							"type": "AMAZON.NUMBER"
 						}
 					]
