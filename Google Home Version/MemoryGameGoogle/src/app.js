@@ -43,6 +43,9 @@ var outSideSpeech = "";
 //players current ingame score
 var playerScore = 0;
 
+//Previous text from winning
+var outsideText = "";
+
 //Current state object
 const currentStateOb = [
     {
@@ -80,42 +83,42 @@ const states = [
 const levelsUnlocked = [
     {
         id: 1,
-        name: "level 1",
+        name: "Level 1",
         unlocked: true,
         numberOfSounds: 3,
         minimumTries: 3,
         tries: 0
     },{
         id: 2,
-        name: "level 2",
+        name: "Level 2",
         unlocked: false,
         numberOfSounds: 4,
         minimumTries: 4,
         tries: 0
     },{
         id: 3,
-        name: "level 3",
+        name: "Level 3",
         unlocked: false,
         numberOfSounds: 6,
         minimumTries: 6,
         tries: 0
     },{
         id: 4,
-        name: "level 4",
+        name: "Level 4",
         unlocked: false,
         numberOfSounds: 8,
         minimumTries: 6,
         tries: 0
     },{
         id: 5,
-        name: "level 5",
+        name: "Level 5",
         unlocked: false,
         numberOfSounds: 10,
         minimumTries: 6,
         tries: 0
     },{
         id: 6,
-        name: "level 6",
+        name: "Level 6",
         unlocked: false,
         numberOfSounds: 12,
         minimumTries: 6,
@@ -127,50 +130,62 @@ const levelsUnlocked = [
 const animals = [
     {
         name: "dog",
+        pluralName: "dogs",
         resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/dog.mp3' />",
         opened: false
     },{
         name: "cat",
+        pluralName: "cats",
         resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/cat.mp3' />",
         opened: false
     },{
         name: "chicken",
+        pluralName: "chickens",
         resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/chicken.mp3' />",
         opened: false
     },{
         name: "cow",
+        pluralName: "cows",
         resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/cow.mp3' />",
         opened: false
     },{
         name: "turkey",
+        pluralName: "tukeys",
         resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/turkey.mp3' />",
         opened: false
     },{
         name: "frog",
+        pluralName: "frogs",
         resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/frog.mp3' />",
         opened: false
     },{
         name: "goat",
+        pluralName: "goats",
         resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/goat.mp3' />",
         opened: false
     },{
         name: "goose",
+        pluralName: "geese",
         resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/goose.mp3' />",
         opened: false
     },{
         name: "horse",
+        pluralName: "horses",
         resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/horse.mp3' />",
         opened: false
     },{
         name: "pig",
+        pluralName: "pigs",
         resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/pig.mp3' />",
         opened: false
     },{
         name: "sheep",
+        pluralName: "sheeps",
         resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/sheep.mp3' />",
         opened: false
     },{
         name: "elephant",
+        pluralName: "elephants",
         resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/elephant.mp3' />",
         opened: false
     }
@@ -259,9 +274,15 @@ app.setHandler({
         //Set player response
         let speech = "";
 
+        //Add winning speech
+        console.log("outSideSpeech at givemenu function: " + outSideSpeech);
+        if(outSideSpeech != ""){
+            speech += outsideText;
+        }
+
         //if it's the players first, second or third time logging in, then play a slightly larger introduction to the menu
         if(numberOfTimesLoggedIn < 3){
-            speech += '<p>From the main menu you can either choose to: '+
+            speech += '<p>From the main menu you can either choose to: </p>'+
                       '<p>Start the game! </p>'+
                       '<p>Show my rank! </p>'+
                       '<p>Ask for help! </p>'+
@@ -363,12 +384,14 @@ app.setHandler({
             //Add in number of animal noises
             inGameSounds.push({
                 name: animals[i].name,
+                pluralName: animals[i].pluralName,
                 resource: animals[i].resource,
                 opened: false
             });
             //Double animal noises
             inGameSounds.push({
                 name: animals[i].name,
+                pluralName: animals[i].pluralName,
                 resource: animals[i].resource,
                 opened: false
             });
@@ -377,6 +400,13 @@ app.setHandler({
         shuffle(inGameSounds);
 
         console.log("inGameSounds length: " + inGameSounds.length);
+
+        //----------------Add previous win text if any----
+        console.log("outSideSpeech at initialisation function: " + outSideSpeech);
+        //Add winning speech
+        if(outSideSpeech != ""){
+            speech += outsideText;
+        }
 
         //----------------Intro---------------------
         if(numberOfTimesLoggedIn < 5){
@@ -454,8 +484,9 @@ app.setHandler({
                         speech += inGameSounds[firstBoxChoice].resource;
                         //Move onto second box
                         hasFirstSelected = true;
-                        //If logged in less than 5
-                        (numberOfTimesLoggedIn < 5 ? speech += "<p>Please select a box to continue between 1 and "+inGameSounds.length+" </p>" : speech);
+
+                        //Tell user
+                        speech += getRandomSpeech("choosingFirst");
                     }
                 }else{
                     //Check if you picked the same box
@@ -471,22 +502,24 @@ app.setHandler({
                             //Check now if they match or not
                             if(inGameSounds[firstBoxChoice].name == inGameSounds[secondBoxChoice].name){
                                 //Tell user they where correct
-                                speech += "<p><audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/success.mp3'/>"+
-                                          " Good work! you found a pair of "+inGameSounds[firstBoxChoice].name+"s! </p>";
+                                speech += "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/success.mp3'/>";
+
                                 inGameSounds[firstBoxChoice].opened = true;
                                 inGameSounds[secondBoxChoice].opened = true;
 
                                 //Tell user
-                                (numberOfTimesLoggedIn < 5 ? speech += "<p>Now onto the next pair! </p>" : speech);
+                                speech += getRandomSpeech("winGuess");
+
                                 resetSelection();
                             }else{
                                 //Tell user they where incorrect
-                                speech += "<p><audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/fail2.mp3'/>"+
+                                speech += "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/fail2.mp3'/>"+
                                           "<audio src='https://alexa-hackathon-memory-game-assets.s3.amazonaws.com/sounds/Boxes/door_slam.mp3'/>"+
-                                          "<audio src='https://alexa-hackathon-memory-game-assets.s3.amazonaws.com/sounds/Boxes/door_slam.mp3'/></p>";
+                                          "<audio src='https://alexa-hackathon-memory-game-assets.s3.amazonaws.com/sounds/Boxes/door_slam.mp3'/>";
 
                                 //Tell user
-                                (numberOfTimesLoggedIn < 5 ? speech += "<p>Sorry, these crates do not match! Pick a new pair to continue!</p>" : speech);
+                                speech += "<p>"+getRandomSpeech("looseGuess")+"</p>";
+
                                 resetSelection();
                             }
                             //Increment tries
@@ -615,30 +648,38 @@ app.setHandler({
 
         //Set final winning text
         let speech = "";
-        speech += outSideSpeech;
-        speech += "<p>Congradulations on winning "+levelsUnlocked[userLevelSelected-1].name+". </p>";
+        speech += "<p>Congradulations on winning "+levelsUnlocked[currentLevel-1].name+". </p>";
 
         //Unlock next level
-        if(!(userLevelSelected > levelsUnlocked.length-1)){
-            levelsUnlocked[userLevelSelected].unlocked = true;
-            speech += "<p>You've now unlocked "+levelsUnlocked[userLevelSelected].name+". </p>";
+        if(!(currentLevel > levelsUnlocked.length-1)){
+            levelsUnlocked[currentLevel].unlocked = true;
+            speech += "<p>You're now ready for </p>" + levelsUnlocked[currentLevel].name;
         }else{
-            speech += "<p>You have reached the max level for the animal sound pack. </p>";
+            speech += "<p>You've finished the game!!! </p>";
         }
+
+        //Increment the levels
+        currentLevel++;
+
+        console.log("Bestscore is: "+bestscore+". PlayerScore is: "+playerScore);
+        console.log("Player is moving from: "+currentLevel-1+" to "+currentLevel);
+
         //If current score is better than highest score than save
         if(playerScore > bestScore){
             bestScore = playerScore;
             //Tell player
             speech += "<p>You've achieved a new highest score of "+bestScore+". Congratulations!!!!!!!! </p>";
+
+            //Return to the main menu
+            outsideText = speech;
+            console.log("outSideSpeech: " + outSideSpeech);
+            return this.toStatelessIntent('GiveMenu');
         }
 
-        speech += "<p>Say level selection to go play your newly unlocked level or say back to go back to the main menu. </p>";
-
-        //Prompt
-        this.$speech.addText(speech);
-        this.$reprompt.addText(Reprompt());
-
-        this.followUpState('BackToMainMenuState').ask(this.$speech, this.$reprompt);
+        //Send to next level
+        outsideText = speech;
+        console.log("outSideSpeech: " + outSideSpeech);
+        return this.toStatelessIntent('InitialisationIntent');
     },
 
     END() {
@@ -688,6 +729,87 @@ function resetSelection(){
     firstBoxChoice = 9999;
     secondBoxChoice = 9999;
     hasFirstSelected = false;
+}
+
+//Random text
+function getRandomSpeech(state){
+    let speech = "";
+    let randomSpeech = Math.floor(Math.random() * 6);
+
+    console.log("current state is: "+state+". randomSpeech num: "+randomSpeech);
+
+    switch(state){
+        case "choosingFirst":
+            switch(randomSpeech){
+                case 0:
+                    speech = "Ok, choose another crate to open!";
+                    break;
+                case 1:
+                    speech = "Just one more left!";
+                    break;
+                case 2:
+                    speech = "We need to crack one more open!";
+                    break;
+                case 3:
+                    speech = "Nice guess. Just one left!";
+                    break;
+                case 4:
+                    speech = "You're doing well!";
+                    break;
+                case 5:
+                    speech = "hmmmmmm";
+                    break;
+            }
+            break;
+        case "winGuess":
+            switch(randomSpeech){
+                case 0:
+                    speech = "Nice, you found a pair of "+inGameSounds[firstBoxChoice].pluralName;
+                    break;
+                case 1:
+                    speech = "Oh wow, nice!";
+                    break;
+                case 2:
+                    speech = inGameSounds[firstBoxChoice].pluralName + ", awe, so adorable!";
+                    break;
+                case 3:
+                    speech = "Congradulations! These two will go nicely together";
+                    break;
+                case 4:
+                    speech = inGameSounds[firstBoxChoice].pluralName + " is such a strange word, don't ya think?";
+                    break;
+                case 5:
+                    speech = "mmmmm";
+                    break;
+            }
+            break;
+        case "looseGuess":
+            switch(randomSpeech){
+                case 0:
+                    speech = "Awe, that's a shame. Better luck next time!";
+                    break;
+                case 1:
+                    speech = "Sorry, these two where incorrect";
+                    break;
+                case 2:
+                    speech = "Pretty sure a " + inGameSounds[firstBoxChoice].name + " and a "+inGameSounds[secondBoxChoice].name + " are not the same.... Or are they!?!";
+                    break;
+                case 3:
+                    speech = "This was a missmatched pair. Maybe try a different combo?";
+                    break;
+                case 4:
+                    speech = "That's alright. Try again for more luck!";
+                    break;
+                case 5:
+                    speech = "Awe.....";
+                    break;
+            }
+            break;
+    }
+
+    //return it
+    console.log("speech to return: "+speech);
+    return speech;
 }
 
 //Dynamic reprompt function
