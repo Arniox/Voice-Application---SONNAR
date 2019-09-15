@@ -8,7 +8,8 @@ const { App } = require('jovo-framework');
 const { Alexa } = require('jovo-platform-alexa');
 const { GoogleAssistant } = require('jovo-platform-googleassistant');
 const { JovoDebugger } = require('jovo-plugin-debugger');
-const { FileDb } = require('jovo-db-filedb');
+//const { FileDb } = require('jovo-db-filedb'); //<----- FileDB
+const { DynamoDb } = require('jovo-db-dynamodb'); // <----- DynamoDB
 
 const app = new App();
 
@@ -16,8 +17,15 @@ app.use(
     new Alexa(),
     new GoogleAssistant(),
     new JovoDebugger(),
-    new FileDb()
+    //new FileDb(), <----- FileDB
+    new DynamoDb() // < ---- DynamoDB
 );
+
+// ------------------------------------------------------------------
+// DATABASING VARIABLES
+// this.$user.$data.score = 2; <--- creates an item in the database (deviceID is auto primary key)
+// let score = this.$user.$data.score; <--- creates a local variable with data retrieved from the DB
+// ------------------------------------------------------------------
 
 // ------------------------------------------------------------------
 // APP LOGIC
@@ -26,8 +34,13 @@ app.use(
 let currentState = ""; //Current game state
 let numberOfTimesLoggedIn = 0;
 
-//Highest Score
-var bestScore = 0;
+// ------------------------------------------------------------------
+// DISPLAY VARIABLES
+// ------------------------------------------------------------------
+let title = 'Card Title Default';
+let content = 'Card Content Default';
+let imageUrl = 'https://s3.amazonaws.com/jovocards/SampleImageCardSmall.png';
+
 //Current level
 var currentLevel = 1;
 var fromMenu = true;
@@ -107,21 +120,21 @@ const levelsUnlocked = [
         name: "Level 4",
         unlocked: false,
         numberOfSounds: 8,
-        minimumTries: 6,
+        minimumTries: 8,
         tries: 0
     },{
         id: 5,
         name: "Level 5",
         unlocked: false,
         numberOfSounds: 10,
-        minimumTries: 6,
+        minimumTries: 10,
         tries: 0
     },{
         id: 6,
         name: "Level 6",
         unlocked: false,
         numberOfSounds: 12,
-        minimumTries: 6,
+        minimumTries: 12,
         tries: 0
     }
 ];
@@ -208,7 +221,28 @@ app.setHandler({
         currentStateOb.stateName = states[0].stateName;
         currentStateOb.userAttempts = states[0].userAttempts;
 
-        //Grab data from data base
+        
+        if(this.$user.$data.timesLoggedIn == 0 || this.$user.$data.timesLoggedIn == null)//checks if the user has logged in before
+        {
+            this.$user.$data.timesLoggedIn = 1; //first time users will have their 'timesLoggedIn' field set to 1 in the database 
+        }
+        else
+        {
+            this.$user.$data.timesLoggedIn += 1; //repeat users will increment their 'timesLoggedIn' field by 1 
+            
+        }
+
+        numberOfTimesLoggedIn = this.$user.$data.timesLoggedIn; //assign the users 'timesLoggedIn' value to a local 'numberOfTimesLoggedIn' variable
+        
+        if(this.$user.$data.timesLoggedIn <= 1) //Assign a new users bestScore to 0 in the database
+        {
+            this.$user.$data.bestScore = 0;
+        }
+
+        //Logs
+        console.log("Local Number of times logged in: "+numberOfTimesLoggedIn);
+        console.log("DB Number of times logged in: "+this.$user.$data.timesLoggedIn);
+      
 
         if(numberOfTimesLoggedIn > 3){
             this.$speech.addText(
@@ -223,15 +257,14 @@ app.setHandler({
                 '<p>Are you ready to help ship them off?</p>'
             );
         }
-        this.$reprompt.addText(Reprompt());
 
-        numberOfTimesLoggedIn++;
-        console.log("Number of times logged in: "+numberOfTimesLoggedIn);
-        //Ask user about how many players are playing with state promise
+        this.$reprompt.addText(Reprompt());
+        GenerateDisplayTexts();
+        this.showImageCard(title, content, imageUrl);
         this.followUpState('StartState').ask(this.$speech, this.$reprompt);
     },
 
-    //Start state: Only yes or no are accepted for playing either one or two players
+    //---Start state: Only yes or no are accepted-------------------------------------------------------------------------------------------------------------------------------
     StartState: {
         //Yes/no answers
         YesIntent(){
@@ -271,12 +304,18 @@ app.setHandler({
         currentStateOb.state = states[1].state;
         currentStateOb.stateName = states[1].stateName;
         currentStateOb.userAttempts = states[1].userAttempts;
+
+        //---------Display Generation-----------------------------
+        GenerateDisplayTexts();
+        this.showImageCard(title, content, imageUrl);
+        //---------Display Generation-----------------------------
+
         //Set player response
         let speech = "";
 
         //Add winning speech
         console.log("outSideSpeech at givemenu function: " + outSideSpeech);
-        if(outSideSpeech != ""){
+        if(outsideText != ""){
             speech += outsideText;
         }
 
@@ -301,8 +340,9 @@ app.setHandler({
         this.$reprompt.addText(Reprompt());
         this.followUpState('MenuSelectionState').ask(this.$speech, this.$reprompt);
     },
-
+    //---MenuSelectState-------------------------------------------------------------------------------------------------------------------------------------------------
     MenuSelectionState: {
+        
         ExitIntent(){
             //Set player response
             this.$speech.addText("Thank you for playing our animal memory game, good bye!");
@@ -321,19 +361,30 @@ app.setHandler({
             this.$speech.addText("<p>Please choose to either play, show my rank, ask for help or quit the game!</p>");
             this.$reprompt.addText(Reprompt());
 
+            //---------Display Generation-----------------------------
+            GenerateDisplayTexts();
+            this.showImageCard(title, content, imageUrl);
+            //---------Display Generation-----------------------------
             this.followUpState('MenuSelectionState').ask(this.$speech, this.$reprompt);
         },
         RankIntent(){
+            
             //Current state is the main menu
             currentStateOb.state = states[3].state;
             currentStateOb.stateName = states[3].stateName;
             currentStateOb.userAttempts = states[3].userAttempts;
+            
             //Set player response
             this.$speech.addText("<p>Your current highest score in our Animal Memory Game is:</p>" +
-                                 "<p>" + bestScore + "</p>");
+                                 "<p>" + this.$user.$data.bestScore + "</p>");
             this.$speech.addText("<p>Please choose to either play, show my rank, ask for help or quit the game!</p>");
             this.$reprompt.addText(Reprompt());
 
+            //---------Display Generation-----------------------------
+            GenerateDisplayTexts();
+            this.showImageCard(title, content, imageUrl);
+            //---------Display Generation-----------------------------
+        
             this.followUpState('MenuSelectionState').ask(this.$speech, this.$reprompt);
         },
         PlayIntent(){
@@ -364,7 +415,7 @@ app.setHandler({
         },
     },
 
-    //Stateless initialisation function
+    //---Stateless initialisation function--------------------------------------------------------------------------------------------------------------------------------------
     InitialisationIntent(){
         //Set user state
         currentStateOb.state = states[4].state;
@@ -372,6 +423,12 @@ app.setHandler({
         currentStateOb.userAttempts = states[4].userAttempts;
 
         //Initialise things first
+        /*
+        if(currentLevel > )//If they've won every Level, check for highscore, and bring them back to main menu
+        {
+
+        }
+        */
         //Set up speech
         let speech = "";
         //Set up random boxes
@@ -401,12 +458,13 @@ app.setHandler({
 
         console.log("inGameSounds length: " + inGameSounds.length);
 
-        //----------------Add previous win text if any----
+        //----------------Add previous win text if any---------------
         console.log("outSideSpeech at initialisation function: " + outSideSpeech);
         //Add winning speech
-        if(outSideSpeech != ""){
+        if(outsideText != ""){
             speech += outsideText;
         }
+        
 
         //----------------Intro---------------------
         if(numberOfTimesLoggedIn < 5){
@@ -438,28 +496,42 @@ app.setHandler({
             "<p>" + (levelsUnlocked[currentLevel-1].numberOfSounds*2) + " sounds! </p>" +
             "<p>" + levelsUnlocked[currentLevel-1].numberOfSounds + " pairs! Ready, set, GO! </p>";
         }
-
+        //-------------Score Calculation-------------------
+        /*
+            GAME CRASHES UPON WINNING LEVEL 2 DUE TO PLAYER SCORE = INFINITY???
+        */
         //Reset current player score if from menu
         if(currentLevel == 1){
             playerScore = 0;
-        }else{
-            //Player score = (1000*currentLevel.minimumTries/currentLevel.tries)
+        }else{            
             playerScore = 0;
-            for(let i=0;i < currentLevel; i++){
-                playerScore += 1000 * (levelsUnlocked[currentLevel-1].minimumTries/levelsUnlocked[currentLevel-1].tries);
+            for(let i=0;i < currentLevel - 1; i++){
+                playerScore += (1000*(Math.pow(levelsUnlocked[i].minimumTries, 1/(levelsUnlocked[i].userTries/levelsUnlocked[i].minimumTries))));
+                console.log("playerScore is now: "+playerScore);
+                console.log("" + levelsUnlocked[i].userTries);
             }
         }
-
+        
+        //---------Display Generation-----------------------------
+        GenerateDisplayTexts();
+        this.showImageCard(title, content, imageUrl);
+        //---------Display Generation-----------------------------
+        
         fromMenu = false;
         this.$speech.addText(speech);
         this.$reprompt.addText(Reprompt());
         this.followUpState('InGameState').ask(this.$speech, this.$reprompt);
     },
-
+     //-------------In Game----------------------------------------------------------------------------------------------------------------------------------------------------
     InGameState: {
         BoxIntent(){
             let speech = "";
 
+        //---------Display Generation-----------------------------
+        GenerateDisplayTexts();
+        this.showImageCard(title, content, imageUrl);
+        //---------Display Generation-----------------------------
+        
             //Check if first box or second box is being chosen
             if(!hasFirstSelected){
                 firstBoxChoice = this.$inputs.boxNumberSelected.value-1;
@@ -469,8 +541,8 @@ app.setHandler({
 
             //Log
             console.log("Has the first box been selected: " + hasFirstSelected);
-            console.log("First box choice: " + firstBoxChoice);
-            console.log("Second box choice: " + secondBoxChoice);
+            console.log("First box choice: " + (firstBoxChoice+1));
+            console.log("Second box choice: " + (secondBoxChoice+1));
 
             //Check if box exists
             if(!(firstBoxChoice+1 > inGameSounds.length || (!hasFirstSelected ? false : secondBoxChoice+1 > inGameSounds.length))){
@@ -492,15 +564,18 @@ app.setHandler({
                     //Check if you picked the same box
                     if(!(firstBoxChoice == secondBoxChoice)){
                         //Check if SECOND box has been opened or not
-                        if(inGameSounds[secondBoxChoice].opened){
+                        if(inGameSounds[secondBoxChoice].opened)
+                        {
                             speech += inGameSounds[secondBoxChoice].resource + "<p> This box has already been opened! </p>";
-                        }else{
+                        }else
+                        {
                             speech += "<audio src='https://alexa-hackathon-memory-game-assets.s3.amazonaws.com/sounds/Boxes/door_open.mp3'/>";
                             speech += inGameSounds[secondBoxChoice].resource;
 
                             //Move on to checking the two boxes
                             //Check now if they match or not
-                            if(inGameSounds[firstBoxChoice].name == inGameSounds[secondBoxChoice].name){
+                            if(inGameSounds[firstBoxChoice].name == inGameSounds[secondBoxChoice].name)
+                            {
                                 //Tell user they where correct
                                 speech += "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/success.mp3'/>";
 
@@ -530,6 +605,7 @@ app.setHandler({
                             //Check if every box has now finished
                             if(checkEveryBox() == inGameSounds.length){
                                 //Go to win state
+                                console.log("******all boxes are opened*********************************************");
                                 return this.toStatelessIntent('WinStatelessFunction');
                             }
                         }
@@ -616,20 +692,18 @@ app.setHandler({
                 let speech = ""
 
                 //if it's the players first, second or third time logging in, then play a slightly larger introduction to the menu
-                if(numberOfTimesLoggedIn < 3){
+                if(numberOfTimesLoggedIn < 5 && currentLevel == 1){
                     speech += '<p>From the main menu you can either choose to: '+
                               '<p>Start the game! </p>'+
                               '<p>Show my rank! </p>'+
                               '<p>Ask for help! </p>'+
                               '<p>Or quit the game! </p>'+
                               '<p>Which option would you like to select?</p>';
-                    numberOfTimesLoggedIn++;
                 }else{
                     speech += '<p>Please choose either to play, </p>'+
                               '<p>Show my rank! </p>'+
                               '<p>Ask for help! </p>'+
                               '<p>or quit the game</p>';
-                    numberOfTimesLoggedIn++;
                 }
                 //set reprompt and redirect to the main menu
                 this.$speech.addText(speech);
@@ -639,16 +713,17 @@ app.setHandler({
                 this.followUpState('InGameState').ask(this.$speech, this.$reprompt);
             }
         },
-    },
+    }, //------End of in-game state---------
 
-    //Win stateless function
+    //---Win stateless function-------------------------------------------------------------------------------------------------------------------------------------------------------
     WinStatelessFunction(){
         //Set state
         currentState = "winState";
 
         //Set final winning text
         let speech = "";
-        speech += "<p>Congradulations on winning "+levelsUnlocked[currentLevel-1].name+". </p>";
+        
+        speech += "<p>Congratulations on winning "+levelsUnlocked[currentLevel-1].name+". </p>";
 
         //Unlock next level
         if(!(currentLevel > levelsUnlocked.length-1)){
@@ -656,26 +731,27 @@ app.setHandler({
             speech += "<p>You're now ready for </p>" + levelsUnlocked[currentLevel].name;
         }else{
             speech += "<p>You've finished the game!!! </p>";
+
         }
 
         //Increment the levels
-        currentLevel++;
+        currentLevel++; //HAVE TO MOVE/CHANGE THIS
 
-        console.log("Bestscore is: "+bestscore+". PlayerScore is: "+playerScore);
-        console.log("Player is moving from: "+currentLevel-1+" to "+currentLevel);
+        console.log("Bestscore is: "+this.$user.$data.bestScore+". PlayerScore is: "+playerScore);
+        console.log("Player is moving from: " + currentLevel-1 +" to "+currentLevel);
 
-        //If current score is better than highest score than save
-        if(playerScore > bestScore){
-            bestScore = playerScore;
+        //If current score is better than highest score, then save
+        if(playerScore > this.$user.$data.bestScore){
+            this.$user.$data.bestScore = playerScore;
+
             //Tell player
-            speech += "<p>You've achieved a new highest score of "+bestScore+". Congratulations!!!!!!!! </p>";
-
+            speech += "<p>You've also achieved a new high score of "+this.$user.$data.bestScore+". Congratulations!!!!!!!! </p>";
+            console.log("new Bestscore is: "+this.$user.$data.bestScore);
             //Return to the main menu
             outsideText = speech;
             console.log("outSideSpeech: " + outSideSpeech);
-            return this.toStatelessIntent('GiveMenu');
+            //return this.toStatelessIntent('GiveMenu');
         }
-
         //Send to next level
         outsideText = speech;
         console.log("outSideSpeech: " + outSideSpeech);
@@ -683,7 +759,15 @@ app.setHandler({
     },
 
     END() {
-        this.$speech.addText("Sorry to see you go. Good bye!");
+        if(playerScore > this.$user.$data.bestScore)
+        {
+            this.$speech.addText("Hey you got new highscore of "+playerScore+"! see you tomorrow!");
+            this.$user.$data.bestScore = playerScore;
+        }
+        else
+        {
+            this.$speech.addText("Better luck next time! have a good day");
+        }
         this.tell(this.$speech);
     },
 });
@@ -691,9 +775,9 @@ app.setHandler({
 module.exports.app = app;
 
 
-// ------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // FUNCTIONS
-// ------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //Is empty function
 function isEmpty(value){
   return (value == null || value.length === 0 || typeof value == 'undefined');
@@ -708,6 +792,8 @@ function checkEveryBox(){
             countedOpenedBoxes++;
         }
     }
+    console.log("amount of boxes in level is: "+ inGameSounds.length);
+    console.log("conuntedOpenedBoxes is: " + countedOpenedBoxes);
 
     //Return count of opened boxes
     return countedOpenedBoxes;
@@ -773,13 +859,13 @@ function getRandomSpeech(state){
                     speech = inGameSounds[firstBoxChoice].pluralName + ", awe, so adorable!";
                     break;
                 case 3:
-                    speech = "Congradulations! These two will go nicely together";
+                    speech = "Congratulations! These two will go nicely together";
                     break;
                 case 4:
                     speech = inGameSounds[firstBoxChoice].pluralName + " is such a strange word, don't ya think?";
                     break;
                 case 5:
-                    speech = "mmmmm";
+                    speech = "YeeHaw";
                     break;
             }
             break;
@@ -824,11 +910,38 @@ function Reprompt(){
     }else if(currentStateOb.stateName  === "SOUND_SELECT"){
         text = "Please choose a sound package to play!, the available sound packages are: <list packages>";
     }else if(currentStateOb.stateName  === "INGAME"){
-        text = "Please choose a box and then another one to match it, or you can choose to either exit, back to menu, back to level select, help, check your score or check opened boxes";
+        text = "Please choose a box and then another one to match it, or you can choose to either exit, back to menu, help, check your score or check opened boxes";
     }else if(currentStateOb.stateName  === "WIN_STATE"){
         text = "Please choose to either go back to the level selection menu or the main menu";
     }else if(currentStateOb.stateName  === "PLAYING_GAME"){
         text = "Please choose a level to select and play";
     }
     return text;
+}
+
+function GenerateDisplayTexts(){
+    if(currentStateOb.stateName === "START"){
+        title = "Welcome to the Memory Game!";
+        content = "Are you ready to play the animal memory game?";
+    }
+    else if(currentStateOb.stateName === "MAIN_MENU"){
+        title = "Main Menu";
+        content = "Please select a main menu option from either: Start, show my rank, ask for help or exit the game!";
+    }
+    else if(currentStateOb.stateName === "HELP_MENU"){
+        title = "HELP MENU";
+        content = "Please let me know if you wish to go back";
+    }
+    else if(currentStateOb.stateName === "RANK_MEMU"){
+        title = "YOUR SCOREBOARD";
+        content = "Your highest score is: " + this.$user.$data.bestScore;
+    }
+    else if(currentStateOb.stateName  === "INGAME"){
+        title = "In Game!";
+        content = "Please choose a box and then another one to match it, or you can choose to either exit, back to menu, help, check your score or check opened boxes";
+    }
+    else if(currentStateOb.stateName  === "WIN_STATE"){
+        title = "You Win!";
+        content = "Please choose to either go back to the level selection menu or the main menu";
+    }
 }
