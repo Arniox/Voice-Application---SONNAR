@@ -221,19 +221,19 @@ app.setHandler({
         currentStateOb.stateName = states[0].stateName;
         currentStateOb.userAttempts = states[0].userAttempts;
 
-        
+
         if(this.$user.$data.timesLoggedIn == 0 || this.$user.$data.timesLoggedIn == null)//checks if the user has logged in before
         {
-            this.$user.$data.timesLoggedIn = 1; //first time users will have their 'timesLoggedIn' field set to 1 in the database 
+            this.$user.$data.timesLoggedIn = 1; //first time users will have their 'timesLoggedIn' field set to 1 in the database
         }
         else
         {
-            this.$user.$data.timesLoggedIn += 1; //repeat users will increment their 'timesLoggedIn' field by 1 
-            
+            this.$user.$data.timesLoggedIn += 1; //repeat users will increment their 'timesLoggedIn' field by 1
+
         }
 
         numberOfTimesLoggedIn = this.$user.$data.timesLoggedIn; //assign the users 'timesLoggedIn' value to a local 'numberOfTimesLoggedIn' variable
-        
+
         if(this.$user.$data.timesLoggedIn <= 1) //Assign a new users bestScore to 0 in the database
         {
             this.$user.$data.bestScore = 0;
@@ -242,7 +242,7 @@ app.setHandler({
         //Logs
         console.log("Local Number of times logged in: "+numberOfTimesLoggedIn);
         console.log("DB Number of times logged in: "+this.$user.$data.timesLoggedIn);
-      
+
 
         if(numberOfTimesLoggedIn > 3){
             this.$speech.addText(
@@ -342,7 +342,7 @@ app.setHandler({
     },
     //---MenuSelectState-------------------------------------------------------------------------------------------------------------------------------------------------
     MenuSelectionState: {
-        
+
         ExitIntent(){
             //Set player response
             this.$speech.addText("Thank you for playing our animal memory game, good bye!");
@@ -368,12 +368,12 @@ app.setHandler({
             this.followUpState('MenuSelectionState').ask(this.$speech, this.$reprompt);
         },
         RankIntent(){
-            
+
             //Current state is the main menu
             currentStateOb.state = states[3].state;
             currentStateOb.stateName = states[3].stateName;
             currentStateOb.userAttempts = states[3].userAttempts;
-            
+
             //Set player response
             this.$speech.addText("<p>Your current highest score in our Animal Memory Game is:</p>" +
                                  "<p>" + this.$user.$data.bestScore + "</p>");
@@ -384,7 +384,7 @@ app.setHandler({
             GenerateDisplayTexts();
             this.showImageCard(title, content, imageUrl);
             //---------Display Generation-----------------------------
-        
+
             this.followUpState('MenuSelectionState').ask(this.$speech, this.$reprompt);
         },
         PlayIntent(){
@@ -464,7 +464,7 @@ app.setHandler({
         if(outsideText != ""){
             speech += outsideText;
         }
-        
+
 
         //----------------Intro---------------------
         if(numberOfTimesLoggedIn < 5){
@@ -503,20 +503,21 @@ app.setHandler({
         //Reset current player score if from menu
         if(currentLevel == 1){
             playerScore = 0;
-        }else{            
+        }else{
             playerScore = 0;
-            for(let i=0;i < currentLevel - 1; i++){
+            for(let i=0; i < currentLevel - 1; i++){
                 playerScore += (1000*(Math.pow(levelsUnlocked[i].minimumTries, 1/(levelsUnlocked[i].userTries/levelsUnlocked[i].minimumTries))));
                 console.log("playerScore is now: "+playerScore);
                 console.log("" + levelsUnlocked[i].userTries);
             }
+            console.log("Calculated player score is now: "+playerScore);
         }
-        
+
         //---------Display Generation-----------------------------
         GenerateDisplayTexts();
         this.showImageCard(title, content, imageUrl);
         //---------Display Generation-----------------------------
-        
+
         fromMenu = false;
         this.$speech.addText(speech);
         this.$reprompt.addText(Reprompt());
@@ -531,7 +532,7 @@ app.setHandler({
         GenerateDisplayTexts();
         this.showImageCard(title, content, imageUrl);
         //---------Display Generation-----------------------------
-        
+
             //Check if first box or second box is being chosen
             if(!hasFirstSelected){
                 firstBoxChoice = this.$inputs.boxNumberSelected.value-1;
@@ -722,7 +723,7 @@ app.setHandler({
 
         //Set final winning text
         let speech = "";
-        
+
         speech += "<p>Congratulations on winning "+levelsUnlocked[currentLevel-1].name+". </p>";
 
         //Unlock next level
@@ -749,12 +750,12 @@ app.setHandler({
             console.log("new Bestscore is: "+this.$user.$data.bestScore);
             //Return to the main menu
             outsideText = speech;
-            console.log("outSideSpeech: " + outSideSpeech);
+            console.log("outSideSpeech: " + outsideText);
             //return this.toStatelessIntent('GiveMenu');
         }
         //Send to next level
         outsideText = speech;
-        console.log("outSideSpeech: " + outSideSpeech);
+        console.log("outSideSpeech: " + outsideText);
         return this.toStatelessIntent('InitialisationIntent');
     },
 

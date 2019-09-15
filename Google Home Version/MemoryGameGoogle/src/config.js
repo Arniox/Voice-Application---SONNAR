@@ -4,15 +4,21 @@
 
 module.exports = {
     logging: true,
-    
+
     intentMap: {
        'AMAZON.StopIntent': 'END',
     },
- 
+
     db: {
-         FileDb: {
-             pathToFile: '../db/db.json',
-         }
-     },
+        DynamoDb: {
+            //enabled: true,
+            tableName: 'MemoryGameUsers',
+
+            awsConfig: {
+               accessKeyId: 'AKIAJTFDYQ44HY4CM6JA',
+               secretAccessKey: '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',
+               region:  'ap-southeast-2',
+            },
+        },
+    },
  };
- 
