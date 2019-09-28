@@ -48,6 +48,7 @@ const GetRank = function(userId,attributes){
 }
 
 var errorCount = 0;
+
 //animal array
 const animals = [
   {
@@ -265,6 +266,64 @@ const levelsUnlocked = [
     }
 ];
 
+/*
+Text/speeches used for game.
+Array type of values(variables) are for speeches, used with attributes.
+The last element of a array shows how elements and attributes should be used together.
+However, if any speeches are not followed by any attributes, then it is not an array
+*/
+const speech = {
+  repromptLaunch: "Are you ready to play?",
+  repromptMenu: "Please select a option from: Start, show my rank, ask for help or exit the game!",
+  repromptinGame: ["Please, choose the "," box!","Please choose the + attributes.boxTurn+ box!"],
+  repromptWin: "Say good bye, to exit game or say menu, to go back to the main menu.",
+  
+  welcomeNewUser: "Hello and welcome. We have recieved a new supply of crates. And your goal is to match the  crates up. So that, the pair of animals gets shipped off together! Are you ready to help ship them off?",
+  welcomeBack: "Welcome back! Are you ready to play?",
+  
+  inGamePleaseChooseBox: ["Please, choose the first box to start off between 1 and ", "Please choose the first box to start off between 1 and +attributes.boxes.length"],
+  inGameBoxInRange: ["Choose from 1 to ", "Choose from 1 to + attributes.boxes.length"],
+  innGameBackToMenu: "if you go back to menu, you will lose your current level progress. do you really wanna go back to menu? if yes, please say menu again. if not, ",
+  inGameBoxChosen: "The box is already choosen for your first box! Choose another box. ",
+  inGameBoxOpened: "The chosen box is already opened! Choose another box. ",
+  inGameBoxMatches: " Good work! ",
+  inGameGoNextLevel: "Let's move on next level. ",
+  
+  levelWin: ["Congradulations on winning ", "audios.levelWin+Congradulations on winning + attributes.currentLevel.name"],
+  gameWin: ["You bit the last level! ", "You bit the last level! + speech.score"],
+  
+  errorGameNotStarted: "You didn't start the game yet!",
+  errorNoBoxOpened: "There is no box opened. ",
+  error1: "Sorry, I don't understand." ,
+  error3: "Thank you for playing! See you next time!",
+  
+  menuNewUser: "From the main menu, you can either choose to: start the game! show my rank! ask for help! or, quit the game. Which option would you like to select?",
+  menu: "Please choose either to: start! show my rank! help! or, quit the game. ",
+  score: ["Your score is ", "Your score is +attributes.totalScore"], 
+  
+  yes: "Yes, yes, yes, ",
+  no: "No, no, no, ",
+  
+  gameContinue: "Okay, the game continues! ",
+  help: "To help our farm ship off animals, you will be given a set amount of crates to open. Each crate contains a sound, that you have to match up with one other crate. Once all crates are opened, and shipped off, the next level will begin, with even more crates to help with. If you decide to go back to main menu, or quit, your score will be tallied up, and saved at that point. ",
+  helpInMenu: "Are you ready to play the game? ",
+  helpInGame: "Are you ready to continue the game? "
+};
+
+//Extra sound effects' sources
+const audios = {
+  launchBGM: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/bgm.mp3'/>",
+  memoryWelcome: "<audio src='https://alexa-hackathon-memory-game-assets.s3.amazonaws.com/sounds/Voices/Memory_Welcome.mp3'/> ",
+  
+  openingBox: "<audio src='https://alexa-hackathon-memory-game-assets.s3.amazonaws.com/sounds/Boxes/door_open.mp3' />",
+  closingBox: "<audio src='https://alexa-hackathon-memory-game-assets.s3.amazonaws.com/sounds/Boxes/door_slam.mp3' />",
+  success: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/success.mp3' />",
+  fail: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/fail2.mp3' />",
+  
+  levelWin: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/win2.mp3' />",
+
+};
+
 const InitiateGame = function(attributes){
   attributes.boxes = shuffleSounds(attributes.currentLevel.numberOfSounds);
   attributes.firstBox = 'undefined';
@@ -288,19 +347,13 @@ const shuffleSounds = function(numOfanimals){
 const RepromptText = function(attributes){
   var text = "";
   if(attributes.state === "launch"){
-    text = "Are you ready to play?";
+    text = speech.repromptLaunch;
   }else if(attributes.state === "menu"){
-    text = "Please select a option from: Start, show my rank, ask for help or exit the game! ";
-  }else if(attributes.state === "levelSelect"){
-    text = "you have, so far, unlocked: level one ";
-    if(attributes.maxLevel> 1){
-      text += "to "+attributes.maxLevel+". ";
-    }
-    text += "Please choose a level to play. ";
+    text = speech.repromptMenu;
   }else if(attributes.state === "inGame"){
-    text = "please choose the "+attributes.boxTurn+" box!";
+    text = speech.repromptinGame[0]+attributes.boxTurn+speech.repromptinGame[1];
   }else if(attributes.win){
-    text = "Say good bye to exit game or say menu to go back to the main menu. ";
+    text = speech.repromptWin;
   }
   return text;
 };
@@ -339,7 +392,7 @@ const LaunchHandler = {
     const request = handlerInput.requestEnvelope.request;
     var speechOutput = "";
     var repromptText = "";
-    speechOutput="<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/bgm.mp3'/>";  
+    speechOutput=audios.launchBGM;  
     //Reset Session attributes
     const p_attributes = await handlerInput.attributesManager.getPersistentAttributes() || {};
     if(Object.keys(p_attributes).length === 0){
@@ -354,11 +407,10 @@ const LaunchHandler = {
   
     if(attributes.logInTimes<3){
       attributes.state = "launch";
-      speechOutput += "Hello and welcome. We have recieved a new supply of crates and your goal is to match the "+
-                "crates up so that the pair of animals gets shipped off together! Are you ready to help ship them off?";
+      speechOutput += speech.welcomeNewUser;
     }else{
       attributes.state = "launch";
-      speechOutput += "Welcome back! Are you ready to play?";
+      speechOutput += speech.welcomeBack;
     }
     repromptText = RepromptText(attributes);
     
@@ -401,11 +453,11 @@ const StartHandler = {
     errorCount = 0;
     attributes.state = "inGame";
     attributes.totalScore = 0;
-    speechOutput += "<audio src='https://alexa-hackathon-memory-game-assets.s3.amazonaws.com/sounds/Voices/Memory_Welcome.mp3'/> ";
+    speechOutput += audios.memoryWelcome;
     attributes.currentLevel = levelsUnlocked[0];
     InitiateGame(attributes);
     speechOutput += attributes.currentLevel.resource;
-    speechOutput += "please choose the first box to start off between 1 and "+attributes.boxes.length;
+    speechOutput += speech.inGamePleaseChooseBox[0] + attributes.boxes.length;
    
     repromptText = RepromptText(attributes);
     
@@ -455,7 +507,7 @@ const MenuHandler = {
     errorCount = 0;
     if(attributes.state === "inGame"){
       if(typeof attributes.backToMenu === 'undefined'){
-        speechOutput += "if you go back to menu, you will lose your current level progress. do you really wanna go back to menu? if yes, please say menu again. if not, " + RepromptText(attributes);
+        speechOutput += speech.innGameBackToMenu + RepromptText(attributes);
         attributes.backToMenu = true;
       }else{
         attributes.state = "menu";
@@ -527,17 +579,18 @@ const BoxHandler = {
         if(userInput>=1&&userInput<=attributes.boxes.length){
           //if the choosed box is already selected
           if(attributes.boxTurn==="second" && (attributes.firstBox === choosedIndex)){
-            speechOutput = attributes.boxes[choosedIndex].resource+"The box is already choosen for your first box! Choose another box. ";
+            speechOutput = attributes.boxes[choosedIndex].resource+speech.inGameBoxChosen;
           }
+          
           //if the choosed box is already opened
           else if(attributes.boxes[choosedIndex].opened){
-            speechOutput = attributes.boxes[choosedIndex].resource+"the chosen box is already opened! Choose another box. ";
+            speechOutput = attributes.boxes[choosedIndex].resource+speech.inGameBoxOpened;
           }else{
             //Check the box turn
             if(attributes.boxTurn === "first"){
               attributes.firstBox = choosedIndex;
               //speechOutput = "Box Number "+userInput + " is " + attributes.boxes[choosedIndex].resource;
-              speechOutput = "<audio src='https://alexa-hackathon-memory-game-assets.s3.amazonaws.com/sounds/Boxes/door_open.mp3' />"+attributes.boxes[choosedIndex].resource;
+              speechOutput = audios.openingBox+attributes.boxes[choosedIndex].resource;
               boxImage[choosedIndex].current = attributes.boxes[choosedIndex].image;
               //it is about to second turn to choose a box
               attributes.boxTurn = "second";
@@ -545,11 +598,11 @@ const BoxHandler = {
               attributes.numOfTry++;
               attributes.secondBox = choosedIndex;
               // speechOutput = "Box Number "+userInput + " is " + attributes.boxes[choosedIndex].resource;
-              speechOutput = "<audio src='https://alexa-hackathon-memory-game-assets.s3.amazonaws.com/sounds/Boxes/door_open.mp3' />"+attributes.boxes[choosedIndex].resource;
+              speechOutput = audios.openingBox+attributes.boxes[choosedIndex].resource;
               boxImage[choosedIndex].current = attributes.boxes[choosedIndex].image;
               //Check selected boxes are the same ==> get score and keep the turn
               if(attributes.boxes[attributes.firstBox].name === attributes.boxes[attributes.secondBox].name){
-                speechOutput += "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/success.mp3' />Good work!";
+                speechOutput += audios.success+speech.inGameBoxMatches;
                 //open the same boxes
                 attributes.boxes[attributes.firstBox].opened = true;
                 attributes.boxes[attributes.secondBox].opened = true;
@@ -559,33 +612,33 @@ const BoxHandler = {
                 attributes.win = (attributes.score === attributes.currentLevel.numberOfSounds);
                
                 if(attributes.win){
-                  speechOutput +=  "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/win2.mp3' />"
-                  +"Congradulations on winning "+attributes.currentLevel.name
+                  speechOutput +=  audios.levelWin
+                  +speech.levelWin[0]+attributes.currentLevel.name
                   +". ";
                   attributes.totalScore += Math.round((attributes.currentLevel.bestTry*1.0 / attributes.numOfTry)*attributes.currentLevel.id*100);
                   attributes.scoreText = "Score: " + attributes.totalScore;
                   RecordScore(attributes);
                   if(attributes.currentLevel.id === 6){
                     attributes.state = "win";
-                    speechOutput += "You bit the last level! your score is"+attributes.totalScore+". ";
+                    speechOutput += speech.gameWin[0]+ speech.score[0] + attributes.totalScore+". ";
                     handlerInput.attributesManager.setPersistentAttributes(attributes);
                     await handlerInput.attributesManager.savePersistentAttributes();
                   }else{
                     levelsUnlocked[attributes.currentLevel.id-1].unlocked = true;
-                    speechOutput += "Let's move on next level. ";
+                    speechOutput += speech.inGameGoNextLevel;
                     attributes.currentLevel = levelsUnlocked[attributes.currentLevel.id];
                     InitiateGame(attributes);
                     attributes.uipage = levelsUnlocked[attributes.currentLevel.id-1].pageName;
                     resetBoxImage();
                     //attributes.uipage = levelsUnlocked[0].pageName;
                     speechOutput += attributes.currentLevel.resource;
-                    speechOutput += "please choose the first box to start off between 1 and "+attributes.boxes.length+". ";
+                    speechOutput += speech.inGamePleaseChooseBox[0]+attributes.boxes.length+". ";
                   }//Check is level 6 End
                 }//Check win End
               }else{
-                speechOutput += "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/fail2.mp3' />"
-                +"<audio src='https://alexa-hackathon-memory-game-assets.s3.amazonaws.com/sounds/Boxes/door_slam.mp3' />"
-                +"<audio src='https://alexa-hackathon-memory-game-assets.s3.amazonaws.com/sounds/Boxes/door_slam.mp3' />";
+                speechOutput += audios.fail
+                +audios.closingBox
+                +audios.closingBox;
                 boxImage[attributes.firstBox].current = boxImage[attributes.firstBox].resource;
                 boxImage[attributes.secondBox].current = boxImage[attributes.secondBox].resource;
               }//Check selected boxes are the same End 
@@ -596,7 +649,7 @@ const BoxHandler = {
             }//Check the box turn End
           }//Check box opened End
         }else{//Check user input
-          speechOutput = "Choose from 1 to "+ attributes.boxes.length +". ";
+          speechOutput = speech.inGameBoxInRange[0] + attributes.boxes.length + ". ";
         }//Check user input valid End
       }//Check the game over End
     }
@@ -668,9 +721,9 @@ const ScoreHandler = {
     // Reset Error Count
     errorCount = 0;
     if(attributes.state === "inGame"){
-      speechOutput = "Your score is "+attributes.totalScore+".";
+      speechOutput = speech.score[0] +attributes.totalScore+".";
     }else{
-      speechOutput = "You didn't start the game yet! ";
+      speechOutput = speech.errorGameNotStarted;
     }
     speechOutput += RepromptText(attributes);
     repromptText = RepromptText(attributes); 
