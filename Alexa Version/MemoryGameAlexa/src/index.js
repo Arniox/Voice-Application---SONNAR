@@ -281,9 +281,11 @@ const speech = {
   welcomeNewUser: "Hello and welcome. We have recieved a new supply of crates. And your goal is to match the  crates up. So that, the pair of animals gets shipped off together! Are you ready to help ship them off?",
   welcomeBack: "Welcome back! Are you ready to play?",
   
+  startNotFromMenu: "You can only start the game from the menu. ",
+
   inGamePleaseChooseBox: ["Please, choose the first box to start off between 1 and ", "Please choose the first box to start off between 1 and +attributes.boxes.length"],
   inGameBoxInRange: ["Choose from 1 to ", "Choose from 1 to + attributes.boxes.length"],
-  innGameBackToMenu: "if you go back to menu, you will lose your current level progress. do you really wanna go back to menu? if yes, please say menu again. if not, ",
+  inGameBackToMenu: "if you go back to menu, you will lose your current level progress. do you really wanna go back to menu? if yes, please say menu again. if not, ",
   inGameBoxChosen: "The box is already choosen for your first box! Choose another box. ",
   inGameBoxOpened: "The chosen box is already opened! Choose another box. ",
   inGameBoxMatches: " Good work! ",
@@ -325,13 +327,17 @@ const audios = {
 };
 
 const InitiateGame = function(attributes){
+  //Set boxes for the level
   attributes.boxes = shuffleSounds(attributes.currentLevel.numberOfSounds);
+  //Selected box index
   attributes.firstBox = 'undefined';
   attributes.secondBox = 'undefined';
+  //Score for checking the level finished
   attributes.score = 0;
   attributes.win = false;
-  //boxChoose tells it is about to choose first box or second box.
+  //Which box have to be choosen
   attributes.boxTurn = "first";
+  //Number of tries in this level
   attributes.numOfTry = 0;
   attributes.uipage = "./aplDocuments/threeSoundsPage.json";
 };
@@ -395,6 +401,8 @@ const LaunchHandler = {
     speechOutput=audios.launchBGM;  
     //Reset Session attributes
     const p_attributes = await handlerInput.attributesManager.getPersistentAttributes() || {};
+
+    //Get persistent attributes
     if(Object.keys(p_attributes).length === 0){
       p_attributes.logInTimes = 1;
       p_attributes.highScore = 0;
@@ -403,7 +411,6 @@ const LaunchHandler = {
     }
     handlerInput.attributesManager.setSessionAttributes(p_attributes);
     const attributes = handlerInput.attributesManager.getSessionAttributes();
-    
   
     if(attributes.logInTimes<3){
       attributes.state = "launch";
@@ -414,6 +421,7 @@ const LaunchHandler = {
     }
     repromptText = RepromptText(attributes);
     
+    //UI
     if (SupportsAPL(handlerInput)) {
       handlerInput.responseBuilder.addDirective({
         type: 'Alexa.Presentation.APL.RenderDocument',
@@ -435,10 +443,8 @@ const LaunchHandler = {
 
 const StartHandler = {
   canHandle(handlerInput) {
-    //Get Session attributes
-    const attributes = handlerInput.attributesManager.getSessionAttributes();
     const request = handlerInput.requestEnvelope.request;
-    return (request.type === 'IntentRequest' && request.intent.name === 'StartIntent'&& attributes.state === "menu")
+    return (request.type === 'IntentRequest' && request.intent.name === 'StartIntent')
     || (request.type === 'Alexa.Presentation.APL.UserEvent' && request.arguments[0] === 'StartIntent');
   },
   handle(handlerInput) {
@@ -448,37 +454,41 @@ const StartHandler = {
     const attributes = handlerInput.attributesManager.getSessionAttributes();
     var speechOutput="";
     var repromptText="";
-    resetBoxImage();
     // Reset Error Count
     errorCount = 0;
-    attributes.state = "inGame";
-    attributes.totalScore = 0;
-    speechOutput += audios.memoryWelcome;
-    attributes.currentLevel = levelsUnlocked[0];
-    InitiateGame(attributes);
-    speechOutput += attributes.currentLevel.resource;
-    speechOutput += speech.inGamePleaseChooseBox[0] + attributes.boxes.length;
-   
-    repromptText = RepromptText(attributes);
-    
-    if (SupportsAPL(handlerInput)) {
-      handlerInput.responseBuilder.addDirective({
-        type: 'Alexa.Presentation.APL.RenderDocument',
-        document: require('./aplDocuments/threeSoundsPage.json'),
-        datasources: {
-          'pageData': {
-              "score" : "Score: " + attributes.totalScore,
-              "currentLevel" : "Level " + attributes.currentLevel.id,
-              "Box1": boxImage[0].current,
-              "Box2": boxImage[1].current,
-              "Box3": boxImage[2].current,
-              "Box4": boxImage[3].current,
-              "Box5": boxImage[4].current,
-              "Box6": boxImage[5].current
-          }
-        },
-      });
+
+    if(attributes.state === 'menu'){
+      resetBoxImage();
+      attributes.state = "inGame";
+      attributes.totalScore = 0;
+      speechOutput += audios.memoryWelcome;
+      attributes.currentLevel = levelsUnlocked[0];
+      InitiateGame(attributes);
+      speechOutput += attributes.currentLevel.resource;
+      speechOutput += speech.inGamePleaseChooseBox[0] + attributes.boxes.length;
+      if (SupportsAPL(handlerInput)) {
+        handlerInput.responseBuilder.addDirective({
+          type: 'Alexa.Presentation.APL.RenderDocument',
+          document: require('./aplDocuments/threeSoundsPage.json'),
+          datasources: {
+            'pageData': {
+                "score" : "Score: " + attributes.totalScore,
+                "currentLevel" : "Level " + attributes.currentLevel.id,
+                "Box1": boxImage[0].current,
+                "Box2": boxImage[1].current,
+                "Box3": boxImage[2].current,
+                "Box4": boxImage[3].current,
+                "Box5": boxImage[4].current,
+                "Box6": boxImage[5].current
+            }
+          },
+        });
+      }
+    }else{
+      //point!!
+      speechOutput = speech.startNotFromMenu + RepromptText(attributes);
     }
+    repromptText = RepromptText(attributes);
     
     return handlerInput.responseBuilder
       .speak(speechOutput)
@@ -566,12 +576,16 @@ const BoxHandler = {
     const attributes = handlerInput.attributesManager.getSessionAttributes();
     var speechOutput="";
     var repromptText="";
+
     // Reset Error Count
     errorCount = 0;
+
+    //distinguish UI input or Voice Input
     if(request.type === 'IntentRequest')
       var userInput = request.intent.slots.boxNumber.value;
     else
       var userInput = request.arguments[1];
+
     var choosedIndex = userInput-1;
     if(attributes.state === "inGame"){
       //if the game is not over, keep going
@@ -655,8 +669,6 @@ const BoxHandler = {
     }
     speechOutput += RepromptText(attributes);
     repromptText = RepromptText(attributes);
-    // var source = "";
-    // attributes.boxes[0].opened? source ="https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/Box2.png":source ="https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/Box1.png"
     
     if (SupportsAPL(handlerInput)) {
       handlerInput.responseBuilder.addDirective({
@@ -708,8 +720,6 @@ const ScoreHandler = {
   canHandle(handlerInput) {
     //Get request obj
     const request = handlerInput.requestEnvelope.request;
-    //Get Session attributes
-    const attributes = handlerInput.attributesManager.getSessionAttributes();
     return request.type === 'IntentRequest' 
     && request.intent.name === 'ScoreIntent';
   },
@@ -721,7 +731,7 @@ const ScoreHandler = {
     // Reset Error Count
     errorCount = 0;
     if(attributes.state === "inGame"){
-      speechOutput = speech.score[0] +attributes.totalScore+".";
+      speechOutput = speech.score[0] +attributes.totalScore+". ";
     }else{
       speechOutput = speech.errorGameNotStarted;
     }
@@ -738,8 +748,6 @@ const OpenedHandler = {
   canHandle(handlerInput) {
     //Get request obj
     const request = handlerInput.requestEnvelope.request;
-    //Get Session attributes
-    const attributes = handlerInput.attributesManager.getSessionAttributes();
     return request.type === 'IntentRequest' 
     && request.intent.name === 'OpenedIntent';
   },
@@ -749,11 +757,14 @@ const OpenedHandler = {
     var speechOutput = "";
     // Reset Error Count
     errorCount = 0;
+
+    //Refactoring needed
     if(attributes.state === "inGame"){
       var opened = [];
       for (var i = 0; i < attributes.boxes.length; i++)
       {
-        speechOutput += attributes.boxes[i].opened?opened.push(i+1):"";
+        if(attributes.boxes[i].opened)
+          opened.push(i+1);
       }
       if(opened.length > 0){
         speechOutput = "Opened boxes are. ";
@@ -764,6 +775,7 @@ const OpenedHandler = {
     }else{
       speechOutput = "You didn't start the game yet! ";
     }
+
     speechOutput += RepromptText(attributes);
     var repromptText = RepromptText(attributes);
     return handlerInput.responseBuilder
@@ -779,8 +791,7 @@ const YesHandler = {
   canHandle(handlerInput) {
     //Get request obj
     const request = handlerInput.requestEnvelope.request;
-    //Get Session attributes
-    const attributes = handlerInput.attributesManager.getSessionAttributes();
+    
     return (request.type === 'IntentRequest' && request.intent.name === 'AMAZON.YesIntent')
     || (request.type === 'Alexa.Presentation.APL.UserEvent' && request.arguments[0] === 'YesIntent');
   },
@@ -976,9 +987,9 @@ const ExitHandler = {
     var speechOutput = "Thank you for playing. ";
     if(attributes.highScore > 0){
       if(attributes.state === "inGame" || attributes.state === "win"){
-        await GetRank(userId, attributes.highScore);
+        await GetRank(userId, attributes);
         speechOutput +="Your best score is "+attributes.highScore
-        +". Your rank is number "+ user_rank 
+        +". Your rank is number "+ attributes.rank 
         +". See you next time!";
       }
     }
@@ -999,16 +1010,9 @@ const SessionEndedRequestHandler = {
   },
   handle(handlerInput) {
     
-    const attributes = handlerInput.attributesManager.getSessionAttributes();
-    var speechOutput = "Thank you for playing,";
-    if(attributes.state === "inGame" || attributes.state === "win"){ 
-      speechOutput +="Your score is "+attributes.totalScore
-      +". Your rank is number 1. "
-      +"See you next time!";
-    }
   
     return handlerInput.responseBuilder
-      .speak(speechOutput)
+      .speak()
       .withShouldEndSession(true)
       .getResponse();
   },
