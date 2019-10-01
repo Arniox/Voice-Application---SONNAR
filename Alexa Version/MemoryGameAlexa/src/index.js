@@ -834,20 +834,12 @@ const YesHandler = {
     if(attributes.state ===stateStr.launch){
       attributes.state = stateStr.menu;
       if(attributes.logInTimes < 3){
-        speechOutput = "From the main menu you can either choose to: "
-        +"Start the game! "
-        +"Show my rank! "
-        +"Ask for help! "
-        +"Or quit the game. "
-        +"Which option would you like to select? ";
+        speechOutput = speech.menuNewUser;
       }else{
-        speechOutput = "Please choose either to start, "
-        +"Show my rank! "
-        +"Ask for help! "
-        +"Or quit the game. ";
+        speechOutput = speech.menu;
       }
     }else{
-      speechOutput = 'Yes yes yes, ';
+      speechOutput = speech.yes;
       speechOutput += RepromptText(attributes);
     }
     
@@ -877,7 +869,7 @@ const NoHandler = {
     const request = handlerInput.requestEnvelope.request;
     //Get Session attributes
     const attributes = handlerInput.attributesManager.getSessionAttributes();
-    return (request.type === 'IntentRequest' && request.intent.name === 'AMAZON.NoIntent' && attributes.state !== "launch");
+    return (request.type === 'IntentRequest' && request.intent.name === 'AMAZON.NoIntent' && attributes.state !== stateStr.launch);
   },
   handle(handlerInput) {
     //Get Session attributes
@@ -890,9 +882,9 @@ const NoHandler = {
     
     if(attributes.state === stateStr.reset){
       attributes.state = stateStr.inGame;
-      speechOutput = "Okay, the game continues! "+RepromptText(attributes);
+      speechOutput = speech.gameContinue +RepromptText(attributes);
     }else{
-      speechOutput = 'No no no, '+RepromptText(attributes);
+      speechOutput = speech.no +RepromptText(attributes);
       repromptText = RepromptText(attributes);
     }
     
@@ -959,12 +951,12 @@ const HelpHandler = {
 
     switch(attributes.state){
       case stateStr.menu:
-        speechOutput = "You will be asked to choose the level of the game. The level will be unlocked as you clear the previous level. During the game, you will be asked for two boxes to match up together. If you choose two boxes with same animal's sound, the box will stay opened. The game will be finished when all the boxes are opened. ";
-        speechOutput += "are you ready to play the game? "+RepromptText(attributes);      
+        speechOutput = speech.help;
+        speechOutput += speech.helpInMenu+RepromptText(attributes);      
         break;
       case stateStr.inGame:
         speechOutput = "There are " + attributes.boxes.length + " boxes with animal hidden inside. You need to match two boxes with identical animals. When you found the same two animals, those boxes will stay open. As soon as all the boxes are matched and opened, the game will be finished. To check score, say, Score. To check opened boxes, say, opened. ";
-        speechOutput += "are you ready to continue the game? " +RepromptText(attributes);
+        speechOutput += speech.helpInGame +RepromptText(attributes);
         break;
       default:
         speechOutput += RepromptText(attributes);
