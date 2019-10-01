@@ -408,12 +408,12 @@ const resetBoxImage = function(){
   for(var i = 0; i < 24; i++){
     boxImage[i].current = boxImage[i].resource;
   }
-}
+};
 
 const frozenUI = function(milliseconds) {
   setTimeout(function(){ 
   }, 5000);
-}
+};
 
 const LaunchHandler = {
   canHandle(handlerInput) {
@@ -608,10 +608,11 @@ const BoxHandler = {
     errorCount = 0;
 
     //distinguish UI input or Voice Input
+    var userInput = "";
     if(request.type === 'IntentRequest')
-      var userInput = request.intent.slots.boxNumber.value;
+      userInput = request.intent.slots.boxNumber.value;
     else
-      var userInput = request.arguments[1];
+      userInput = request.arguments[1];
 
     var choosedIndex = userInput-1;
     if(attributes.state === stateStr.inGame){
