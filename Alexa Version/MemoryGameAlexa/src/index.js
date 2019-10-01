@@ -45,9 +45,36 @@ const GetRank = function(userId,attributes){
   return RankQuery(userId, attributes.highScore).then((rank) => {
         attributes.rank = rank;
   });
-}
+};
 
 var errorCount = 0;
+
+
+//states into String
+const stateStr = {
+  launch: "launch",
+  menu: "menu",
+  inGame: "inGame",
+  win: "win",
+  reset: "reset",
+  naming: "naming",
+  levelSelect: "levelSelect"
+};
+
+//Box turn into String
+const boxTurnStr = {
+  first: "first",
+  second: "second"
+};
+
+//String value : undefined
+const undefinedStr = 'undefined';
+
+//Alexa presentation APL String value
+const alexaPresentationAPL = {
+  renderDocument: "Alexa.Presentation.APL.RenderDocument",
+  userEvent: "Alexa.Presentation.APL.UserEvent"
+};
 
 //animal array
 const animals = [
@@ -330,13 +357,13 @@ const InitiateGame = function(attributes){
   //Set boxes for the level
   attributes.boxes = shuffleSounds(attributes.currentLevel.numberOfSounds);
   //Selected box index
-  attributes.firstBox = 'undefined';
-  attributes.secondBox = 'undefined';
+  attributes.firstBox = undefinedStr;
+  attributes.secondBox = undefinedStr;
   //Score for checking the level finished
   attributes.score = 0;
   attributes.win = false;
   //Which box have to be choosen
-  attributes.boxTurn = "first";
+  attributes.boxTurn = boxTurnStr.first;
   //Number of tries in this level
   attributes.numOfTry = 0;
   attributes.uipage = "./aplDocuments/threeSoundsPage.json";
@@ -352,11 +379,11 @@ const shuffleSounds = function(numOfanimals){
 
 const RepromptText = function(attributes){
   var text = "";
-  if(attributes.state === "launch"){
+  if(attributes.state === stateStr.launch){
     text = speech.repromptLaunch;
-  }else if(attributes.state === "menu"){
+  }else if(attributes.state === stateStr.menu){
     text = speech.repromptMenu;
-  }else if(attributes.state === "inGame"){
+  }else if(attributes.state === stateStr.inGame){
     text = speech.repromptinGame[0]+attributes.boxTurn+speech.repromptinGame[1];
   }else if(attributes.win){
     text = speech.repromptWin;
@@ -413,10 +440,10 @@ const LaunchHandler = {
     const attributes = handlerInput.attributesManager.getSessionAttributes();
   
     if(attributes.logInTimes<3){
-      attributes.state = "launch";
+      attributes.state = stateStr.launch;
       speechOutput += speech.welcomeNewUser;
     }else{
-      attributes.state = "launch";
+      attributes.state = stateStr.launch;
       speechOutput += speech.welcomeBack;
     }
     repromptText = RepromptText(attributes);
@@ -424,7 +451,7 @@ const LaunchHandler = {
     //UI
     if (SupportsAPL(handlerInput)) {
       handlerInput.responseBuilder.addDirective({
-        type: 'Alexa.Presentation.APL.RenderDocument',
+        type: alexaPresentationAPL.renderDocument,
         document: require('./aplDocuments/launch.json'),
         datasources: {
           'launchData': {
@@ -445,7 +472,7 @@ const StartHandler = {
   canHandle(handlerInput) {
     const request = handlerInput.requestEnvelope.request;
     return (request.type === 'IntentRequest' && request.intent.name === 'StartIntent')
-    || (request.type === 'Alexa.Presentation.APL.UserEvent' && request.arguments[0] === 'StartIntent');
+    || (request.type === alexaPresentationAPL.userEvent && request.arguments[0] === 'StartIntent');
   },
   handle(handlerInput) {
     //Get request obj
@@ -457,9 +484,9 @@ const StartHandler = {
     // Reset Error Count
     errorCount = 0;
 
-    if(attributes.state === 'menu'){
+    if(attributes.state === stateStr.menu){
       resetBoxImage();
-      attributes.state = "inGame";
+      attributes.state = stateStr.inGame;
       attributes.totalScore = 0;
       speechOutput += audios.memoryWelcome;
       attributes.currentLevel = levelsUnlocked[0];
@@ -468,7 +495,7 @@ const StartHandler = {
       speechOutput += speech.inGamePleaseChooseBox[0] + attributes.boxes.length;
       if (SupportsAPL(handlerInput)) {
         handlerInput.responseBuilder.addDirective({
-          type: 'Alexa.Presentation.APL.RenderDocument',
+          type: alexaPresentationAPL.renderDocument,
           document: require('./aplDocuments/threeSoundsPage.json'),
           datasources: {
             'pageData': {
@@ -503,7 +530,7 @@ const MenuHandler = {
     const attributes = handlerInput.attributesManager.getSessionAttributes();
     const request = handlerInput.requestEnvelope.request;
     return (request.type === 'IntentRequest' && request.intent.name === 'MenuIntent')
-    || (request.type === 'Alexa.Presentation.APL.UserEvent' && request.arguments[0] === 'MenuIntent');
+    || (request.type === alexaPresentationAPL.userEvent && request.arguments[0] === 'MenuIntent');
   },
   handle(handlerInput) {
     //Get request obj
@@ -515,18 +542,18 @@ const MenuHandler = {
     resetBoxImage();
     // Reset Error Count
     errorCount = 0;
-    if(attributes.state === "inGame"){
-      if(typeof attributes.backToMenu === 'undefined'){
+    if(attributes.state === stateStr.inGame){
+      if(typeof attributes.backToMenu === undefinedStr){
         speechOutput += speech.innGameBackToMenu + RepromptText(attributes);
         attributes.backToMenu = true;
       }else{
-        attributes.state = "menu";
+        attributes.state = stateStr.menu;
         attributes.backToMenu = undefined;
         speechOutput += RepromptText(attributes);
         
         if (SupportsAPL(handlerInput)) {
           handlerInput.responseBuilder.addDirective({
-            type: 'Alexa.Presentation.APL.RenderDocument',
+            type: alexaPresentationAPL.renderDocument,
             document: require('./aplDocuments/menu.json'),
             datasources: {
               'menuData': {
@@ -536,13 +563,13 @@ const MenuHandler = {
         }
       }
     }else{
-        attributes.state = "menu";
+        attributes.state = stateStr.menu;
         attributes.backToMenu = undefined;
         speechOutput += RepromptText(attributes);
         
       if (SupportsAPL(handlerInput)) {
         handlerInput.responseBuilder.addDirective({
-          type: 'Alexa.Presentation.APL.RenderDocument',
+          type: alexaPresentationAPL.renderDocument,
           document: require('./aplDocuments/menu.json'),
           datasources: {
             'menuData': {
@@ -568,7 +595,7 @@ const BoxHandler = {
     //Get Session attributes
     const attributes = handlerInput.attributesManager.getSessionAttributes();
     return (request.type === 'IntentRequest' && request.intent.name === 'BoxIntent')
-    || (request.type === 'Alexa.Presentation.APL.UserEvent' && request.arguments[0] === 'Box');
+    || (request.type === alexaPresentationAPL.userEvent && request.arguments[0] === 'Box');
   },
   async handle(handlerInput) {
     //Get Session attributes
@@ -587,12 +614,12 @@ const BoxHandler = {
       var userInput = request.arguments[1];
 
     var choosedIndex = userInput-1;
-    if(attributes.state === "inGame"){
+    if(attributes.state === stateStr.inGame){
       //if the game is not over, keep going
       if(!attributes.win){
         if(userInput>=1&&userInput<=attributes.boxes.length){
           //if the choosed box is already selected
-          if(attributes.boxTurn==="second" && (attributes.firstBox === choosedIndex)){
+          if(attributes.boxTurn===boxTurnStr.second && (attributes.firstBox === choosedIndex)){
             speechOutput = attributes.boxes[choosedIndex].resource+speech.inGameBoxChosen;
           }
           
@@ -601,13 +628,13 @@ const BoxHandler = {
             speechOutput = attributes.boxes[choosedIndex].resource+speech.inGameBoxOpened;
           }else{
             //Check the box turn
-            if(attributes.boxTurn === "first"){
+            if(attributes.boxTurn === boxTurnStr.first){
               attributes.firstBox = choosedIndex;
               //speechOutput = "Box Number "+userInput + " is " + attributes.boxes[choosedIndex].resource;
               speechOutput = audios.openingBox+attributes.boxes[choosedIndex].resource;
               boxImage[choosedIndex].current = attributes.boxes[choosedIndex].image;
               //it is about to second turn to choose a box
-              attributes.boxTurn = "second";
+              attributes.boxTurn = boxTurnStr.second;
             }else{
               attributes.numOfTry++;
               attributes.secondBox = choosedIndex;
@@ -633,7 +660,7 @@ const BoxHandler = {
                   attributes.scoreText = "Score: " + attributes.totalScore;
                   RecordScore(attributes);
                   if(attributes.currentLevel.id === 6){
-                    attributes.state = "win";
+                    attributes.state = stateStr.win;
                     speechOutput += speech.gameWin[0]+ speech.score[0] + attributes.totalScore+". ";
                     handlerInput.attributesManager.setPersistentAttributes(attributes);
                     await handlerInput.attributesManager.savePersistentAttributes();
@@ -657,9 +684,9 @@ const BoxHandler = {
                 boxImage[attributes.secondBox].current = boxImage[attributes.secondBox].resource;
               }//Check selected boxes are the same End 
               //Change the box turn
-              attributes.firstBox = 'undefined';
-              attributes.secondBox = 'undefined';
-              attributes.boxTurn ="first";
+              attributes.firstBox = undefinedStr;
+              attributes.secondBox = undefinedStr;
+              attributes.boxTurn =boxTurnStr.first;
             }//Check the box turn End
           }//Check box opened End
         }else{//Check user input
@@ -672,7 +699,7 @@ const BoxHandler = {
     
     if (SupportsAPL(handlerInput)) {
       handlerInput.responseBuilder.addDirective({
-        type: 'Alexa.Presentation.APL.RenderDocument',
+        type: alexaPresentationAPL.renderDocument,
         document: require(attributes.uipage),
         datasources: {
           'pageData': {
@@ -730,7 +757,7 @@ const ScoreHandler = {
     var repromptText = "";
     // Reset Error Count
     errorCount = 0;
-    if(attributes.state === "inGame"){
+    if(attributes.state === stateStr.inGame){
       speechOutput = speech.score[0] +attributes.totalScore+". ";
     }else{
       speechOutput = speech.errorGameNotStarted;
@@ -759,7 +786,7 @@ const OpenedHandler = {
     errorCount = 0;
 
     //Refactoring needed
-    if(attributes.state === "inGame"){
+    if(attributes.state === stateStr.inGame){
       var opened = [];
       for (var i = 0; i < attributes.boxes.length; i++)
       {
@@ -793,7 +820,7 @@ const YesHandler = {
     const request = handlerInput.requestEnvelope.request;
     
     return (request.type === 'IntentRequest' && request.intent.name === 'AMAZON.YesIntent')
-    || (request.type === 'Alexa.Presentation.APL.UserEvent' && request.arguments[0] === 'YesIntent');
+    || (request.type === alexaPresentationAPL.userEvent && request.arguments[0] === 'YesIntent');
   },
   handle(handlerInput) {
     //Get Session attributes
@@ -803,8 +830,8 @@ const YesHandler = {
     
     // Reset Error Count
     errorCount = 0;
-    if(attributes.state ==='launch'){
-      attributes.state = "menu";
+    if(attributes.state ===stateStr.launch){
+      attributes.state = stateStr.menu;
       if(attributes.logInTimes < 3){
         speechOutput = "From the main menu you can either choose to: "
         +"Start the game! "
@@ -827,7 +854,7 @@ const YesHandler = {
     
     if (SupportsAPL(handlerInput)) {
       handlerInput.responseBuilder.addDirective({
-        type: 'Alexa.Presentation.APL.RenderDocument',
+        type: alexaPresentationAPL.renderDocument,
         document: require('./aplDocuments/menu.json'),
         datasources: {
           'menuData': {
@@ -860,8 +887,8 @@ const NoHandler = {
     // Reset Error Count
     errorCount = 0;
     
-    if(attributes.state === "reset"){
-      attributes.state = "inGame";
+    if(attributes.state === stateStr.reset){
+      attributes.state = stateStr.inGame;
       speechOutput = "Okay, the game continues! "+RepromptText(attributes);
     }else{
       speechOutput = 'No no no, '+RepromptText(attributes);
@@ -882,7 +909,7 @@ const RankHandler = {
     const request = handlerInput.requestEnvelope.request;
     //Get Session attributes
     return (request.type === 'IntentRequest' && request.intent.name === 'RankIntent')
-    || (request.type === 'Alexa.Presentation.APL.UserEvent' && request.arguments[0] === 'RankIntent');
+    || (request.type === alexaPresentationAPL.userEvent && request.arguments[0] === 'RankIntent');
   },
   async handle(handlerInput) {
     //Get Session attributes
@@ -898,7 +925,7 @@ const RankHandler = {
     
     if (SupportsAPL(handlerInput)) {
       handlerInput.responseBuilder.addDirective({
-        type: 'Alexa.Presentation.APL.RenderDocument',
+        type: alexaPresentationAPL.renderDocument,
         document: require('./aplDocuments/rank.json'),
         datasources: {
           'rankData': {
@@ -919,7 +946,7 @@ const HelpHandler = {
   canHandle(handlerInput) {
     const request = handlerInput.requestEnvelope.request;
     return (request.type === 'IntentRequest' && request.intent.name === 'AMAZON.HelpIntent')
-    || (request.type === 'Alexa.Presentation.APL.UserEvent' && request.arguments[0] === 'HelpIntent');
+    || (request.type === alexaPresentationAPL.userEvent && request.arguments[0] === 'HelpIntent');
   },
   handle(handlerInput) {
     const attributes = handlerInput.attributesManager.getSessionAttributes();
@@ -930,11 +957,11 @@ const HelpHandler = {
     errorCount = 0;
 
     switch(attributes.state){
-      case "menu":
+      case stateStr.menu:
         speechOutput = "You will be asked to choose the level of the game. The level will be unlocked as you clear the previous level. During the game, you will be asked for two boxes to match up together. If you choose two boxes with same animal's sound, the box will stay opened. The game will be finished when all the boxes are opened. ";
         speechOutput += "are you ready to play the game? "+RepromptText(attributes);      
         break;
-      case "inGame":
+      case stateStr.inGame:
         speechOutput = "There are " + attributes.boxes.length + " boxes with animal hidden inside. You need to match two boxes with identical animals. When you found the same two animals, those boxes will stay open. As soon as all the boxes are matched and opened, the game will be finished. To check score, say, Score. To check opened boxes, say, opened. ";
         speechOutput += "are you ready to continue the game? " +RepromptText(attributes);
         break;
@@ -942,11 +969,11 @@ const HelpHandler = {
         speechOutput += RepromptText(attributes);
     }
     repromptText = RepromptText(attributes);
-    var intent = attributes.state === 'inGame'? "Box" : "MenuIntent";
+    var intent = attributes.state === stateStr.inGame ? "Box" : "MenuIntent";
     
     if (SupportsAPL(handlerInput)) {
       handlerInput.responseBuilder.addDirective({
-        type: 'Alexa.Presentation.APL.RenderDocument',
+        type: alexaPresentationAPL.renderDocument,
         document: require('./aplDocuments/helpUI.json'),
         datasources: {
           'helpData': {
@@ -971,13 +998,13 @@ const ExitHandler = {
     return (request.type === 'IntentRequest'
       && (request.intent.name === 'AMAZON.CancelIntent'
         || request.intent.name === 'AMAZON.StopIntent' 
-        || (request.intent.name === 'AMAZON.NoIntent' && (attributes.win|| attributes.state === "launch"))))
-        || (request.type === 'Alexa.Presentation.APL.UserEvent' && request.arguments[0] === 'ExitIntent');
+        || (request.intent.name === 'AMAZON.NoIntent' && (attributes.win|| attributes.state === stateStr.launch))))
+        || (request.type === alexaPresentationAPL.userEvent && request.arguments[0] === 'ExitIntent');
   },
   async handle(handlerInput) {
     const attributes = handlerInput.attributesManager.getSessionAttributes();
     
-    if(attributes.state === "in game"){
+    if(attributes.state === stateStr.inGame){
       RecordScore(attributes);
     }
     const userId = handlerInput.requestEnvelope.context.System.user.userId;
@@ -986,7 +1013,7 @@ const ExitHandler = {
     
     var speechOutput = "Thank you for playing. ";
     if(attributes.highScore > 0){
-      if(attributes.state === "inGame" || attributes.state === "win"){
+      if(attributes.state === stateStr.inGame || attributes.state === stateStr.win){
         await GetRank(userId, attributes);
         speechOutput +="Your best score is "+attributes.highScore
         +". Your rank is number "+ attributes.rank 
@@ -1032,11 +1059,11 @@ const ErrorHandler = {
       speechOutput = "Sorry, I don't understand. ";
     // error count 2 => give user what is valid input
     }else if(errorCount === 2){
-      if(attributes.state === "naming"){
+      if(attributes.state === stateStr.naming){
         speechOutput += "";
-      }else if(attributes.state === "levelSelect"){
+      }else if(attributes.state === stateStr.levelSelect){
         speechOutput += "Please choose a level between 1 and 6. ";
-      }else if(attributes.state === "inGame"){
+      }else if(attributes.state === stateStr.inGame){
         speechOutput += "Choose a box number from 1 to "+attributes.boxes.length+". ";
       }
       speechOutput += RepromptText(attributes);
