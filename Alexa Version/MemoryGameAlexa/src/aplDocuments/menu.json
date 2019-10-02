@@ -1,0 +1,172 @@
+{
+    "type": "APL",
+    "version": "1.0",
+    "theme": "dark",
+    "import": [],
+    "mainTemplate": {
+        "parameters": [
+            "payload"
+        ],
+        "items": [{
+            "type": "Frame",
+            "width": "100vw",
+            "height": "100vh",
+            "backgroundColor": "#55DDEE",
+            "items": [
+                {
+                    "type": "Container",
+                    "width": "100vw",
+                    "height": "100vh",
+                    "justifyContent": "spaceAround",
+                    "items": [
+                        {
+                        "type": "Container",
+                        "width": "100vw",
+                        "height": "20vh",
+                        "items": [
+                            {
+                                "type": "Text",
+                                "text": "Memory Game",
+                                "width": "100vw",
+                                "fontWeight": "800",
+                                "fontSize": "16vh",
+                                "top": "1vh",
+                                "color": "white",
+                                "textAlign": "center"
+                            }]
+                        },
+                        {
+                            "type": "Container",
+                            "width": "100vw",
+                            "height": "60vh",
+                            "direction": "column",
+                            "alignItems": "center",
+                            "justifyContent": "spaceAround",
+                            "items" : [
+                                {   
+                                    "type": "TouchWrapper",
+                                    "width": "18vw",
+                                    "height": "12vh",
+                                    "item": {
+                                        "type": "Frame",
+                                        "width": "18vw",
+                                        "height": "12vh",
+                                        "borderColor": "white",
+                                        "borderWidth": "5px",
+                                        "borderRadius": "30vw",
+                                        "items": [
+                                            {
+                                                "type": "Text",
+                                                "text": "Start",
+                                                "color": "white",
+                                                "width": "17vw",
+                                                "height": "12vh",
+                                                "textAlign": "center",
+                                                "textAlignVertical": "center",
+                                                "fontSize": "9vh"
+                                            }]
+                                    },
+                                    "onPress": {
+                                        "type": "SendEvent",
+                                        "arguments":[
+                                            "StartIntent"
+                                        ]
+                                    }
+                                },
+                                {   
+                                    "type": "TouchWrapper",
+                                    "width": "18vw",
+                                    "height": "12vh",
+                                    "item": {
+                                        "type": "Frame",
+                                        "width": "18vw",
+                                        "height": "12vh",
+                                        "borderColor": "white",
+                                        "borderWidth": "5px",
+                                        "borderRadius": "30vw",
+                                        "items": [
+                                            {
+                                                "type": "Text",
+                                                "text": "Rank",
+                                                "color": "white",
+                                                "width": "17vw",
+                                                "height": "12vh",
+                                                "textAlign": "center",
+                                                "textAlignVertical": "center",
+                                                "fontSize": "9vh"
+                                            }]
+                                    },
+                                    "onPress": {
+                                        "type": "SendEvent",
+                                        "arguments":[
+                                            "RankIntent"
+                                        ]
+                                    }
+                                },
+                                {   
+                                    "type": "TouchWrapper",
+                                    "width": "18vw",
+                                    "height": "12vh",
+                                    "item": {
+                                        "type": "Frame",
+                                        "width": "18vw",
+                                        "height": "12vh",
+                                        "borderColor": "white",
+                                        "borderWidth": "5px",
+                                        "borderRadius": "30vw",
+                                        "items": [
+                                            {
+                                                "type": "Text",
+                                                "text": "Help",
+                                                "color": "white",
+                                                "width": "17vw",
+                                                "height": "12vh",
+                                                "textAlign": "center",
+                                                "textAlignVertical": "center",
+                                                "fontSize": "9vh"
+                                            }]
+                                    },
+                                    "onPress": {
+                                        "type": "SendEvent",
+                                        "arguments":[
+                                            "HelpIntent"
+                                        ]
+                                    }
+                                },
+                                {   
+                                    "type": "TouchWrapper",
+                                    "width": "18vw",
+                                    "height": "12vh",
+                                    "item": {
+                                        "type": "Frame",
+                                        "width": "18vw",
+                                        "height": "12vh",
+                                        "borderColor": "white",
+                                        "borderWidth": "5px",
+                                        "borderRadius": "30vw",
+                                        "items": [
+                                            {
+                                                "type": "Text",
+                                                "text": "Exit",
+                                                "color": "white",
+                                                "width": "17vw",
+                                                "height": "12vh",
+                                                "textAlign": "center",
+                                                "textAlignVertical": "center",
+                                                "fontSize": "9vh"
+                                            }]
+                                    },
+                                    "onPress": {
+                                        "type": "SendEvent",
+                                        "arguments":[
+                                            "ExitIntent"
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }]
+        }]
+    }
+}

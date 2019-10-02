@@ -1,0 +1,132 @@
+{
+    "type": "APL",
+    "version": "1.0",
+    "theme": "dark",
+    "import": [],
+    "mainTemplate": {
+        "parameters": [
+            "payload"
+        ],
+        "items": [{
+            "type": "Frame",
+            "width": "100vw",
+            "height": "100vh",
+            "backgroundColor": "#55DDEE",
+            "items": [
+                {
+                    "type": "Container",
+                    "width": "100vw",
+                    "height": "100vh",
+                    "justifyContent": "start",
+                    "items": [
+                        {
+                        "type": "Container",
+                        "width": "100vw",
+                        "height": "60vh",
+                        "items": [
+                            {
+                                "type": "Text",
+                                "text": "Welcome To",
+                                "width": "100vw",
+                                "fontWeight": "800",
+                                "fontSize": "11vh",
+                                "top": "10vh",
+                                "color": "white",
+                                "textAlign": "center"
+                            },
+                            {
+                                "type": "Text",
+                                "text": "Memory Game",
+                                "width": "100vw",
+                                "fontWeight": "800",
+                                "fontSize": "16vh",
+                                "top": "4vh",
+                                "color": "white",
+                                "textAlign": "center"
+                            },
+                            {
+                                "type": "Text",
+                                "text": "${payload.launchData.text}",
+                                "width": "100vw",
+                                "fontWeight": "500",
+                                "fontSize": "11vh",
+                                "top": "10vh",
+                                "color": "white",
+                                "textAlign": "center"
+                            }]
+                        },
+                        {
+                            "type": "Container",
+                            "width": "100vw",
+                            "height": "30vh",
+                            "direction": "column",
+                            "alignItems": "center",
+                            "justifyContent": "spaceAround",
+                            "items" : [
+                                {   
+                                    "type": "TouchWrapper",
+                                    "width": "18vw",
+                                    "height": "12vh",
+                                    "item": {
+                                        "type": "Frame",
+                                        "width": "18vw",
+                                        "height": "12vh",
+                                        "borderColor": "white",
+                                        "borderWidth": "5px",
+                                        "borderRadius": "30vw",
+                                        "items": [
+                                            {
+                                                "type": "Text",
+                                                "text": "YES",
+                                                "color": "white",
+                                                "width": "17vw",
+                                                "height": "12vh",
+                                                "textAlign": "center",
+                                                "textAlignVertical": "center",
+                                                "fontSize": "10vh"
+                                            }]
+                                    },
+                                    "onPress": {
+                                        "type": "SendEvent",
+                                        "arguments":[
+                                            "YesIntent"
+                                        ]
+                                    }
+                                },
+                                {   
+                                    "type": "TouchWrapper",
+                                    "width": "18vw",
+                                    "height": "12vh",
+                                    "item": {
+                                        "type": "Frame",
+                                        "width": "18vw",
+                                        "height": "12vh",
+                                        "borderColor": "white",
+                                        "borderWidth": "5px",
+                                        "borderRadius": "30vw",
+                                        "items": [
+                                            {
+                                                "type": "Text",
+                                                "text": "NO",
+                                                "color": "white",
+                                                "width": "17vw",
+                                                "height": "12vh",
+                                                "textAlign": "center",
+                                                "textAlignVertical": "center",
+                                                "fontSize": "10vh"
+                                            }]
+                                    },
+                                    "onPress": {
+                                        "type": "SendEvent",
+                                        "arguments":[
+                                            "ExitIntent"
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }]
+        }]
+    }
+}
