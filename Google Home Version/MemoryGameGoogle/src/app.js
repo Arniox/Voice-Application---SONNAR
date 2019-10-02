@@ -47,7 +47,7 @@ let content = 'Card Content Default';
 let imageUrl = 'https://s3.amazonaws.com/jovocards/SampleImageCardSmall.png';
 
 //Current level
-var currentLevel = 6;
+var currentLevel = 1;
 var fromMenu = true;
 var fromReset = false;
 
@@ -362,39 +362,39 @@ const levelsUnlocked = [
         unlocked: true,
         numberOfSounds: 3,
         minimumTries: 3,
-        tries: 3
+        tries: 0
     },{
         id: 2,
         name: "Level 2",
-        unlocked: true,
+        unlocked: false,
         numberOfSounds: 4,
         minimumTries: 4,
-        tries: 4
+        tries: 0
     },{
         id: 3,
         name: "Level 3",
-        unlocked: true,
+        unlocked: false,
         numberOfSounds: 6,
         minimumTries: 6,
-        tries: 6
+        tries: 0
     },{
         id: 4,
         name: "Level 4",
-        unlocked: true,
+        unlocked: false,
         numberOfSounds: 8,
         minimumTries: 8,
-        tries: 8
+        tries: 0
     },{
         id: 5,
         name: "Level 5",
-        unlocked: true,
+        unlocked: false,
         numberOfSounds: 10,
         minimumTries: 10,
-        tries: 10
+        tries: 0
     },{
         id: 6,
         name: "Level 6",
-        unlocked: true,
+        unlocked: false,
         numberOfSounds: 12,
         minimumTries: 12,
         tries: 0
