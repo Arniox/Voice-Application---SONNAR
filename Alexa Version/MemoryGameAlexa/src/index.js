@@ -55,10 +55,7 @@ const stateStr = {
   launch: "launch",
   menu: "menu",
   inGame: "inGame",
-  win: "win",
-  reset: "reset",
-  naming: "naming",
-  levelSelect: "levelSelect"
+  win: "win"
 };
 
 //Box turn into String
@@ -300,13 +297,12 @@ The last element of a array shows how elements and attributes should be used tog
 However, if any speeches are not followed by any attributes, then it is not an array
 */
 const speech = {
-  repromptLaunch: "Are you ready to play?",
   repromptMenu: "Please select a option from: Start, show my rank, ask for help or exit the game!",
   repromptinGame: ["Please, choose the "," box!","Please choose the + attributes.boxTurn+ box!"],
   repromptWin: "Say good bye, to exit game or say menu, to go back to the main menu.",
   
-  welcomeNewUser: "Hello and welcome. We have recieved a new supply of crates. And your goal is to match the  crates up. So that, the pair of animals gets shipped off together! Are you ready to help ship them off?",
-  welcomeBack: "Welcome back! Are you ready to play?",
+  welcomeNewUser: "Hello and welcome. We have recieved a new supply of crates. And your goal is to match the  crates up. So that, the pair of animals gets shipped off together! ",
+  welcomeBack: "Welcome back! ",
   
   startNotFromMenu: "You can only start the game from the menu. ",
 
@@ -439,23 +435,22 @@ const LaunchHandler = {
     handlerInput.attributesManager.setSessionAttributes(p_attributes);
     const attributes = handlerInput.attributesManager.getSessionAttributes();
   
-    if(attributes.logInTimes<3){
-      attributes.state = stateStr.launch;
-      speechOutput += speech.welcomeNewUser;
+    errorCount = 0;
+    attributes.state = stateStr.menu;
+    if(attributes.logInTimes < 3){
+      speechOutput =speech.welcomeNewUser + speech.menuNewUser;
     }else{
-      attributes.state = stateStr.launch;
-      speechOutput += speech.welcomeBack;
+      speechOutput =speech.welcomeBack + speech.menu;
     }
+    
     repromptText = RepromptText(attributes);
     
-    //UI
     if (SupportsAPL(handlerInput)) {
       handlerInput.responseBuilder.addDirective({
         type: alexaPresentationAPL.renderDocument,
-        document: require('./aplDocuments/launch.json'),
+        document: require('./aplDocuments/menu.json'),
         datasources: {
-          'launchData': {
-            "text": "Are you ready to Play?"
+          'menuData': {
           }
         },
       });
@@ -543,7 +538,7 @@ const MenuHandler = {
     // Reset Error Count
     errorCount = 0;
     if(attributes.state === stateStr.inGame){
-      if(typeof attributes.backToMenu === undefinedStr){
+      if(typeof attributes.backToMenu === 'undefined'){
         speechOutput += speech.innGameBackToMenu + RepromptText(attributes);
         attributes.backToMenu = true;
       }else{
@@ -642,7 +637,8 @@ const BoxHandler = {
               // speechOutput = "Box Number "+userInput + " is " + attributes.boxes[choosedIndex].resource;
               speechOutput = audios.openingBox+attributes.boxes[choosedIndex].resource;
               boxImage[choosedIndex].current = attributes.boxes[choosedIndex].image;
-              //Check selected boxes are the same ==> get score and keep the turn
+              
+              //Check selected boxes are the same ==> get score
               if(attributes.boxes[attributes.firstBox].name === attributes.boxes[attributes.secondBox].name){
                 speechOutput += audios.success+speech.inGameBoxMatches;
                 //open the same boxes
@@ -678,8 +674,7 @@ const BoxHandler = {
                   }//Check is level 6 End
                 }//Check win End
               }else{
-                speechOutput += audios.fail
-                +audios.closingBox
+                speechOutput +=audios.closingBox
                 +audios.closingBox;
                 boxImage[attributes.firstBox].current = boxImage[attributes.firstBox].resource;
                 boxImage[attributes.secondBox].current = boxImage[attributes.secondBox].resource;
@@ -880,13 +875,13 @@ const NoHandler = {
     // Reset Error Count
     errorCount = 0;
     
-    if(attributes.state === stateStr.reset){
-      attributes.state = stateStr.inGame;
-      speechOutput = speech.gameContinue +RepromptText(attributes);
-    }else{
+    // if(attributes.state === "re"){
+    //   attributes.state = stateStr.inGame;
+    //   speechOutput = speech.gameContinue +RepromptText(attributes);
+    // }else{
       speechOutput = speech.no +RepromptText(attributes);
       repromptText = RepromptText(attributes);
-    }
+    // }
     
     handlerInput.attributesManager.setSessionAttributes(attributes);
     return handlerInput.responseBuilder
@@ -1010,7 +1005,7 @@ const ExitHandler = {
         await GetRank(userId, attributes);
         speechOutput +="Your best score is "+attributes.highScore
         +". Your rank is number "+ attributes.rank 
-        +". See you next time!";
+        +" in the world. See you next time!";
       }
     }
     
@@ -1052,11 +1047,7 @@ const ErrorHandler = {
       speechOutput = "Sorry, I don't understand. ";
     // error count 2 => give user what is valid input
     }else if(errorCount === 2){
-      if(attributes.state === stateStr.naming){
-        speechOutput += "";
-      }else if(attributes.state === stateStr.levelSelect){
-        speechOutput += "Please choose a level between 1 and 6. ";
-      }else if(attributes.state === stateStr.inGame){
+      if(attributes.state === stateStr.inGame){
         speechOutput += "Choose a box number from 1 to "+attributes.boxes.length+". ";
       }
       speechOutput += RepromptText(attributes);
