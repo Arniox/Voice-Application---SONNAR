@@ -1,0 +1,56 @@
+body{
+    background-color: #4B4B4B;
+}
+
+.pat-nav{
+    background-color: black;
+}
+
+#broken-image {
+    -webkit-transform: scaleY(-1);
+    transform: scaleY(-1);
+}
+
+.containerBox{
+	background-color: #FFF;
+	border-color: #bee5eb;
+	margin-bottom: 1rem;
+	border: 1px solid transparent;
+    border-radius: 10px;
+    font-size: 15px;
+}
+
+.item-margin{
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.log-containerBox{
+	background-color: #FFF;
+	border-color: #bee5eb;
+	margin-bottom: 1rem;
+	border: 1px solid transparent;
+    border-radius: 10px;
+    font-size: 15px;
+    width: 80%;
+    margin: 0 auto;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.log-margin{
+    margin-left: 10%;
+    margin-right: 10%;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.log-table-margin{
+    width: 80%;
+    margin: 0 auto;
+    margin-left: 10%;
+    margin-right: 10%;
+    margin-bottom: 20px;
+}
