@@ -8,22 +8,25 @@ AWS.config.apiVersions = {
   dynamodb: '2012-08-10',
   // other service API versions
 };
-const ddbTableName = 'Memory-Game';
+const ddbTableName = 'MemoryGameUsers';
 const { DynamoDbPersistenceAdapter } = require('ask-sdk-dynamodb-persistence-adapter');
+var gameInfo = {};
+
 //Execute query to get rank
-const RankQuery = function(userId,highScore){
+const RankQuery = function(userId,bestScore){
   return new Promise(function (resolve, reject) {
     var dynamodb = new AWS.DynamoDB.DocumentClient();
     var params = {
         TableName:ddbTableName,
-        ProjectionExpression: "#att.#hS",
-        FilterExpression: "#att.#hS > :hS",
+        ProjectionExpression: "#att.#dt.#bS",
+        FilterExpression: "#att.#dt.#bS > :bS",
         ExpressionAttributeNames: {
           "#att": "attributes",
-          "#hS": "highScore"
+          "#dt" : "data",
+          "#bS": "bestScore"
         },
         ExpressionAttributeValues: {
-            ":hS": highScore
+            ":bS": bestScore
         }
     };
     dynamodb.scan(params,function(err, data) {
@@ -42,8 +45,8 @@ const RankQuery = function(userId,highScore){
 };
 
 const GetRank = function(userId,attributes){
-  return RankQuery(userId, attributes.highScore).then((rank) => {
-        attributes.rank = rank;
+  return RankQuery(userId, attributes.data.bestScore).then((rank) => {
+        gameInfo.rank = rank;
   });
 };
 
@@ -63,9 +66,6 @@ const boxTurnStr = {
   first: "first",
   second: "second"
 };
-
-//String value : undefined
-const undefinedStr = 'undefined';
 
 //Alexa presentation APL String value
 const alexaPresentationAPL = {
@@ -298,7 +298,7 @@ However, if any speeches are not followed by any attributes, then it is not an a
 */
 const speech = {
   repromptMenu: "Please select a option from: Start, show my rank, ask for help or exit the game!",
-  repromptinGame: ["Please, choose the "," box!","Please choose the + attributes.boxTurn+ box!"],
+  repromptinGame: ["Please, choose the "," box!","Please choose the + gameInfoboxTurn+ box!"],
   repromptWin: "Say good bye, to exit game or say menu, to go back to the main menu.",
   
   welcomeNewUser: "Hello and welcome. We have recieved a new supply of crates. And your goal is to match the  crates up. So that, the pair of animals gets shipped off together! ",
@@ -306,15 +306,14 @@ const speech = {
   
   startNotFromMenu: "You can only start the game from the menu. ",
 
-  inGamePleaseChooseBox: ["Please, choose the first box to start off between 1 and ", "Please choose the first box to start off between 1 and +attributes.boxes.length"],
-  inGameBoxInRange: ["Choose from 1 to ", "Choose from 1 to + attributes.boxes.length"],
+  inGamePleaseChooseBox: ["Please, choose the first box to start off between 1 and ", "Please choose the first box to start off between 1 and +gameInfo.boxes.length"],
+  inGameBoxInRange: ["Choose from 1 to ", "Choose from 1 to + gameInfo.boxes.length"],
   inGameBackToMenu: "if you go back to menu, you will lose your current level progress. do you really wanna go back to menu? if yes, please say menu again. if not, ",
   inGameBoxChosen: "The box is already choosen for your first box! Choose another box. ",
   inGameBoxOpened: "The chosen box is already opened! Choose another box. ",
-  inGameBoxMatches: " Good work! ",
   inGameGoNextLevel: "Let's move on next level. ",
   
-  levelWin: ["Congradulations on winning ", "audios.levelWin+Congradulations on winning + attributes.currentLevel.name"],
+  levelWin: ["Congradulations on winning ", "audios.levelWin+Congradulations on winning + gameInfocurrentLevel.name"],
   gameWin: ["You bit the last level! ", "You bit the last level! + speech.score"],
   
   errorGameNotStarted: "You didn't start the game yet!",
@@ -324,7 +323,7 @@ const speech = {
   
   menuNewUser: "From the main menu, you can either choose to: start the game! show my rank! ask for help! or, quit the game. Which option would you like to select?",
   menu: "Please choose either to: start! show my rank! help! or, quit the game. ",
-  score: ["Your score is ", "Your score is +attributes.totalScore"], 
+  score: ["Your score is ", "Your score is +gameInfototalScore"], 
   
   yes: "Yes, yes, yes, ",
   no: "No, no, no, ",
@@ -349,20 +348,21 @@ const audios = {
 
 };
 
-const InitiateGame = function(attributes){
+const InitiateGame = function(){
+  animals.forEach((item)=>{item.opened = false;});
   //Set boxes for the level
-  attributes.boxes = shuffleSounds(attributes.currentLevel.numberOfSounds);
+  gameInfo.boxes = shuffleSounds(gameInfo.currentLevel.numberOfSounds);
   //Selected box index
-  attributes.firstBox = undefinedStr;
-  attributes.secondBox = undefinedStr;
+  gameInfo.firstBox = undefined;
+  gameInfo.secondBox = undefined;
   //Score for checking the level finished
-  attributes.score = 0;
-  attributes.win = false;
+  gameInfo.score = 0;
+  gameInfo.win = false;
   //Which box have to be choosen
-  attributes.boxTurn = boxTurnStr.first;
+  gameInfo.boxTurn = boxTurnStr.first;
   //Number of tries in this level
-  attributes.numOfTry = 0;
-  attributes.uipage = "./aplDocuments/threeSoundsPage.json";
+  gameInfo.numOfTry = 0;
+  gameInfo.uipage = "./aplDocuments/threeSoundsPage.json";
 };
 
 const shuffleSounds = function(numOfanimals){
@@ -373,23 +373,23 @@ const shuffleSounds = function(numOfanimals){
   return boxes;
 };
 
-const RepromptText = function(attributes){
+const RepromptText = function(){
   var text = "";
-  if(attributes.state === stateStr.launch){
+  if(gameInfo.state === stateStr.launch){
     text = speech.repromptLaunch;
-  }else if(attributes.state === stateStr.menu){
+  }else if(gameInfo.state === stateStr.menu){
     text = speech.repromptMenu;
-  }else if(attributes.state === stateStr.inGame){
-    text = speech.repromptinGame[0]+attributes.boxTurn+speech.repromptinGame[1];
-  }else if(attributes.win){
+  }else if(gameInfo.state === stateStr.inGame){
+    text = speech.repromptinGame[0]+gameInfo.boxTurn+speech.repromptinGame[1];
+  }else if(gameInfo.win){
     text = speech.repromptWin;
   }
   return text;
 };
 
 const RecordScore = function(attributes){
-  if(attributes.totalScore > attributes.highScore){
-    attributes.highScore = attributes.totalScore;
+  if(gameInfo.totalScore > attributes.data.bestScore){
+    attributes.data.bestScore = gameInfo.totalScore;
   } 
 };
 
@@ -397,7 +397,7 @@ const SupportsAPL = function(handlerInput) {
   const supportedInterfaces = 
   handlerInput.requestEnvelope.context.System.device.supportedInterfaces;
   const aplInterface = supportedInterfaces['Alexa.Presentation.APL'];
-  return aplInterface != null && aplInterface !== undefined;
+  return aplInterface != null && aplInterface !== 'undefined';
 };
 
 const resetBoxImage = function(){
@@ -427,23 +427,24 @@ const LaunchHandler = {
 
     //Get persistent attributes
     if(Object.keys(p_attributes).length === 0){
-      p_attributes.logInTimes = 1;
-      p_attributes.highScore = 0;
+      p_attributes.data = {};
+      p_attributes.data.timesLoggedIn = 1;
+      p_attributes.data.bestScore = 0;
     }else{
-      p_attributes.logInTimes ++;
+      p_attributes.data.timesLoggedIn ++;
     }
     handlerInput.attributesManager.setSessionAttributes(p_attributes);
     const attributes = handlerInput.attributesManager.getSessionAttributes();
   
     errorCount = 0;
-    attributes.state = stateStr.menu;
-    if(attributes.logInTimes < 3){
+    gameInfo.state = stateStr.menu;
+    if(attributes.data.timesLoggedIn < 3){
       speechOutput =speech.welcomeNewUser + speech.menuNewUser;
     }else{
       speechOutput =speech.welcomeBack + speech.menu;
     }
     
-    repromptText = RepromptText(attributes);
+    repromptText = RepromptText();
     
     if (SupportsAPL(handlerInput)) {
       handlerInput.responseBuilder.addDirective({
@@ -479,23 +480,24 @@ const StartHandler = {
     // Reset Error Count
     errorCount = 0;
 
-    if(attributes.state === stateStr.menu){
+    if(gameInfo.state === stateStr.menu){
       resetBoxImage();
-      attributes.state = stateStr.inGame;
-      attributes.totalScore = 0;
+      gameInfo.state = stateStr.inGame;
+      gameInfo.totalScore = 0;
       speechOutput += audios.memoryWelcome;
-      attributes.currentLevel = levelsUnlocked[0];
-      InitiateGame(attributes);
-      speechOutput += attributes.currentLevel.resource;
-      speechOutput += speech.inGamePleaseChooseBox[0] + attributes.boxes.length;
+      gameInfo.currentLevel = levelsUnlocked[0];
+      InitiateGame();
+      console.log(gameInfo.boxes);
+      speechOutput += gameInfo.currentLevel.resource;
+      speechOutput += speech.inGamePleaseChooseBox[0] + gameInfo.boxes.length;
       if (SupportsAPL(handlerInput)) {
         handlerInput.responseBuilder.addDirective({
           type: alexaPresentationAPL.renderDocument,
           document: require('./aplDocuments/threeSoundsPage.json'),
           datasources: {
             'pageData': {
-                "score" : "Score: " + attributes.totalScore,
-                "currentLevel" : "Level " + attributes.currentLevel.id,
+                "score" : "Score: " + gameInfo.totalScore,
+                "currentLevel" : "Level " + gameInfo.currentLevel.id,
                 "Box1": boxImage[0].current,
                 "Box2": boxImage[1].current,
                 "Box3": boxImage[2].current,
@@ -508,9 +510,9 @@ const StartHandler = {
       }
     }else{
       //point!!
-      speechOutput = speech.startNotFromMenu + RepromptText(attributes);
+      speechOutput = speech.startNotFromMenu + RepromptText();
     }
-    repromptText = RepromptText(attributes);
+    repromptText = RepromptText();
     
     return handlerInput.responseBuilder
       .speak(speechOutput)
@@ -521,8 +523,6 @@ const StartHandler = {
 
 const MenuHandler = {
   canHandle(handlerInput) {
-    //Get Session attributes
-    const attributes = handlerInput.attributesManager.getSessionAttributes();
     const request = handlerInput.requestEnvelope.request;
     return (request.type === 'IntentRequest' && request.intent.name === 'MenuIntent')
     || (request.type === alexaPresentationAPL.userEvent && request.arguments[0] === 'MenuIntent');
@@ -537,14 +537,14 @@ const MenuHandler = {
     resetBoxImage();
     // Reset Error Count
     errorCount = 0;
-    if(attributes.state === stateStr.inGame){
-      if(typeof attributes.backToMenu === 'undefined'){
-        speechOutput += speech.innGameBackToMenu + RepromptText(attributes);
-        attributes.backToMenu = true;
+    if(gameInfo.state === stateStr.inGame){
+      if(typeof gameInfo.backToMenu === 'undefined'){
+        speechOutput += speech.inGameBackToMenu + RepromptText();
+        gameInfo.backToMenu = true;
       }else{
-        attributes.state = stateStr.menu;
-        attributes.backToMenu = undefined;
-        speechOutput += RepromptText(attributes);
+        gameInfo.state = stateStr.menu;
+        gameInfo.backToMenu = undefined;
+        speechOutput += RepromptText();
         
         if (SupportsAPL(handlerInput)) {
           handlerInput.responseBuilder.addDirective({
@@ -558,9 +558,9 @@ const MenuHandler = {
         }
       }
     }else{
-        attributes.state = stateStr.menu;
-        attributes.backToMenu = undefined;
-        speechOutput += RepromptText(attributes);
+        gameInfo.state = stateStr.menu;
+        gameInfo.backToMenu = undefined;
+        speechOutput += RepromptText();
         
       if (SupportsAPL(handlerInput)) {
         handlerInput.responseBuilder.addDirective({
@@ -574,7 +574,7 @@ const MenuHandler = {
       }
     }
     
-    repromptText = RepromptText(attributes);
+    repromptText = RepromptText();
     
     return handlerInput.responseBuilder
       .speak(speechOutput)
@@ -587,8 +587,6 @@ const MenuHandler = {
 const BoxHandler = {
   canHandle(handlerInput) {
     const request = handlerInput.requestEnvelope.request;
-    //Get Session attributes
-    const attributes = handlerInput.attributesManager.getSessionAttributes();
     return (request.type === 'IntentRequest' && request.intent.name === 'BoxIntent')
     || (request.type === alexaPresentationAPL.userEvent && request.arguments[0] === 'Box');
   },
@@ -610,97 +608,98 @@ const BoxHandler = {
       userInput = request.arguments[1];
 
     var choosedIndex = userInput-1;
-    if(attributes.state === stateStr.inGame){
+    if(gameInfo.state === stateStr.inGame){
       //if the game is not over, keep going
-      if(!attributes.win){
-        if(userInput>=1&&userInput<=attributes.boxes.length){
+      if(!gameInfo.win){
+        if(userInput>=1&&userInput<=gameInfo.boxes.length){
           //if the choosed box is already selected
-          if(attributes.boxTurn===boxTurnStr.second && (attributes.firstBox === choosedIndex)){
-            speechOutput = attributes.boxes[choosedIndex].resource+speech.inGameBoxChosen;
+          if(gameInfo.boxTurn===boxTurnStr.second && (gameInfo.firstBox === choosedIndex)){
+            speechOutput = gameInfo.boxes[choosedIndex].resource+speech.inGameBoxChosen;
           }
           
           //if the choosed box is already opened
-          else if(attributes.boxes[choosedIndex].opened){
-            speechOutput = attributes.boxes[choosedIndex].resource+speech.inGameBoxOpened;
+          else if(gameInfo.boxes[choosedIndex].opened){
+            speechOutput = gameInfo.boxes[choosedIndex].resource+speech.inGameBoxOpened;
           }else{
             //Check the box turn
-            if(attributes.boxTurn === boxTurnStr.first){
-              attributes.firstBox = choosedIndex;
-              //speechOutput = "Box Number "+userInput + " is " + attributes.boxes[choosedIndex].resource;
-              speechOutput = audios.openingBox+attributes.boxes[choosedIndex].resource;
-              boxImage[choosedIndex].current = attributes.boxes[choosedIndex].image;
+            if(gameInfo.boxTurn === boxTurnStr.first){
+              gameInfo.firstBox = choosedIndex;
+              speechOutput = audios.openingBox+gameInfo.boxes[choosedIndex].resource;
+              boxImage[choosedIndex].current = gameInfo.boxes[choosedIndex].image;
               //it is about to second turn to choose a box
-              attributes.boxTurn = boxTurnStr.second;
+              gameInfo.boxTurn = boxTurnStr.second;
             }else{
-              attributes.numOfTry++;
-              attributes.secondBox = choosedIndex;
-              // speechOutput = "Box Number "+userInput + " is " + attributes.boxes[choosedIndex].resource;
-              speechOutput = audios.openingBox+attributes.boxes[choosedIndex].resource;
-              boxImage[choosedIndex].current = attributes.boxes[choosedIndex].image;
+              gameInfo.numOfTry++;
+              gameInfo.secondBox = choosedIndex;
+              speechOutput = audios.openingBox+gameInfo.boxes[choosedIndex].resource;
+              boxImage[choosedIndex].current = gameInfo.boxes[choosedIndex].image;
               
               //Check selected boxes are the same ==> get score
-              if(attributes.boxes[attributes.firstBox].name === attributes.boxes[attributes.secondBox].name){
-                speechOutput += audios.success+speech.inGameBoxMatches;
+              if(gameInfo.boxes[gameInfo.firstBox].name === gameInfo.boxes[gameInfo.secondBox].name){
+                speechOutput += audios.success;
                 //open the same boxes
-                attributes.boxes[attributes.firstBox].opened = true;
-                attributes.boxes[attributes.secondBox].opened = true;
+                gameInfo.boxes[gameInfo.firstBox].opened = true;
+                gameInfo.boxes[gameInfo.secondBox].opened = true;
                 //Give one score
-                attributes.score++;
+                gameInfo.score++;
                 //Check the player finished the current level
-                attributes.win = (attributes.score === attributes.currentLevel.numberOfSounds);
+                gameInfo.win = (gameInfo.score === gameInfo.currentLevel.numberOfSounds);
                
-                if(attributes.win){
+                if(gameInfo.win){
                   speechOutput +=  audios.levelWin
-                  +speech.levelWin[0]+attributes.currentLevel.name
+                  +speech.levelWin[0]+gameInfo.currentLevel.name
                   +". ";
-                  attributes.totalScore += Math.round((attributes.currentLevel.bestTry*1.0 / attributes.numOfTry)*attributes.currentLevel.id*100);
-                  attributes.scoreText = "Score: " + attributes.totalScore;
+                  //gameInfo.totalScore += Math.round((gameInfo.currentLevel.bestTry*1.0 / gameInfo.numOfTry)*gameInfo.currentLevel.id*100);
+                 
+                  gameInfo.totalScore += Math.round( 1000*(Math.pow(gameInfo.currentLevel.bestTry, 1/(gameInfo.numOfTry/gameInfo.currentLevel.bestTry*1.0))));
+                  gameInfo.scoreText = "Score: " + gameInfo.totalScore;
                   RecordScore(attributes);
-                  if(attributes.currentLevel.id === 6){
-                    attributes.state = stateStr.win;
-                    speechOutput += speech.gameWin[0]+ speech.score[0] + attributes.totalScore+". ";
+                  if(gameInfo.currentLevel.id === 6){
+                    gameInfo.state = stateStr.win;
+                    speechOutput += speech.gameWin[0]+ speech.score[0] + gameInfo.totalScore+". ";
                     handlerInput.attributesManager.setPersistentAttributes(attributes);
                     await handlerInput.attributesManager.savePersistentAttributes();
                   }else{
-                    levelsUnlocked[attributes.currentLevel.id-1].unlocked = true;
+                    levelsUnlocked[gameInfo.currentLevel.id-1].unlocked = true;
                     speechOutput += speech.inGameGoNextLevel;
-                    attributes.currentLevel = levelsUnlocked[attributes.currentLevel.id];
-                    InitiateGame(attributes);
-                    attributes.uipage = levelsUnlocked[attributes.currentLevel.id-1].pageName;
+                    gameInfo.currentLevel = levelsUnlocked[gameInfo.currentLevel.id];
+                    InitiateGame();
+                    console.log(gameInfo.boxes);
+                    gameInfo.uipage = levelsUnlocked[gameInfo.currentLevel.id-1].pageName;
                     resetBoxImage();
-                    //attributes.uipage = levelsUnlocked[0].pageName;
-                    speechOutput += attributes.currentLevel.resource;
-                    speechOutput += speech.inGamePleaseChooseBox[0]+attributes.boxes.length+". ";
+                    //gameInfo.uipage = levelsUnlocked[0].pageName;
+                    speechOutput += gameInfo.currentLevel.resource;
+                    speechOutput += speech.inGamePleaseChooseBox[0]+gameInfo.boxes.length+". ";
                   }//Check is level 6 End
                 }//Check win End
               }else{
                 speechOutput +=audios.closingBox
                 +audios.closingBox;
-                boxImage[attributes.firstBox].current = boxImage[attributes.firstBox].resource;
-                boxImage[attributes.secondBox].current = boxImage[attributes.secondBox].resource;
+                boxImage[gameInfo.firstBox].current = boxImage[gameInfo.firstBox].resource;
+                boxImage[gameInfo.secondBox].current = boxImage[gameInfo.secondBox].resource;
               }//Check selected boxes are the same End 
               //Change the box turn
-              attributes.firstBox = undefinedStr;
-              attributes.secondBox = undefinedStr;
-              attributes.boxTurn =boxTurnStr.first;
+              gameInfo.firstBox = undefined;
+              gameInfo.secondBox = undefined;
+              gameInfo.boxTurn =boxTurnStr.first;
             }//Check the box turn End
           }//Check box opened End
         }else{//Check user input
-          speechOutput = speech.inGameBoxInRange[0] + attributes.boxes.length + ". ";
+          speechOutput = speech.inGameBoxInRange[0] + gameInfo.boxes.length + ". ";
         }//Check user input valid End
       }//Check the game over End
     }
-    speechOutput += RepromptText(attributes);
-    repromptText = RepromptText(attributes);
+    speechOutput += RepromptText();
+    repromptText = RepromptText();
     
     if (SupportsAPL(handlerInput)) {
       handlerInput.responseBuilder.addDirective({
         type: alexaPresentationAPL.renderDocument,
-        document: require(attributes.uipage),
+        document: require(gameInfo.uipage),
         datasources: {
           'pageData': {
-              "score" : "Score: " + attributes.totalScore,
-              "currentLevel" : "Level " + attributes.currentLevel.id,
+              "score" : "Score: " + gameInfo.totalScore,
+              "currentLevel" : "Level " + gameInfo.currentLevel.id,
               "Box1": boxImage[0].current,
               "Box2": boxImage[1].current,
               "Box3": boxImage[2].current,
@@ -753,13 +752,13 @@ const ScoreHandler = {
     var repromptText = "";
     // Reset Error Count
     errorCount = 0;
-    if(attributes.state === stateStr.inGame){
-      speechOutput = speech.score[0] +attributes.totalScore+". ";
+    if(gameInfo.state === stateStr.inGame){
+      speechOutput = speech.score[0] +gameInfo.totalScore+". ";
     }else{
       speechOutput = speech.errorGameNotStarted;
     }
-    speechOutput += RepromptText(attributes);
-    repromptText = RepromptText(attributes); 
+    speechOutput += RepromptText();
+    repromptText = RepromptText(); 
     return handlerInput.responseBuilder
       .speak(speechOutput)
       .reprompt(repromptText)
@@ -782,11 +781,11 @@ const OpenedHandler = {
     errorCount = 0;
 
     //Refactoring needed
-    if(attributes.state === stateStr.inGame){
+    if(gameInfo.state === stateStr.inGame){
       var opened = [];
-      for (var i = 0; i < attributes.boxes.length; i++)
+      for (var i = 0; i < gameInfo.boxes.length; i++)
       {
-        if(attributes.boxes[i].opened)
+        if(gameInfo.boxes[i].opened)
           opened.push(i+1);
       }
       if(opened.length > 0){
@@ -799,8 +798,8 @@ const OpenedHandler = {
       speechOutput = "You didn't start the game yet! ";
     }
 
-    speechOutput += RepromptText(attributes);
-    var repromptText = RepromptText(attributes);
+    speechOutput += RepromptText();
+    var repromptText = RepromptText();
     return handlerInput.responseBuilder
       .speak(speechOutput)
       .reprompt(repromptText)
@@ -826,19 +825,19 @@ const YesHandler = {
     
     // Reset Error Count
     errorCount = 0;
-    if(attributes.state ===stateStr.launch){
-      attributes.state = stateStr.menu;
-      if(attributes.logInTimes < 3){
+    if(gameInfo.state ===stateStr.launch){
+      gameInfo.state = stateStr.menu;
+      if(gameInfo.timesLoggedIn < 3){
         speechOutput = speech.menuNewUser;
       }else{
         speechOutput = speech.menu;
       }
     }else{
       speechOutput = speech.yes;
-      speechOutput += RepromptText(attributes);
+      speechOutput += RepromptText();
     }
     
-    var repromptText = RepromptText(attributes);
+    var repromptText = RepromptText();
     
     if (SupportsAPL(handlerInput)) {
       handlerInput.responseBuilder.addDirective({
@@ -862,9 +861,7 @@ const NoHandler = {
   canHandle(handlerInput) {
     //Get request obj
     const request = handlerInput.requestEnvelope.request;
-    //Get Session attributes
-    const attributes = handlerInput.attributesManager.getSessionAttributes();
-    return (request.type === 'IntentRequest' && request.intent.name === 'AMAZON.NoIntent' && attributes.state !== stateStr.launch);
+    return (request.type === 'IntentRequest' && request.intent.name === 'AMAZON.NoIntent');
   },
   handle(handlerInput) {
     //Get Session attributes
@@ -874,16 +871,8 @@ const NoHandler = {
     
     // Reset Error Count
     errorCount = 0;
-    
-    // if(attributes.state === "re"){
-    //   attributes.state = stateStr.inGame;
-    //   speechOutput = speech.gameContinue +RepromptText(attributes);
-    // }else{
-      speechOutput = speech.no +RepromptText(attributes);
-      repromptText = RepromptText(attributes);
-    // }
-    
-    handlerInput.attributesManager.setSessionAttributes(attributes);
+    speechOutput = speech.no +RepromptText();
+    repromptText = RepromptText();
     return handlerInput.responseBuilder
       .speak(speechOutput)
       .reprompt(repromptText)
@@ -895,7 +884,6 @@ const RankHandler = {
   canHandle(handlerInput) {
     //Get request obj
     const request = handlerInput.requestEnvelope.request;
-    //Get Session attributes
     return (request.type === 'IntentRequest' && request.intent.name === 'RankIntent')
     || (request.type === alexaPresentationAPL.userEvent && request.arguments[0] === 'RankIntent');
   },
@@ -903,13 +891,13 @@ const RankHandler = {
     //Get Session attributes
     const attributes = handlerInput.attributesManager.getSessionAttributes();
     var speechOutput = "";
-    var repromptText = RepromptText(attributes);
+    var repromptText = RepromptText();
     // Reset Error Count
     errorCount = 0;
     const userId = handlerInput.requestEnvelope.context.System.user.userId;
     await GetRank(userId,attributes);
-    speechOutput += "Your best score is " + attributes.highScore + ", You are number ";
-    speechOutput +=  attributes.rank + " in the world.";
+    speechOutput += "Your best score is " + attributes.data.bestScore + ", You are number ";
+    speechOutput +=  gameInfo.rank + " in the world.";
     
     if (SupportsAPL(handlerInput)) {
       handlerInput.responseBuilder.addDirective({
@@ -944,33 +932,33 @@ const HelpHandler = {
     // Reset Error Count
     errorCount = 0;
 
-    switch(attributes.state){
+    switch(gameInfo.state){
       case stateStr.menu:
         speechOutput = speech.help;
-        speechOutput += speech.helpInMenu+RepromptText(attributes);      
+        speechOutput += speech.helpInMenu+RepromptText();      
         break;
       case stateStr.inGame:
-        speechOutput = "There are " + attributes.boxes.length + " boxes with animal hidden inside. You need to match two boxes with identical animals. When you found the same two animals, those boxes will stay open. As soon as all the boxes are matched and opened, the game will be finished. To check score, say, Score. To check opened boxes, say, opened. ";
-        speechOutput += speech.helpInGame +RepromptText(attributes);
+        speechOutput = "There are " + gameInfo.boxes.length + " boxes with animal hidden inside. You need to match two boxes with identical animals. When you found the same two animals, those boxes will stay open. As soon as all the boxes are matched and opened, the game will be finished. To check score, say, Score. To check opened boxes, say, opened. ";
+        speechOutput += speech.helpInGame +RepromptText();
         break;
       default:
-        speechOutput += RepromptText(attributes);
+        speechOutput += RepromptText();
     }
-    repromptText = RepromptText(attributes);
-    var intent = attributes.state === stateStr.inGame ? "Box" : "MenuIntent";
+    repromptText = RepromptText();
+    // var intent = gameInfo.state === stateStr.inGame ? "Box" : "MenuIntent";
     
-    if (SupportsAPL(handlerInput)) {
-      handlerInput.responseBuilder.addDirective({
-        type: alexaPresentationAPL.renderDocument,
-        document: require('./aplDocuments/helpUI.json'),
-        datasources: {
-          'helpData': {
-            "text" : speechOutput,
-            "state" : intent
-          }
-        },
-      });
-    }
+    // if (SupportsAPL(handlerInput)) {
+    //   handlerInput.responseBuilder.addDirective({
+    //     type: alexaPresentationAPL.renderDocument,
+    //     document: require('./aplDocuments/helpUI.json'),
+    //     datasources: {
+    //       'helpData': {
+    //         "text" : speechOutput,
+    //         "state" : intent
+    //       }
+    //     },
+    //   });
+    // }
     
     return handlerInput.responseBuilder
       .speak(speechOutput)
@@ -986,13 +974,13 @@ const ExitHandler = {
     return (request.type === 'IntentRequest'
       && (request.intent.name === 'AMAZON.CancelIntent'
         || request.intent.name === 'AMAZON.StopIntent' 
-        || (request.intent.name === 'AMAZON.NoIntent' && (attributes.win|| attributes.state === stateStr.launch))))
+        || (request.intent.name === 'AMAZON.NoIntent' && gameInfo.win)))
         || (request.type === alexaPresentationAPL.userEvent && request.arguments[0] === 'ExitIntent');
   },
   async handle(handlerInput) {
     const attributes = handlerInput.attributesManager.getSessionAttributes();
     
-    if(attributes.state === stateStr.inGame){
+    if(gameInfo.state === stateStr.inGame){
       RecordScore(attributes);
     }
     const userId = handlerInput.requestEnvelope.context.System.user.userId;
@@ -1000,11 +988,11 @@ const ExitHandler = {
     await handlerInput.attributesManager.savePersistentAttributes();
     
     var speechOutput = "Thank you for playing. ";
-    if(attributes.highScore > 0){
-      if(attributes.state === stateStr.inGame || attributes.state === stateStr.win){
+    if(attributes.data.bestScore > 0){
+      if(gameInfo.state === stateStr.inGame || gameInfo.state === stateStr.win){
         await GetRank(userId, attributes);
-        speechOutput +="Your best score is "+attributes.highScore
-        +". Your rank is number "+ attributes.rank 
+        speechOutput +="Your best score is "+attributes.data.bestScore
+        +". Your rank is number "+ gameInfo.rank 
         +" in the world. See you next time!";
       }
     }
@@ -1040,17 +1028,17 @@ const ErrorHandler = {
   handle(handlerInput, error) {
     const attributes = handlerInput.attributesManager.getSessionAttributes();
     var speechOutput = "";
-    var repromptText = RepromptText(attributes);
+    var repromptText = RepromptText();
     errorCount ++;
     // error count 1 => tell user that we don't understand what they said
     if(errorCount === 1){
       speechOutput = "Sorry, I don't understand. ";
     // error count 2 => give user what is valid input
     }else if(errorCount === 2){
-      if(attributes.state === stateStr.inGame){
-        speechOutput += "Choose a box number from 1 to "+attributes.boxes.length+". ";
+      if(gameInfo.state === stateStr.inGame){
+        speechOutput += "Choose a box number from 1 to "+gameInfo.boxes.length+". ";
       }
-      speechOutput += RepromptText(attributes);
+      speechOutput += RepromptText();
     // error count 3 => kick user out from the skill.
     }else if(errorCount === 3){
       speechOutput = "Thank you for playing! See you next time!";
