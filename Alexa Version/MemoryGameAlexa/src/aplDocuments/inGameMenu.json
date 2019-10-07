@@ -11,7 +11,7 @@
             "type": "Frame",
             "width": "100vw",
             "height": "100vh",
-            "backgroundColor": "#55DDEE",
+            "backgroundColor": "#5B5B5B",
             "items": [
                 {
                     "type": "Container",
@@ -25,34 +25,55 @@
                         "height": "60vh",
                         "items": [
                             {
-                                "type": "Text",
-                                "text": "Welcome To",
+                                "type": "Container",
                                 "width": "100vw",
-                                "fontWeight": "800",
-                                "fontSize": "11vh",
-                                "top": "10vh",
-                                "color": "white",
-                                "textAlign": "center"
+                                "height": "20vh",
+                                "justifyContent": "center",
+                                "items" : [
+                                    {
+                                        "type": "Text",
+                                        "text": "${payload.inGameMenuData.textTop}",
+                                        "width": "100vw",
+                                        "fontWeight": "800",
+                                        "fontSize": "12vh",
+                                        "color": "white",
+                                        "textAlign": "center"
+                                    }
+                                ]
                             },
                             {
-                                "type": "Text",
-                                "text": "Memory Game",
+                                "type": "Container",
                                 "width": "100vw",
-                                "fontWeight": "800",
-                                "fontSize": "16vh",
-                                "top": "4vh",
-                                "color": "white",
-                                "textAlign": "center"
+                                "height": "20vh",
+                                "justifyContent": "center",
+                                "items" : [
+                                    {
+                                        "type": "Text",
+                                        "text": "${payload.inGameMenuData.textMid}",
+                                        "width": "100vw",
+                                        "fontWeight": "800",
+                                        "fontSize": "12vh",
+                                        "color": "white",
+                                        "textAlign": "center"
+                                    }
+                                ]
                             },
                             {
-                                "type": "Text",
-                                "text": "${payload.launchData.text}",
+                                "type": "Container",
                                 "width": "100vw",
-                                "fontWeight": "500",
-                                "fontSize": "11vh",
-                                "top": "10vh",
-                                "color": "white",
-                                "textAlign": "center"
+                                "height": "20vh",
+                                "justifyContent": "center",
+                                "items" : [
+                                    {
+                                        "type": "Text",
+                                        "text": "${payload.inGameMenuData.textBot}",
+                                        "width": "100vw",
+                                        "fontWeight": "800",
+                                        "fontSize": "12vh",
+                                        "color": "white",
+                                        "textAlign": "center"
+                                    }
+                                ]
                             }]
                         },
                         {
@@ -119,7 +140,7 @@
                                     "onPress": {
                                         "type": "SendEvent",
                                         "arguments":[
-                                            "ExitIntent"
+                                            "NoIntent"
                                         ]
                                     }
                                 }

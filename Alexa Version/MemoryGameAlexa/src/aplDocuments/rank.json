@@ -12,7 +12,7 @@
                 "type": "Frame",
                 "width": "100vw",
                 "height": "100vh",
-                "backgroundColor": "#55DDEE",
+                "backgroundColor": "#5B5B5B",
                 "items": [
                     {
                         "type": "Container",

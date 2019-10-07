@@ -12,7 +12,7 @@
                 "type": "Frame",
                 "width": "100vw",
                 "height": "100vh",
-                "backgroundColor": "#55DDEE",
+                "backgroundColor": "#5B5B5B",
                 "items": [
                     {
                         "type": "Container",
@@ -88,7 +88,41 @@
                                             "type": "Frame",
                                             "width": "6vw",
                                             "height": "9vh",
-                                            "borderColor": "#",
+                                            "borderColor": "#669977",
+                                            "borderWidth": "2px",
+                                            "borderRadius": "45vw",
+                                            "item": [
+                                                {
+                                                    "type": "Image",
+                                                    "source": "https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/questionMark.png",
+                                                    "scale": "best-fill",
+                                                    "width": "6vw",
+                                                    "height": "9vh"
+                                                }
+                                            ]
+                                        },
+                                        "onPress": {
+                                            "type": "SendEvent",
+                                            "arguments": [
+                                                "HelpIntent"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "type": "Text",
+                                        "text": "",
+                                        "width": "2vw",
+                                        "height": "10vh"
+                                    },
+                                    {
+                                        "type": "TouchWrapper",
+                                        "width": "6vw",
+                                        "height": "9vh",
+                                        "item": {
+                                            "type": "Frame",
+                                            "width": "6vw",
+                                            "height": "9vh",
+                                            "borderColor": "#669977",
                                             "borderWidth": "2px",
                                             "borderRadius": "45vw",
                                             "item": [

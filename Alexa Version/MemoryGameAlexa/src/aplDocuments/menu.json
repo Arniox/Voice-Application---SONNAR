@@ -11,7 +11,7 @@
             "type": "Frame",
             "width": "100vw",
             "height": "100vh",
-            "backgroundColor": "#55DDEE",
+            "backgroundColor": "#5B5B5B",
             "items": [
                 {
                     "type": "Container",
@@ -22,7 +22,8 @@
                         {
                         "type": "Container",
                         "width": "100vw",
-                        "height": "20vh",
+                        "height": "32vh",
+                        "justifyContent": "end",
                         "items": [
                             {
                                 "type": "Text",
@@ -38,7 +39,7 @@
                         {
                             "type": "Container",
                             "width": "100vw",
-                            "height": "60vh",
+                            "height": "50vh",
                             "direction": "column",
                             "alignItems": "center",
                             "justifyContent": "spaceAround",
@@ -130,36 +131,6 @@
                                         "type": "SendEvent",
                                         "arguments":[
                                             "HelpIntent"
-                                        ]
-                                    }
-                                },
-                                {   
-                                    "type": "TouchWrapper",
-                                    "width": "18vw",
-                                    "height": "12vh",
-                                    "item": {
-                                        "type": "Frame",
-                                        "width": "18vw",
-                                        "height": "12vh",
-                                        "borderColor": "white",
-                                        "borderWidth": "5px",
-                                        "borderRadius": "30vw",
-                                        "items": [
-                                            {
-                                                "type": "Text",
-                                                "text": "Exit",
-                                                "color": "white",
-                                                "width": "17vw",
-                                                "height": "12vh",
-                                                "textAlign": "center",
-                                                "textAlignVertical": "center",
-                                                "fontSize": "9vh"
-                                            }]
-                                    },
-                                    "onPress": {
-                                        "type": "SendEvent",
-                                        "arguments":[
-                                            "ExitIntent"
                                         ]
                                     }
                                 }

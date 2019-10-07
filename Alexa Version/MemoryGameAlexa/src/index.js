@@ -73,6 +73,7 @@ const alexaPresentationAPL = {
   userEvent: "Alexa.Presentation.APL.UserEvent"
 };
 
+// *nc May need remove the animals without image once confirm
 //animal array
 const animals = [
   {
@@ -138,6 +139,7 @@ const animals = [
   }
 ];
 
+// *nc May need delete some of the boxes once confirm only 9 types
 const boxImage = [
   {
     name: "box1",
@@ -271,15 +273,19 @@ const levelsUnlocked = [
         numberOfSounds: 8,
         pageName: "./aplDocuments/eightSoundsPage.json",
         bestTry: 8
-    },{
+    },
+    //*nc Some of the resources may need change
+    {
         id: 5,
         resource: "<audio src='https://alexa-hackathon-memory-game-assets.s3.amazonaws.com/sounds/Voices/Memory_Box_Ammount_20.mp3'/>",
         name: "level 5",
         unlocked: false,
-        numberOfSounds: 10,
-        pageName: "./aplDocuments/tenSoundsPage.json",
-        bestTry: 10
-    },{
+        numberOfSounds: 9,
+        pageName: "./aplDocuments/nineSoundsPage.json",
+        bestTry: 9
+    }
+    // *nc May delete below code once confim only 9 type of voice
+    /*,{
         id: 6,
         resource: "<audio src='https://alexa-hackathon-memory-game-assets.s3.amazonaws.com/sounds/Voices/Memory_Box_Ammount_24.mp3'/>",
         name: "level 6",
@@ -287,7 +293,7 @@ const levelsUnlocked = [
         numberOfSounds: 12,
         pageName: "./aplDocuments/twelveSoundsPage.json",
         bestTry: 12
-    }
+    }*/
 ];
 
 /*
@@ -308,7 +314,7 @@ const speech = {
 
   inGamePleaseChooseBox: ["Please, choose the first box to start off between 1 and ", "Please choose the first box to start off between 1 and +gameInfo.boxes.length"],
   inGameBoxInRange: ["Choose from 1 to ", "Choose from 1 to + gameInfo.boxes.length"],
-  inGameBackToMenu: "if you go back to menu, you will lose your current level progress. do you really wanna go back to menu? if yes, please say menu again. if not, ",
+  inGameBackToMenu: "if you go back to menu, you will lose your current level progress. do you really wanna go back to menu? ",
   inGameBoxChosen: "The box is already choosen for your first box! Choose another box. ",
   inGameBoxOpened: "The chosen box is already opened! Choose another box. ",
   inGameGoNextLevel: "Let's move on next level. ",
@@ -362,6 +368,7 @@ const InitiateGame = function(){
   gameInfo.boxTurn = boxTurnStr.first;
   //Number of tries in this level
   gameInfo.numOfTry = 0;
+  // The inital ingame page set to three sounds
   gameInfo.uipage = "./aplDocuments/threeSoundsPage.json";
 };
 
@@ -393,6 +400,7 @@ const RecordScore = function(attributes){
   } 
 };
 
+//To identify the current device support the APL or not
 const SupportsAPL = function(handlerInput) {
   const supportedInterfaces = 
   handlerInput.requestEnvelope.context.System.device.supportedInterfaces;
@@ -404,11 +412,6 @@ const resetBoxImage = function(){
   for(var i = 0; i < 24; i++){
     boxImage[i].current = boxImage[i].resource;
   }
-};
-
-const frozenUI = function(milliseconds) {
-  setTimeout(function(){ 
-  }, 5000);
 };
 
 const LaunchHandler = {
@@ -493,7 +496,7 @@ const StartHandler = {
       if (SupportsAPL(handlerInput)) {
         handlerInput.responseBuilder.addDirective({
           type: alexaPresentationAPL.renderDocument,
-          document: require('./aplDocuments/threeSoundsPage.json'),
+          document: require(gameInfo.uipage),
           datasources: {
             'pageData': {
                 "score" : "Score: " + gameInfo.totalScore,
@@ -534,34 +537,25 @@ const MenuHandler = {
     const attributes = handlerInput.attributesManager.getSessionAttributes();
     var speechOutput="";
     var repromptText="";
-    resetBoxImage();
     // Reset Error Count
     errorCount = 0;
-    if(gameInfo.state === stateStr.inGame){
-      if(typeof gameInfo.backToMenu === 'undefined'){
-        speechOutput += speech.inGameBackToMenu + RepromptText();
-        gameInfo.backToMenu = true;
-      }else{
-        gameInfo.state = stateStr.menu;
-        gameInfo.backToMenu = undefined;
-        speechOutput += RepromptText();
-        
-        if (SupportsAPL(handlerInput)) {
-          handlerInput.responseBuilder.addDirective({
-            type: alexaPresentationAPL.renderDocument,
-            document: require('./aplDocuments/menu.json'),
-            datasources: {
-              'menuData': {
-              }
-            },
-          });
-        }
+    if(gameInfo.state === stateStr.inGame && gameInfo.win === false){
+      if (SupportsAPL(handlerInput)) {
+        handlerInput.responseBuilder.addDirective({
+          type: 'Alexa.Presentation.APL.RenderDocument',
+          document: require('./aplDocuments/inGameMenu.json'),
+          datasources: {
+            'inGameMenuData': {
+              "textTop": "Do you really want to",
+              "textMid": "Go back to Menu?",
+              "textBot": "You will lose the progress."
+            }
+          },
+        });
       }
     }else{
-        gameInfo.state = stateStr.menu;
-        gameInfo.backToMenu = undefined;
-        speechOutput += RepromptText();
-        
+      gameInfo.state = stateStr.menu;
+      speechOutput += RepromptText();
       if (SupportsAPL(handlerInput)) {
         handlerInput.responseBuilder.addDirective({
           type: alexaPresentationAPL.renderDocument,
@@ -654,7 +648,8 @@ const BoxHandler = {
                   gameInfo.totalScore += Math.round( 1000*(Math.pow(gameInfo.currentLevel.bestTry, 1/(gameInfo.numOfTry/gameInfo.currentLevel.bestTry*1.0))));
                   gameInfo.scoreText = "Score: " + gameInfo.totalScore;
                   RecordScore(attributes);
-                  if(gameInfo.currentLevel.id === 6){
+                  // *nc need change to 6 if set back to 6 level
+                  if(gameInfo.currentLevel.id === 5){
                     gameInfo.state = stateStr.win;
                     speechOutput += speech.gameWin[0]+ speech.score[0] + gameInfo.totalScore+". ";
                     handlerInput.attributesManager.setPersistentAttributes(attributes);
@@ -667,7 +662,6 @@ const BoxHandler = {
                     console.log(gameInfo.boxes);
                     gameInfo.uipage = levelsUnlocked[gameInfo.currentLevel.id-1].pageName;
                     resetBoxImage();
-                    //gameInfo.uipage = levelsUnlocked[0].pageName;
                     speechOutput += gameInfo.currentLevel.resource;
                     speechOutput += speech.inGamePleaseChooseBox[0]+gameInfo.boxes.length+". ";
                   }//Check is level 6 End
@@ -692,6 +686,7 @@ const BoxHandler = {
     speechOutput += RepromptText();
     repromptText = RepromptText();
     
+    // *nc Need remove some of the data once confirm nine type only
     if (SupportsAPL(handlerInput)) {
       handlerInput.responseBuilder.addDirective({
         type: alexaPresentationAPL.renderDocument,
@@ -818,19 +813,27 @@ const YesHandler = {
     || (request.type === alexaPresentationAPL.userEvent && request.arguments[0] === 'YesIntent');
   },
   handle(handlerInput) {
-    //Get Session attributes
-    const attributes = handlerInput.attributesManager.getSessionAttributes();
     
     var speechOutput = "";
     
     // Reset Error Count
     errorCount = 0;
-    if(gameInfo.state ===stateStr.launch){
+    if(gameInfo.state ===stateStr.inGame){
       gameInfo.state = stateStr.menu;
       if(gameInfo.timesLoggedIn < 3){
         speechOutput = speech.menuNewUser;
       }else{
         speechOutput = speech.menu;
+      }
+      if (SupportsAPL(handlerInput)) {
+        handlerInput.responseBuilder.addDirective({
+          type: alexaPresentationAPL.renderDocument,
+          document: require('./aplDocuments/menu.json'),
+          datasources: {
+            'menuData': {
+            }
+          },
+        });
       }
     }else{
       speechOutput = speech.yes;
@@ -838,17 +841,6 @@ const YesHandler = {
     }
     
     var repromptText = RepromptText();
-    
-    if (SupportsAPL(handlerInput)) {
-      handlerInput.responseBuilder.addDirective({
-        type: alexaPresentationAPL.renderDocument,
-        document: require('./aplDocuments/menu.json'),
-        datasources: {
-          'menuData': {
-          }
-        },
-      });
-    }
     
     return handlerInput.responseBuilder
       .speak(speechOutput)
@@ -861,17 +853,57 @@ const NoHandler = {
   canHandle(handlerInput) {
     //Get request obj
     const request = handlerInput.requestEnvelope.request;
-    return (request.type === 'IntentRequest' && request.intent.name === 'AMAZON.NoIntent');
+    return (request.type === 'IntentRequest' && request.intent.name === 'AMAZON.NoIntent')
+    || (request.type === alexaPresentationAPL.userEvent && request.arguments[0] === 'NoIntent');
   },
   handle(handlerInput) {
-    //Get Session attributes
-    const attributes = handlerInput.attributesManager.getSessionAttributes();
     var speechOutput = "";
     var repromptText = "";
     
     // Reset Error Count
     errorCount = 0;
-    speechOutput = speech.no +RepromptText();
+    if(gameInfo.state ===stateStr.inGame){
+      speechOutput = RepromptText();
+      if (SupportsAPL(handlerInput)) {
+        handlerInput.responseBuilder.addDirective({
+          type: alexaPresentationAPL.renderDocument,
+          document: require(gameInfo.uipage),
+          datasources: {
+            'pageData': {
+                "score" : "Score: " + gameInfo.totalScore,
+                "currentLevel" : "Level " + gameInfo.currentLevel.id,
+                "Box1": boxImage[0].current,
+                "Box2": boxImage[1].current,
+                "Box3": boxImage[2].current,
+                "Box4": boxImage[3].current,
+                "Box5": boxImage[4].current,
+                "Box6": boxImage[5].current,
+                "Box7": boxImage[6].current,
+                "Box8": boxImage[7].current,
+                "Box9": boxImage[8].current,
+                "Box10": boxImage[9].current,
+                "Box11": boxImage[10].current,
+                "Box12": boxImage[11].current,
+                "Box13": boxImage[12].current,
+                "Box14": boxImage[13].current,
+                "Box15": boxImage[14].current,
+                "Box16": boxImage[15].current,
+                "Box17": boxImage[16].current,
+                "Box18": boxImage[17].current,
+                "Box19": boxImage[18].current,
+                "Box20": boxImage[19].current,
+                "Box21": boxImage[20].current,
+                "Box22": boxImage[21].current,
+                "Box23": boxImage[22].current,
+                "Box24": boxImage[23].current
+            }
+          },
+        });
+      } 
+    }else{
+      speechOutput = speech.no +RepromptText();
+    }
+    
     repromptText = RepromptText();
     return handlerInput.responseBuilder
       .speak(speechOutput)
@@ -897,7 +929,7 @@ const RankHandler = {
     const userId = handlerInput.requestEnvelope.context.System.user.userId;
     await GetRank(userId,attributes);
     speechOutput += "Your best score is " + attributes.data.bestScore + ", You are number ";
-    speechOutput +=  gameInfo.rank + " in the world.";
+    speechOutput +=  gameInfo.rank + " in the world. ";
     
     if (SupportsAPL(handlerInput)) {
       handlerInput.responseBuilder.addDirective({
@@ -910,6 +942,7 @@ const RankHandler = {
         },
       });
     }
+    speechOutput += RepromptText();
 
     return handlerInput.responseBuilder
       .speak(speechOutput)
@@ -945,6 +978,8 @@ const HelpHandler = {
         speechOutput += RepromptText();
     }
     repromptText = RepromptText();
+    
+    //*nc Will delete once confirm not needed
     // var intent = gameInfo.state === stateStr.inGame ? "Box" : "MenuIntent";
     
     // if (SupportsAPL(handlerInput)) {
@@ -974,8 +1009,7 @@ const ExitHandler = {
     return (request.type === 'IntentRequest'
       && (request.intent.name === 'AMAZON.CancelIntent'
         || request.intent.name === 'AMAZON.StopIntent' 
-        || (request.intent.name === 'AMAZON.NoIntent' && gameInfo.win)))
-        || (request.type === alexaPresentationAPL.userEvent && request.arguments[0] === 'ExitIntent');
+        || (request.intent.name === 'AMAZON.NoIntent' && gameInfo.win)));
   },
   async handle(handlerInput) {
     const attributes = handlerInput.attributesManager.getSessionAttributes();
@@ -997,14 +1031,12 @@ const ExitHandler = {
       }
     }
     
-    
     return handlerInput.responseBuilder
       .speak(speechOutput)
       .withShouldEndSession(true)
       .getResponse();
   },
 };
-
 
 const SessionEndedRequestHandler = {
   canHandle(handlerInput) {
@@ -1047,7 +1079,6 @@ const ErrorHandler = {
       .withShouldEndSession(true)
       .getResponse();
     }
-    
     
     return handlerInput.responseBuilder
       .speak(speechOutput)
