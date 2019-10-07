@@ -26,7 +26,7 @@
                         "items": [
                             {
                                 "type": "Text",
-                                "text": "Welcome To",
+                                "text": "Do you really want to",
                                 "width": "100vw",
                                 "fontWeight": "800",
                                 "fontSize": "11vh",
@@ -36,7 +36,7 @@
                             },
                             {
                                 "type": "Text",
-                                "text": "Memory Game",
+                                "text": "Go back to Menu?",
                                 "width": "100vw",
                                 "fontWeight": "800",
                                 "fontSize": "16vh",
@@ -46,7 +46,7 @@
                             },
                             {
                                 "type": "Text",
-                                "text": "${payload.launchData.text}",
+                                "text": "${payload.inGameMenuData.text}",
                                 "width": "100vw",
                                 "fontWeight": "500",
                                 "fontSize": "11vh",
@@ -119,7 +119,7 @@
                                     "onPress": {
                                         "type": "SendEvent",
                                         "arguments":[
-                                            "ExitIntent"
+                                            "NoIntent"
                                         ]
                                     }
                                 }
