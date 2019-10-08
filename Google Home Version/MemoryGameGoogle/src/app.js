@@ -525,9 +525,10 @@ app.setHandler({
         }else{
             this.$speech.addText(
                 '<audio src="https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/bgm.mp3"/>'+
-                '<p>Hello and welcome. We have recieved a new supply of crates and your goal is to match the '+
-                'crates up so that the pair of animals gets shipped off together!</p> '+
-                '<p>Are you ready to help ship them off?</p>'
+                '<audio src="https://alexa-hackathon-memory-game-assets.s3.amazonaws.com/sounds/Voices/Memory_Welcome.mp3"/> '+
+                // '<p>Hello and welcome. We have recieved a new supply of crates and your goal is to match the '+
+                // 'crates up so that the pair of animals gets shipped off together!</p> '+
+                '<p> Are you ready to help ship them off?</p>'
             );
         }        
         
@@ -808,14 +809,13 @@ app.setHandler({
         }        
 
         //----------------Intro---------------------
-        if(numberOfTimesLoggedIn < 5){
+        if(numberOfTimesLoggedIn < 5 && currentLevel < 2){
             if(fromMenu){
                 //Welcome from the menu to the game
                 speech += "<p>We hope you are ready for our memory game. </p>";
             }
             //Introduction to the game
-            speech += "<p>You can select a main menu option at anytime during the game to exit out of it! </p>"+
-                      "<p>You must also pick a box to play! </p>";
+            speech += "<p>You can say back at anytime during the game to return to the menu! </p>";
         }
         else{
             if(fromMenu){
@@ -831,8 +831,8 @@ app.setHandler({
             (levelsUnlocked[currentLevel-1].numberOfSounds*2) + " sounds to discover. Meaning a total of " +
             levelsUnlocked[currentLevel-1].numberOfSounds + " pairs to match up! </p>";
 
-            speech += "<p>Please choose a box to start off between 1 and "+inGameSounds.length;
-        }else if (numberOfTimesLoggedIn >= 5 && currentLevel < 6) //Shortened level info 
+            speech += "<p>Please choose a box between 1 and " + inGameSounds.length + " to start";
+        }else if (numberOfTimesLoggedIn >= 5 && currentLevel < 6) //Shortened level info
         {
             speech += "<p> " + levelsUnlocked[currentLevel-1].name + "! </p>" +
             "<p>" + (levelsUnlocked[currentLevel-1].numberOfSounds*2) + " sounds! </p>" +
@@ -1203,7 +1203,7 @@ app.setHandler({
                                 inGameSounds[firstBoxChoice].opened = false;
                                 inGameSounds[secondBoxChoice].opened = false;
                                 //Tell user they where incorrect
-                                speech += "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/fail2.mp3'/>"+
+                                speech += //"<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/fail2.mp3'/>"+
                                           "<audio src='https://alexa-hackathon-memory-game-assets.s3.amazonaws.com/sounds/Boxes/door_slam.mp3'/>"+
                                           "<audio src='https://alexa-hackathon-memory-game-assets.s3.amazonaws.com/sounds/Boxes/door_slam.mp3'/>";
 
@@ -1309,7 +1309,7 @@ app.setHandler({
 
             //---------Display Generation-----------------------------
             let startList = new List();
-            startList.setTitle('Back to menu?');
+            startList.setTitle('Reset Game?');
             startList.addItem(yesItem);
             startList.addItem(noItem);
             this.$googleAction.showList(startList);
@@ -1331,7 +1331,7 @@ app.setHandler({
             }
             //---------Display Generation-----------------------------
             let startList = new List();
-            startList.setTitle('Back to menu?');
+            startList.setTitle('Return to menu?');
             startList.addItem(yesItem);
             startList.addItem(noItem);
             this.$googleAction.showList(startList);
@@ -1540,19 +1540,19 @@ function getRandomSpeech(state){
         case "choosingFirst":
             switch(randomSpeech){
                 case 0:
-                    speech = "Ok, choose another crate to open!";
+                    speech = "great, now choose another crate to open! ";
                     break;
                 case 1:
                     speech = "Just one more left!";
                     break;
                 case 2:
-                    speech = "We need to crack one more open!";
+                    speech = "We need to crack one more open! ";
                     break;
                 case 3:
-                    speech = "Nice guess. Just one left!";
+                    speech = "Nice guess. Just one left! ";
                     break;
                 case 4:
-                    speech = "You're doing well!";
+                    speech = "What a beautiful " + inGameSounds[firstBoxChoice].name;
                     break;
                 case 5:
                     speech = "hmmmmmm";
@@ -1565,7 +1565,7 @@ function getRandomSpeech(state){
                     speech = "Nice, you found a pair of "+inGameSounds[firstBoxChoice].pluralName;
                     break;
                 case 1:
-                    speech = "Oh wow, nice!";
+                    speech = "Oh wow, nice! ";
                     break;
                 case 2:
                     speech = inGameSounds[firstBoxChoice].pluralName + ", awe, so adorable!";
@@ -1577,14 +1577,14 @@ function getRandomSpeech(state){
                     speech = inGameSounds[firstBoxChoice].pluralName + " is such a strange word, don't ya think?";
                     break;
                 case 5:
-                    speech = "YeeHaw";
+                    speech = "YeeeeeeHaw";
                     break;
             }
             break;
         case "looseGuess":
             switch(randomSpeech){
                 case 0:
-                    speech = "Awe, that's a shame. Better luck next time!";
+                    speech = "Awe, that's a shame. ";
                     break;
                 case 1:
                     speech = "Sorry, these two were incorrect";
@@ -1685,7 +1685,7 @@ function calculateScore()
         }
         else
         {
-            playerScore += 1000*(Math.pow(levelsUnlocked[i].minimumTries, 1/(levelsUnlocked[i].tries/levelsUnlocked[i].minimumTries)));
+            playerScore += Math.floor(1000*(Math.pow(levelsUnlocked[i].minimumTries, 1/(levelsUnlocked[i].tries/levelsUnlocked[i].minimumTries))));
             console.log("playerScore is now: "+playerScore);
             console.log("level " +(i + 1)+" tries = " + levelsUnlocked[i].tries);
         }            
