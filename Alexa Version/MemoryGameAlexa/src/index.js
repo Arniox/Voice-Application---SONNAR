@@ -540,9 +540,9 @@ const MenuHandler = {
       if (SupportsAPL(handlerInput)) {
         handlerInput.responseBuilder.addDirective({
           type: 'Alexa.Presentation.APL.RenderDocument',
-          document: require('./aplDocuments/inGameMenu.json'),
+          document: require('./aplDocuments/yesOrNo.json'),
           datasources: {
-            'inGameMenuData': {
+            'yesOrNoData': {
               "textTop": "Do you really want to",
               "textMid": "Go back to Menu?",
               "textBot": "You will lose the progress."
@@ -646,7 +646,7 @@ const BoxHandler = {
                   gameInfo.scoreText = "Score: " + gameInfo.totalScore;
                   RecordScore(attributes);
                   // *nc need change to 6 if set back to 6 level
-                  if(gameInfo.currentLevel.id === 5){
+                  if(gameInfo.currentLevel.id === 1){
                     gameInfo.state = stateStr.win;
                     speechOutput += speech.gameWin[0]+ speech.score[0] + gameInfo.totalScore+". ";
                     handlerInput.attributesManager.setPersistentAttributes(attributes);
@@ -688,9 +688,9 @@ const BoxHandler = {
       if (SupportsAPL(handlerInput)) {
         handlerInput.responseBuilder.addDirective({
           type: alexaPresentationAPL.renderDocument,
-          document: require('./aplDocuments/inGameMenu.json'),
+          document: require('./aplDocuments/yesOrNo.json'),
           datasources: {
-            'inGameMenuData': {
+            'yesOrNoData': {
               "textTop": "Congradulations!",
               "textMid": "You've got "+gameInfo.totalScore+"! ",
               "textBot": "Do you want to play again?"
