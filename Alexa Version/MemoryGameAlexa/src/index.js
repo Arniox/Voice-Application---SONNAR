@@ -13,15 +13,15 @@ const { DynamoDbPersistenceAdapter } = require('ask-sdk-dynamodb-persistence-ada
 var gameInfo = {};
 
 //Execute query to get rank
-const RankQuery = function(userId,bestScore){
+const RankQuery = function(bestScore){
   return new Promise(function (resolve, reject) {
     var dynamodb = new AWS.DynamoDB.DocumentClient();
     var params = {
         TableName:ddbTableName,
-        ProjectionExpression: "#att.#dt.#bS",
-        FilterExpression: "#att.#dt.#bS > :bS",
+        ProjectionExpression: "#ud.#dt.#bS",
+        FilterExpression: "#ud.#dt.#bS > :bS",
         ExpressionAttributeNames: {
-          "#att": "attributes",
+          "#ud": "userData",
           "#dt" : "data",
           "#bS": "bestScore"
         },
@@ -44,8 +44,8 @@ const RankQuery = function(userId,bestScore){
   });
 };
 
-const GetRank = function(userId,attributes){
-  return RankQuery(userId, attributes.data.bestScore).then((rank) => {
+const GetRank = function(attributes){
+  return RankQuery(attributes.data.bestScore).then((rank) => {
         gameInfo.rank = rank;
   });
 };
@@ -305,7 +305,7 @@ However, if any speeches are not followed by any attributes, then it is not an a
 const speech = {
   repromptMenu: "Please select a option from: Start, show my rank, ask for help or exit the game!",
   repromptinGame: ["Please, choose the "," box!","Please choose the + gameInfoboxTurn+ box!"],
-  repromptWin: "Say good bye, to exit game or say menu, to go back to the main menu.",
+  repromptWin: "Do you wanna play a new game?",
   
   welcomeNewUser: "Hello and welcome. We have recieved a new supply of crates. And your goal is to match the  crates up. So that, the pair of animals gets shipped off together! ",
   welcomeBack: "Welcome back! ",
@@ -470,8 +470,9 @@ const LaunchHandler = {
 const StartHandler = {
   canHandle(handlerInput) {
     const request = handlerInput.requestEnvelope.request;
-    return (request.type === 'IntentRequest' && request.intent.name === 'StartIntent')
-    || (request.type === alexaPresentationAPL.userEvent && request.arguments[0] === 'StartIntent');
+    return (request.type === 'IntentRequest' && (request.intent.name === 'StartIntent'||(request.intent.name === 'AMAZON.YesIntent' && gameInfo.state === stateStr.win)))
+    || (request.type === alexaPresentationAPL.userEvent && (request.arguments[0] === 'StartIntent' ||(request.arguments[0] === 'YesIntent' && gameInfo.state === stateStr.win)));
+    
   },
   handle(handlerInput) {
     //Get request obj
@@ -483,7 +484,7 @@ const StartHandler = {
     // Reset Error Count
     errorCount = 0;
 
-    if(gameInfo.state === stateStr.menu){
+    if(gameInfo.state === stateStr.menu||gameInfo.state === stateStr.win){
       resetBoxImage();
       gameInfo.state = stateStr.inGame;
       gameInfo.totalScore = 0;
@@ -531,10 +532,6 @@ const MenuHandler = {
     || (request.type === alexaPresentationAPL.userEvent && request.arguments[0] === 'MenuIntent');
   },
   handle(handlerInput) {
-    //Get request obj
-    const request = handlerInput.requestEnvelope.request;
-    //Get Session attributes
-    const attributes = handlerInput.attributesManager.getSessionAttributes();
     var speechOutput="";
     var repromptText="";
     // Reset Error Count
@@ -687,42 +684,59 @@ const BoxHandler = {
     repromptText = RepromptText();
     
     // *nc Need remove some of the data once confirm nine type only
-    if (SupportsAPL(handlerInput)) {
-      handlerInput.responseBuilder.addDirective({
-        type: alexaPresentationAPL.renderDocument,
-        document: require(gameInfo.uipage),
-        datasources: {
-          'pageData': {
-              "score" : "Score: " + gameInfo.totalScore,
-              "currentLevel" : "Level " + gameInfo.currentLevel.id,
-              "Box1": boxImage[0].current,
-              "Box2": boxImage[1].current,
-              "Box3": boxImage[2].current,
-              "Box4": boxImage[3].current,
-              "Box5": boxImage[4].current,
-              "Box6": boxImage[5].current,
-              "Box7": boxImage[6].current,
-              "Box8": boxImage[7].current,
-              "Box9": boxImage[8].current,
-              "Box10": boxImage[9].current,
-              "Box11": boxImage[10].current,
-              "Box12": boxImage[11].current,
-              "Box13": boxImage[12].current,
-              "Box14": boxImage[13].current,
-              "Box15": boxImage[14].current,
-              "Box16": boxImage[15].current,
-              "Box17": boxImage[16].current,
-              "Box18": boxImage[17].current,
-              "Box19": boxImage[18].current,
-              "Box20": boxImage[19].current,
-              "Box21": boxImage[20].current,
-              "Box22": boxImage[21].current,
-              "Box23": boxImage[22].current,
-              "Box24": boxImage[23].current
-          }
-        },
-      });
-    }    
+    if(gameInfo.state === stateStr.win){
+      if (SupportsAPL(handlerInput)) {
+        handlerInput.responseBuilder.addDirective({
+          type: alexaPresentationAPL.renderDocument,
+          document: require('./aplDocuments/inGameMenu.json'),
+          datasources: {
+            'inGameMenuData': {
+              "textTop": "Congradulations!",
+              "textMid": "You've got "+gameInfo.totalScore+"! ",
+              "textBot": "Do you want to play again?"
+            }
+          },
+        });
+      }    
+    }else{
+      if (SupportsAPL(handlerInput)) {
+        handlerInput.responseBuilder.addDirective({
+          type: alexaPresentationAPL.renderDocument,
+          document: require(gameInfo.uipage),
+          datasources: {
+            'pageData': {
+                "score" : "Score: " + gameInfo.totalScore,
+                "currentLevel" : "Level " + gameInfo.currentLevel.id,
+                "Box1": boxImage[0].current,
+                "Box2": boxImage[1].current,
+                "Box3": boxImage[2].current,
+                "Box4": boxImage[3].current,
+                "Box5": boxImage[4].current,
+                "Box6": boxImage[5].current,
+                "Box7": boxImage[6].current,
+                "Box8": boxImage[7].current,
+                "Box9": boxImage[8].current,
+                "Box10": boxImage[9].current,
+                "Box11": boxImage[10].current,
+                "Box12": boxImage[11].current,
+                "Box13": boxImage[12].current,
+                "Box14": boxImage[13].current,
+                "Box15": boxImage[14].current,
+                "Box16": boxImage[15].current,
+                "Box17": boxImage[16].current,
+                "Box18": boxImage[17].current,
+                "Box19": boxImage[18].current,
+                "Box20": boxImage[19].current,
+                "Box21": boxImage[20].current,
+                "Box22": boxImage[21].current,
+                "Box23": boxImage[22].current,
+                "Box24": boxImage[23].current
+            }
+          },
+        });
+      }    
+    }
+      
       
     //Save Session attributes
     handlerInput.attributesManager.setSessionAttributes(attributes);
@@ -809,8 +823,8 @@ const YesHandler = {
     //Get request obj
     const request = handlerInput.requestEnvelope.request;
     
-    return (request.type === 'IntentRequest' && request.intent.name === 'AMAZON.YesIntent')
-    || (request.type === alexaPresentationAPL.userEvent && request.arguments[0] === 'YesIntent');
+    return (request.type === 'IntentRequest' && request.intent.name === 'AMAZON.YesIntent' && gameInfo.state !== stateStr.win)
+    || (request.type === alexaPresentationAPL.userEvent && request.arguments[0] === 'YesIntent' && gameInfo.state !== stateStr.win);
   },
   handle(handlerInput) {
     
@@ -853,8 +867,8 @@ const NoHandler = {
   canHandle(handlerInput) {
     //Get request obj
     const request = handlerInput.requestEnvelope.request;
-    return (request.type === 'IntentRequest' && request.intent.name === 'AMAZON.NoIntent')
-    || (request.type === alexaPresentationAPL.userEvent && request.arguments[0] === 'NoIntent');
+    return (request.type === 'IntentRequest' && request.intent.name === 'AMAZON.NoIntent' && gameInfo.state !== stateStr.win)
+    || (request.type === alexaPresentationAPL.userEvent && request.arguments[0] === 'NoIntent' && gameInfo.state !== stateStr.win);
   },
   handle(handlerInput) {
     var speechOutput = "";
@@ -926,8 +940,7 @@ const RankHandler = {
     var repromptText = RepromptText();
     // Reset Error Count
     errorCount = 0;
-    const userId = handlerInput.requestEnvelope.context.System.user.userId;
-    await GetRank(userId,attributes);
+    await GetRank(attributes);
     speechOutput += "Your best score is " + attributes.data.bestScore + ", You are number ";
     speechOutput +=  gameInfo.rank + " in the world. ";
     
@@ -1009,13 +1022,15 @@ const ExitHandler = {
     return (request.type === 'IntentRequest'
       && (request.intent.name === 'AMAZON.CancelIntent'
         || request.intent.name === 'AMAZON.StopIntent' 
-        || (request.intent.name === 'AMAZON.NoIntent' && gameInfo.win)));
+        || (request.intent.name === 'AMAZON.NoIntent' && gameInfo.state === stateStr.win)))
+    || (request.type === alexaPresentationAPL.userEvent && request.arguments[0] === 'NoIntent' && gameInfo.state === stateStr.win);
   },
   async handle(handlerInput) {
     const attributes = handlerInput.attributesManager.getSessionAttributes();
     
-    if(gameInfo.state === stateStr.inGame){
+    if(gameInfo.state === stateStr.inGame || gameInfo.state === stateStr.win){
       RecordScore(attributes);
+      console.log("in win state");
     }
     const userId = handlerInput.requestEnvelope.context.System.user.userId;
     handlerInput.attributesManager.setPersistentAttributes(attributes);
@@ -1024,7 +1039,7 @@ const ExitHandler = {
     var speechOutput = "Thank you for playing. ";
     if(attributes.data.bestScore > 0){
       if(gameInfo.state === stateStr.inGame || gameInfo.state === stateStr.win){
-        await GetRank(userId, attributes);
+        await GetRank(attributes);
         speechOutput +="Your best score is "+attributes.data.bestScore
         +". Your rank is number "+ gameInfo.rank 
         +" in the world. See you next time!";
