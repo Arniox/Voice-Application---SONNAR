@@ -338,8 +338,8 @@ const speech = {
   no: "No, no, no, ",
   
   gameContinue: "Okay, the game continues! ",
-  help: "There are a set of boxes with animal hidden inside. You need to open two boxes and find same animals inside. When you have found the same animals within a turn, those boxes will stay open. As soon as every boxes are matched and opened, you will go to the next level. When you finish level six, You will win the game. The score will be calcultated every end of levels. ",
-  helpInMenu: "Here's a list of what you could choose.",
+  help: "There is a set of boxes with animal hidden inside. You need to open two boxes and find same animals inside. When you have found the same animals within a turn, those boxes will stay open. As soon as every boxes are matched and opened, you will go to the next level. When you finish level six, You will win the game. The score will be calcultated every end of levels. ",
+  helpInMenu: " .",
   helpInGame: "To check score, say, Score. To check opened boxes, say, opened. Now. Let's go back to game!"
 };
 
@@ -540,7 +540,7 @@ const MenuHandler = {
     // Reset Error Count
     errorCount = 0;
     if(gameInfo.state === stateStr.inGame && gameInfo.win === false){
-    	speechOutput += speech.inGameBackToMenu;
+      speechOutput += speech.inGameBackToMenu;
       if (SupportsAPL(handlerInput)) {
         handlerInput.responseBuilder.addDirective({
           type: 'Alexa.Presentation.APL.RenderDocument',
@@ -881,8 +881,8 @@ const NoHandler = {
     // Reset Error Count
     errorCount = 0;
     if(gameInfo.state === stateStr.inGame){
-    	speechOutput += speech.gameContinue;
-      	speechOutput += RepromptText();
+      speechOutput += speech.gameContinue;
+        speechOutput += RepromptText();
       if (SupportsAPL(handlerInput)) {
         handlerInput.responseBuilder.addDirective({
           type: alexaPresentationAPL.renderDocument,
