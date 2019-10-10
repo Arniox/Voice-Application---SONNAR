@@ -962,28 +962,11 @@ const RankHandler = {
     }
     speechOutput += RepromptText();
 
-    return TriggerClick(handlerInput);
+    return handlerInput.responseBuilder
+      .speak(speechOutput)
+      .reprompt(repromptText)
+      .getResponse();
   },
-};
-
-const asyncFunc = (...args) => new Promise((resolve) => {
-
-  setTimeout(resolve, 1000, computeResult(...args));
-
-});
-
-const TriggerClick = function(handlerInput) {
-  const attributes = handlerInput.attributesManager.getSessionAttributes();
-  const fs = require("fs");
-  var speechOutput = "";
-  var repromptText = RepromptText();
-  if(gameInfo === state.menu){
-    var content = fs.readFileSync("./aplDocuments/rank.json");
-    var obj = JSON.parse(content);
-    return  $(AlexaButton).trigger("click");
-  }else{
-
-  }
 };
 
 const HelpHandler = {
