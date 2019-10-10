@@ -12,6 +12,9 @@ const ddbTableName = 'MemoryGameUsers';
 const { DynamoDbPersistenceAdapter } = require('ask-sdk-dynamodb-persistence-adapter');
 var gameInfo = {};
 
+const jQuery = require('jquery');
+const $ = jQuery;
+
 //Execute query to get rank
 const RankQuery = function(bestScore){
   return new Promise(function (resolve, reject) {
@@ -307,7 +310,7 @@ const speech = {
   repromptinGame: ["Please, choose the "," box!","Please choose the + gameInfoboxTurn+ box!"],
   repromptWin: "Do you wanna play a new game?",
   
-  welcomeNewUser: "Hello and welcome. We have recieved a new supply of crates. And your goal is to match the  crates up. So that, the pair of animals gets shipped off together! ",
+  welcomeNewUser: "Hello and welcome. We have recieved a new supply of crates. And your goal is to match those crates up, so that the pair of animals gets shipped off together! ",
   welcomeBack: "Welcome back! ",
   
   startNotFromMenu: "You can only start the game from the menu. ",
@@ -335,9 +338,9 @@ const speech = {
   no: "No, no, no, ",
   
   gameContinue: "Okay, the game continues! ",
-  help: "To help our farm ship off animals, you will be given a set amount of crates to open. Each crate contains a sound, that you have to match up with one other crate. Once all crates are opened, and shipped off, the next level will begin, with even more crates to help with. If you decide to go back to main menu, or quit, your score will be tallied up, and saved at that point. ",
-  helpInMenu: "Are you ready to play the game? ",
-  helpInGame: "Are you ready to continue the game? "
+  help: "There are a set of boxes with animal hidden inside. You need to open two boxes and find same animals inside. When you have found the same animals within a turn, those boxes will stay open. As soon as every boxes are matched and opened, you will go to the next level. When you finish level six, You will win the game. The score will be calcultated every end of levels. ",
+  helpInMenu: "Here's a list of what you could choose.",
+  helpInGame: "To check score, say, Score. To check opened boxes, say, opened. Now. Let's go back to game!"
 };
 
 //Extra sound effects' sources
@@ -537,6 +540,7 @@ const MenuHandler = {
     // Reset Error Count
     errorCount = 0;
     if(gameInfo.state === stateStr.inGame && gameInfo.win === false){
+    	speechOutput += speech.inGameBackToMenu;
       if (SupportsAPL(handlerInput)) {
         handlerInput.responseBuilder.addDirective({
           type: 'Alexa.Presentation.APL.RenderDocument',
@@ -876,8 +880,9 @@ const NoHandler = {
     
     // Reset Error Count
     errorCount = 0;
-    if(gameInfo.state ===stateStr.inGame){
-      speechOutput = RepromptText();
+    if(gameInfo.state === stateStr.inGame){
+    	speechOutput += speech.gameContinue;
+      	speechOutput += RepromptText();
       if (SupportsAPL(handlerInput)) {
         handlerInput.responseBuilder.addDirective({
           type: alexaPresentationAPL.renderDocument,
@@ -957,11 +962,28 @@ const RankHandler = {
     }
     speechOutput += RepromptText();
 
-    return handlerInput.responseBuilder
-      .speak(speechOutput)
-      .reprompt(repromptText)
-      .getResponse();
+    return TriggerClick(handlerInput);
   },
+};
+
+const asyncFunc = (...args) => new Promise((resolve) => {
+
+  setTimeout(resolve, 1000, computeResult(...args));
+
+});
+
+const TriggerClick = function(handlerInput) {
+  const attributes = handlerInput.attributesManager.getSessionAttributes();
+  const fs = require("fs");
+  var speechOutput = "";
+  var repromptText = RepromptText();
+  if(gameInfo === state.menu){
+    var content = fs.readFileSync("./aplDocuments/rank.json");
+    var obj = JSON.parse(content);
+    return  $(AlexaButton).trigger("click");
+  }else{
+
+  }
 };
 
 const HelpHandler = {
@@ -984,7 +1006,7 @@ const HelpHandler = {
         speechOutput += speech.helpInMenu+RepromptText();      
         break;
       case stateStr.inGame:
-        speechOutput = "There are " + gameInfo.boxes.length + " boxes with animal hidden inside. You need to match two boxes with identical animals. When you found the same two animals, those boxes will stay open. As soon as all the boxes are matched and opened, the game will be finished. To check score, say, Score. To check opened boxes, say, opened. ";
+        speechOutput = "There are " + gameInfo.boxes.length + " boxes with animal hidden inside. You need to open two boxes and find same animals inside. When you have found the same animals within a turn, those boxes will stay open. As soon as every boxes are matched and opened, you will go to the next level. When you finish level six, You will win the game. The score will be calcultated every end of levels. ";
         speechOutput += speech.helpInGame +RepromptText();
         break;
       default:
