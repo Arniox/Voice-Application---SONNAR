@@ -271,53 +271,53 @@ Box18Item.addSynonym("18");
 Box18Item.setImage({ url: 'https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/Box18.png',
                     accessibilityText: 'Unopened Box'});
 
-let Box19Item = new OptionItem();//19
-Box19Item.setTitle("19");
-Box19Item.setDescription("Find out what is inside!");
-Box19Item.setKey("Box19Item");
-Box19Item.addSynonym("19");
-Box19Item.setImage({ url: 'https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/Box19.png',
-                    accessibilityText: 'Unopened Box'});
+// let Box19Item = new OptionItem();//19
+// Box19Item.setTitle("19");
+// Box19Item.setDescription("Find out what is inside!");
+// Box19Item.setKey("Box19Item");
+// Box19Item.addSynonym("19");
+// Box19Item.setImage({ url: 'https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/Box19.png',
+//                     accessibilityText: 'Unopened Box'});
 
-let Box20Item = new OptionItem();//20
-Box20Item.setTitle("20");
-Box20Item.setDescription("Find out what is inside!");
-Box20Item.setKey("Box20Item");
-Box20Item.addSynonym("20");
-Box20Item.setImage({ url: 'https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/Box20.png',
-                    accessibilityText: 'Unopened Box'});
+// let Box20Item = new OptionItem();//20
+// Box20Item.setTitle("20");
+// Box20Item.setDescription("Find out what is inside!");
+// Box20Item.setKey("Box20Item");
+// Box20Item.addSynonym("20");
+// Box20Item.setImage({ url: 'https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/Box20.png',
+//                     accessibilityText: 'Unopened Box'});
 
-let Box21Item = new OptionItem();//21
-Box21Item.setTitle("21");
-Box21Item.setDescription("Find out what is inside!");
-Box21Item.setKey("Box21Item");
-Box21Item.addSynonym("21");
-Box21Item.setImage({ url: 'https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/Box21.png',
-                    accessibilityText: 'Unopened Box'});
+// let Box21Item = new OptionItem();//21
+// Box21Item.setTitle("21");
+// Box21Item.setDescription("Find out what is inside!");
+// Box21Item.setKey("Box21Item");
+// Box21Item.addSynonym("21");
+// Box21Item.setImage({ url: 'https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/Box21.png',
+//                     accessibilityText: 'Unopened Box'});
 
-let Box22Item = new OptionItem();//22
-Box22Item.setTitle("22");
-Box22Item.setDescription("Find out what is inside!");
-Box22Item.setKey("Box22Item");
-Box22Item.addSynonym("22");
-Box22Item.setImage({ url: 'https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/Box22.png',
-                    accessibilityText: 'Unopened Box'});
+// let Box22Item = new OptionItem();//22
+// Box22Item.setTitle("22");
+// Box22Item.setDescription("Find out what is inside!");
+// Box22Item.setKey("Box22Item");
+// Box22Item.addSynonym("22");
+// Box22Item.setImage({ url: 'https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/Box22.png',
+//                     accessibilityText: 'Unopened Box'});
 
-let Box23Item = new OptionItem();//23
-Box23Item.setTitle("23");
-Box23Item.setDescription("Find out what is inside!");
-Box23Item.setKey("Box23Item");
-Box23Item.addSynonym("23");
-Box23Item.setImage({ url: 'https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/Box23.png',
-                    accessibilityText: 'Unopened Box'});
+// let Box23Item = new OptionItem();//23
+// Box23Item.setTitle("23");
+// Box23Item.setDescription("Find out what is inside!");
+// Box23Item.setKey("Box23Item");
+// Box23Item.addSynonym("23");
+// Box23Item.setImage({ url: 'https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/Box23.png',
+//                     accessibilityText: 'Unopened Box'});
 
-let Box24Item = new OptionItem();//24
-Box24Item.setTitle("24");
-Box24Item.setDescription("Find out what is inside!");
-Box24Item.setKey("Box24Item");
-Box24Item.addSynonym("24");
-Box24Item.setImage({ url: 'https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/Box24.png',
-                    accessibilityText: 'Unopened Box'});
+// let Box24Item = new OptionItem();//24
+// Box24Item.setTitle("24");
+// Box24Item.setDescription("Find out what is inside!");
+// Box24Item.setKey("Box24Item");
+// Box24Item.addSynonym("24");
+// Box24Item.setImage({ url: 'https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/Box24.png',
+//                     accessibilityText: 'Unopened Box'});
 
 // UI List items End-----------------------------------------------------------------------------------
 
@@ -388,17 +388,18 @@ const levelsUnlocked = [
         id: 5,
         name: "Level 5",
         unlocked: false,
-        numberOfSounds: 10,
-        minimumTries: 10,
-        tries: 0
-    },{
-        id: 6,
-        name: "Level 6",
-        unlocked: false,
-        numberOfSounds: 12,
-        minimumTries: 12,
+        numberOfSounds: 9,
+        minimumTries: 9,
         tries: 0
     }
+    // {
+    //     id: 6,
+    //     name: "Level 6",
+    //     unlocked: false,
+    //     numberOfSounds: 12,
+    //     minimumTries: 12,
+    //     tries: 0
+    // }
 ];
 
 //create an array of animal objects
@@ -409,13 +410,15 @@ const animals = [
         resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/dog.mp3' />",
         imgUrl: 'https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/dog.png',
         opened: false
-    },{
-        name: "cat",
-        pluralName: "cats",
-        resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/cat.mp3' />",
-        imgUrl: 'https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/noImage.png',
-        opened: false
-    },{
+    },
+    // {
+    //     name: "cat",
+    //     pluralName: "cats",
+    //     resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/cat.mp3' />",
+    //     imgUrl: 'https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/noImage.png',
+    //     opened: false
+    // },
+    {
         name: "chicken",
         pluralName: "chickens",
         resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/chicken.mp3' />",
@@ -433,13 +436,15 @@ const animals = [
         resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/turkey.mp3' />",
         imgUrl: 'https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/turkey.png',
         opened: false
-    },{
-        name: "frog",
-        pluralName: "frogs",
-        resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/frog.mp3' />",
-        imgUrl: 'https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/noImage.png',
-        opened: false
-    },{
+    },
+    // {
+    //     name: "frog",
+    //     pluralName: "frogs",
+    //     resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/frog.mp3' />",
+    //     imgUrl: 'https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/noImage.png',
+    //     opened: false
+    // },
+    {
         name: "goat",
         pluralName: "goats",
         resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/goat.mp3' />",
@@ -463,17 +468,19 @@ const animals = [
         resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/pig.mp3' />",
         imgUrl: 'https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/pig.png',
         opened: false
-    },{
+    },
+    //{
+    //     name: "elephant",
+    //     pluralName: "elephants",
+    //     resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/elephant.mp3' />",
+    //     imgUrl: 'https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/noImage.png',
+    //     opened: false
+    // },
+    {
         name: "sheep",
         pluralName: "sheeps",
         resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/sheep.mp3' />",
         imgUrl: 'https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/sheep.png',
-        opened: false
-    },{
-        name: "elephant",
-        pluralName: "elephants",
-        resource: "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/Animals/elephant.mp3' />",
-        imgUrl: 'https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/noImage.png',
         opened: false
     }
 ];
@@ -520,22 +527,20 @@ app.setHandler({
         if(numberOfTimesLoggedIn > 3){ //Short welcome for repeat users, long intro for new users
             this.$speech.addText(
                 '<audio src="https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/bgm.mp3"/>'+
-                '<p>Welcome back! Are you ready to play?</p>'
+                '<p>Welcome back!</p>'
             );
         }else{
             this.$speech.addText(
                 '<audio src="https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/bgm.mp3"/>'+
-                '<audio src="https://alexa-hackathon-memory-game-assets.s3.amazonaws.com/sounds/Voices/Memory_Welcome.mp3"/> '+
-                // '<p>Hello and welcome. We have recieved a new supply of crates and your goal is to match the '+
-                // 'crates up so that the pair of animals gets shipped off together!</p> '+
-                '<p> Are you ready to help ship them off?</p>'
+                '<audio src="https://alexa-hackathon-memory-game-assets.s3.amazonaws.com/sounds/Voices/Memory_Welcome.mp3"/> '
             );
         }        
         
         this.$reprompt.addText(Reprompt());
-        GenerateDisplayTexts();
-        this.showImageCard(title, content, imageUrl);
-        this.followUpState('StartState').ask(this.$speech, this.$reprompt);
+        // GenerateDisplayTexts();
+        // this.showImageCard(title, content, imageUrl);
+        //this.followUpState('StartState').ask(this.$speech, this.$reprompt);
+        return this.toStatelessIntent('GiveMenu');
     },   
 
     //---Start state: Only yes or no are accepted-------------------------------------------------------------------------------------------------------------------------------
@@ -582,7 +587,7 @@ app.setHandler({
                 this.followUpState('StartState').ask(this.$speech, this.$reprompt);
             }
         },
-    },
+    }, //REMOVE START STATE? 
 
     //Stateless intent for giving menu
     GiveMenu(){
@@ -605,18 +610,16 @@ app.setHandler({
 
         //if it's the players first, second or third time logging in, then play a slightly larger introduction to the menu
         if(numberOfTimesLoggedIn < 3){
-            speech += '<p>From the main menu you can either choose to: </p>'+
+            speech += '<p>Welcome to the main menu! From here you can either choose to: </p>'+
                       '<p>Start the game! </p>'+
                       '<p>Show my rank! </p>'+
-                      '<p>Ask for help! </p>'+
-                      '<p>Or quit the game! </p>'+
+                      '<p>Or ask for help! </p>'+
                       '<p>Which option would you like to select?</p>';
             numberOfTimesLoggedIn++;
         }else{
-            speech += '<p>Please choose either to play, </p>'+
+            speech += '<p>Welcome to the main menu! Please choose either to play, </p>'+
                       '<p>Show my rank! </p>'+
-                      '<p>Ask for help! </p>'+
-                      '<p>or quit the game</p>';
+                      '<p>Or ask for help! </p>';
             numberOfTimesLoggedIn++;
         }
         
@@ -682,7 +685,7 @@ app.setHandler({
                                  "<p>Each crate contains a sound that you have to match up with one other crate. </p>"+
                                  "<p>Once all crates are open and shipped off, the next level will begin with even more crates to help with. </p>"+
                                  "<p>If you decide to go back to the main menu or quit, your score will be tallied up and saved at that point. </p>");
-            this.$speech.addText("<p>Please choose to either play, show my rank, or quit the game!</p>");
+            this.$speech.addText("<p>Please choose either play or show my rank!</p>");
             this.$reprompt.addText(Reprompt());
 
             //---------Display Generation-----------------------------
@@ -705,7 +708,7 @@ app.setHandler({
             //Set player response
             this.$speech.addText("<p>Your current highest score in our Animal Memory Game is:</p>" +
                                  "<p>" + bestScore + "</p>");
-            this.$speech.addText("<p>Please choose to either play, ask for help, or quit the game!</p>");
+            this.$speech.addText("<p>Please choose either play or ask for help!</p>");
             this.$reprompt.addText(Reprompt());
 
             //---------Display Generation-----------------------------
@@ -854,8 +857,9 @@ app.setHandler({
          if(hax == true)
             {
                 haxFunc();
-            }
+            }            
          this.$googleAction.showList(aBoxList);
+         this.$googleAction.showSuggestionChips(['help','Show my rank','Back to menu', 'Reset game', 'Quit']);
         //---------Display Generation-----------------------------
         fromReset = false;
         outsideText = "";
@@ -865,6 +869,9 @@ app.setHandler({
         this.followUpState('InGameState').ask(this.$speech, this.$reprompt);
     },//------------ END OF INITIALIZATION---------------------------------------------------------------------------------------------------------------------------------
 
+    /*
+        Stateless FinishedGame State will prompt the user to choose either back to menu or reset when they finish the game
+    */
     FinishedGame()
     {
         speech += "<p>That's all the shipments sorted! </p>";
@@ -961,6 +968,7 @@ app.setHandler({
                 haxFunc();
             }
             this.$googleAction.showList(aBoxList);
+            this.$googleAction.showSuggestionChips(['help','Show my rank','Back to menu', 'Reset game', 'Quit']);
             //---------Display Generation-----------------------------
             this.$speech.addText(speech);
             this.$reprompt.addText(Reprompt());
@@ -1007,6 +1015,7 @@ app.setHandler({
                 haxFunc();
             }
             this.$googleAction.showList(aBoxList);
+            this.$googleAction.showSuggestionChips(['help','Show my rank','Back to menu', 'Reset game', 'Quit']);       
             //---------Display Generation-----------------------------
 
             this.$speech.addText(speech);
@@ -1244,7 +1253,8 @@ app.setHandler({
             {
                 haxFunc();
             }
-            this.$googleAction.showList(BboxList);            
+            this.$googleAction.showList(BboxList);
+            this.$googleAction.showSuggestionChips(['help','Show my rank','Back to menu', 'Reset game', 'Quit']);       
             //---------Display Generation-----------------------------
 
             this.$speech.addText(speech);
@@ -1267,7 +1277,8 @@ app.setHandler({
             {
                 haxFunc();
             }
-            this.$googleAction.showList(BboxList);          
+            this.$googleAction.showList(BboxList);
+            this.$googleAction.showSuggestionChips(['help','Back to menu', 'Reset game', 'Quit']);          
             //---------Display Generation-----------------------------
             this.$speech.addText(speech);
             this.$reprompt.addText(Reprompt());
@@ -1276,10 +1287,9 @@ app.setHandler({
         HelpIntent(){
             //Reprompt the user and let them know how to use the app whilst playing
             speech = "";
-            speech += "<p>At any point in time during the level; you can say exit to quit the game,"+
-                      " back to go back to the main menu, help to ask for help, or score to check your current score! </p>";
-            speech += "<p>You will also be asked for two boxes to match up together! </p>";
-            speech += "<p>Please select two boxes to continue between 1 and "+inGameSounds.length;
+            speech += "<p>To play this game you must select a box to open and then listen to what animal is inside! you must then select another box that contains the same animal to pair them up!" +
+                      " At any point in time during the level; you can say exit to quit the game, back to go back to the main menu, help to ask for help, reset to restart from level 1, or score to check your current score! </p>";
+            speech += "<p>Please select two boxes between 1 and " +inGameSounds.length + " to continue </p>";
             //---------Display Generation-----------------------------
             let BboxList = new List();
             BboxList.setTitle('Boxes to Choose from');
@@ -1289,7 +1299,8 @@ app.setHandler({
             {
                 haxFunc();
             }
-            this.$googleAction.showList(BboxList);            
+            this.$googleAction.showList(BboxList);
+            this.$googleAction.showSuggestionChips(['Show my rank','Back to menu', 'Reset game', 'Quit']);         
             //---------Display Generation-----------------------------
             this.$speech.addText(speech);
             this.$reprompt.addText(Reprompt());
@@ -1312,7 +1323,7 @@ app.setHandler({
             startList.setTitle('Reset Game?');
             startList.addItem(yesItem);
             startList.addItem(noItem);
-            this.$googleAction.showList(startList);
+            this.$googleAction.showList(startList);            
             //---------Display Generation-----------------------------  
             this.$speech.addText(speech);
             this.$reprompt.addText(Reprompt());
@@ -1397,19 +1408,29 @@ app.setHandler({
                               '<p>Start the game! </p>'+
                               '<p>Show my rank! </p>'+
                               '<p>Ask for help! </p>'+
-                              '<p>Or quit the game! </p>'+
                               '<p>Which option would you like to select?</p>';
                 }else{
                     speech += '<p>Please choose either to play, </p>'+
                               '<p>Show my rank! </p>'+
-                              '<p>Ask for help! </p>'+
-                              '<p>or quit the game</p>';
+                              '<p>Ask for help! </p>';
                 }
                 //set reprompt and redirect to the main menu
                 this.$speech.addText(speech);
                 this.$reprompt.addText(Reprompt());
                 this.followUpState('MenuSelectionState').ask(this.$speech, this.$reprompt);
             }else{
+                //---------Display Generation-----------------------------
+                let BboxList = new List();
+                BboxList.setTitle('Boxes to Choose from');
+                displayCurrentLevelBoxes(BboxList);
+                checkBoxImage(BboxList);
+                if(hax == true)
+                {
+                    haxFunc();
+                }
+                this.$googleAction.showList(BboxList);
+                this.$googleAction.showSuggestionChips(['help','Show my rank','Back to menu', 'Reset game', 'Quit']);         
+                //---------Display Generation-----------------------------
                 this.followUpState('InGameState').ask(this.$speech, this.$reprompt);
             }
         },
@@ -1422,7 +1443,8 @@ app.setHandler({
 
         //Set final winning text
         speech = "";
-        
+
+        speech += "<audio src='https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/win2.mp3' />";
         speech += "<p>Congratulations on winning "+levelsUnlocked[currentLevel-1].name+". </p>";
 
         //Unlock next level
@@ -1806,36 +1828,36 @@ function haxFunc()
             Box16Item.setDescription(inGameSounds[15].name);
             Box17Item.setDescription(inGameSounds[16].name);
             Box18Item.setDescription(inGameSounds[17].name);
-            Box19Item.setDescription(inGameSounds[18].name);
-            Box20Item.setDescription(inGameSounds[19].name);
+            // Box19Item.setDescription(inGameSounds[18].name);
+            // Box20Item.setDescription(inGameSounds[19].name);
             break;
 
-        case(6):
-            Box1Item.setDescription(inGameSounds[0].name);
-            Box2Item.setDescription(inGameSounds[1].name);
-            Box3Item.setDescription(inGameSounds[2].name);
-            Box4Item.setDescription(inGameSounds[3].name);
-            Box5Item.setDescription(inGameSounds[4].name);
-            Box6Item.setDescription(inGameSounds[5].name);
-            Box7Item.setDescription(inGameSounds[6].name);
-            Box8Item.setDescription(inGameSounds[7].name);
-            Box9Item.setDescription(inGameSounds[8].name);
-            Box10Item.setDescription(inGameSounds[9].name);
-            Box11Item.setDescription(inGameSounds[10].name);
-            Box12Item.setDescription(inGameSounds[11].name);
-            Box13Item.setDescription(inGameSounds[12].name);
-            Box14Item.setDescription(inGameSounds[13].name);
-            Box15Item.setDescription(inGameSounds[14].name);
-            Box16Item.setDescription(inGameSounds[15].name);
-            Box17Item.setDescription(inGameSounds[16].name);
-            Box18Item.setDescription(inGameSounds[17].name);
-            Box19Item.setDescription(inGameSounds[18].name);
-            Box20Item.setDescription(inGameSounds[19].name);
-            Box21Item.setDescription(inGameSounds[20].name);
-            Box22Item.setDescription(inGameSounds[21].name);
-            Box23Item.setDescription(inGameSounds[22].name);
-            Box24Item.setDescription(inGameSounds[23].name);
-            break;        
+        // case(6):
+        //     Box1Item.setDescription(inGameSounds[0].name);
+        //     Box2Item.setDescription(inGameSounds[1].name);
+        //     Box3Item.setDescription(inGameSounds[2].name);
+        //     Box4Item.setDescription(inGameSounds[3].name);
+        //     Box5Item.setDescription(inGameSounds[4].name);
+        //     Box6Item.setDescription(inGameSounds[5].name);
+        //     Box7Item.setDescription(inGameSounds[6].name);
+        //     Box8Item.setDescription(inGameSounds[7].name);
+        //     Box9Item.setDescription(inGameSounds[8].name);
+        //     Box10Item.setDescription(inGameSounds[9].name);
+        //     Box11Item.setDescription(inGameSounds[10].name);
+        //     Box12Item.setDescription(inGameSounds[11].name);
+        //     Box13Item.setDescription(inGameSounds[12].name);
+        //     Box14Item.setDescription(inGameSounds[13].name);
+        //     Box15Item.setDescription(inGameSounds[14].name);
+        //     Box16Item.setDescription(inGameSounds[15].name);
+        //     Box17Item.setDescription(inGameSounds[16].name);
+        //     Box18Item.setDescription(inGameSounds[17].name);
+        //     Box19Item.setDescription(inGameSounds[18].name);
+        //     Box20Item.setDescription(inGameSounds[19].name);
+        //     Box21Item.setDescription(inGameSounds[20].name);
+        //     Box22Item.setDescription(inGameSounds[21].name);
+        //     Box23Item.setDescription(inGameSounds[22].name);
+        //     Box24Item.setDescription(inGameSounds[23].name);
+        //     break;        
     }
 }
 
@@ -1960,36 +1982,36 @@ function displayCurrentLevelBoxes(passedInList)
             passedInList.addItem(Box16Item);
             passedInList.addItem(Box17Item);
             passedInList.addItem(Box18Item);
-            passedInList.addItem(Box19Item);
-            passedInList.addItem(Box20Item);
+            // passedInList.addItem(Box19Item);
+            // passedInList.addItem(Box20Item);
             break;
 
-        case(6):
-            passedInList.addItem(Box1Item);
-            passedInList.addItem(Box2Item);
-            passedInList.addItem(Box3Item);
-            passedInList.addItem(Box4Item);
-            passedInList.addItem(Box5Item);
-            passedInList.addItem(Box6Item);
-            passedInList.addItem(Box7Item);
-            passedInList.addItem(Box8Item);
-            passedInList.addItem(Box9Item);
-            passedInList.addItem(Box10Item);
-            passedInList.addItem(Box11Item);
-            passedInList.addItem(Box12Item);
-            passedInList.addItem(Box13Item);
-            passedInList.addItem(Box14Item);
-            passedInList.addItem(Box15Item);
-            passedInList.addItem(Box16Item);
-            passedInList.addItem(Box17Item);
-            passedInList.addItem(Box18Item);
-            passedInList.addItem(Box19Item);
-            passedInList.addItem(Box20Item);
-            passedInList.addItem(Box21Item);
-            passedInList.addItem(Box22Item);
-            passedInList.addItem(Box23Item);
-            passedInList.addItem(Box24Item);
-            break;        
+        // case(6):
+        //     passedInList.addItem(Box1Item);
+        //     passedInList.addItem(Box2Item);
+        //     passedInList.addItem(Box3Item);
+        //     passedInList.addItem(Box4Item);
+        //     passedInList.addItem(Box5Item);
+        //     passedInList.addItem(Box6Item);
+        //     passedInList.addItem(Box7Item);
+        //     passedInList.addItem(Box8Item);
+        //     passedInList.addItem(Box9Item);
+        //     passedInList.addItem(Box10Item);
+        //     passedInList.addItem(Box11Item);
+        //     passedInList.addItem(Box12Item);
+        //     passedInList.addItem(Box13Item);
+        //     passedInList.addItem(Box14Item);
+        //     passedInList.addItem(Box15Item);
+        //     passedInList.addItem(Box16Item);
+        //     passedInList.addItem(Box17Item);
+        //     passedInList.addItem(Box18Item);
+        //     passedInList.addItem(Box19Item);
+        //     passedInList.addItem(Box20Item);
+        //     passedInList.addItem(Box21Item);
+        //     passedInList.addItem(Box22Item);
+        //     passedInList.addItem(Box23Item);
+        //     passedInList.addItem(Box24Item);
+        //     break;        
     }
 }
 
@@ -2073,29 +2095,29 @@ function checkBoxImage()
                 setBoxItemsToOpenImage(18);
                 break;
 
-                case(18):                        
-                setBoxItemsToOpenImage(19);
-                break;
+                // case(18):                        
+                // setBoxItemsToOpenImage(19);
+                // break;
 
-                case(19):
-                setBoxItemsToOpenImage(20);
-                break;
+                // case(19):
+                // setBoxItemsToOpenImage(20);
+                // break;
 
-                case(20):
-                setBoxItemsToOpenImage(21);
-                break;
+                // case(20):
+                // setBoxItemsToOpenImage(21);
+                // break;
 
-                case(21):
-                setBoxItemsToOpenImage(22);
-                break;
+                // case(21):
+                // setBoxItemsToOpenImage(22);
+                // break;
 
-                case(22):
-                setBoxItemsToOpenImage(23);
-                break;
+                // case(22):
+                // setBoxItemsToOpenImage(23);
+                // break;
 
-                case(23):
-                setBoxItemsToOpenImage(24);
-                break;
+                // case(23):
+                // setBoxItemsToOpenImage(24);
+                // break;
             }
         }
         else //set back to default
@@ -2174,29 +2196,29 @@ function checkBoxImage()
                     setBoxItemsToDefault(18);
                 break;
 
-                case(18):
-                    setBoxItemsToDefault(19);
-                break;
+                // case(18):
+                //     setBoxItemsToDefault(19);
+                // break;
 
-                case(19):
-                    setBoxItemsToDefault(20);
-                break;
+                // case(19):
+                //     setBoxItemsToDefault(20);
+                // break;
 
-                case(20):
-                    setBoxItemsToDefault(21);
-                break;
+                // case(20):
+                //     setBoxItemsToDefault(21);
+                // break;
 
-                case(21):
-                    setBoxItemsToDefault(22);
-                break;
+                // case(21):
+                //     setBoxItemsToDefault(22);
+                // break;
 
-                case(22):
-                    setBoxItemsToDefault(23);
-                break;
+                // case(22):
+                //     setBoxItemsToDefault(23);
+                // break;
 
-                case(23):
-                    setBoxItemsToDefault(24);
-                break;
+                // case(23):
+                //     setBoxItemsToDefault(24);
+                // break;
             }
         }
     }    
@@ -2314,41 +2336,41 @@ function setBoxItemsToDefault(boxNum)
                         accessibilityText: 'Unopened Box'});
         break;
 
-        case(19):
-        Box19Item.setDescription("Find out what is inside!");
-                        Box19Item.setImage({ url: 'https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/Box19.png',
-                        accessibilityText: 'Unopened Box'});
-        break;
+        // case(19):
+        // Box19Item.setDescription("Find out what is inside!");
+        //                 Box19Item.setImage({ url: 'https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/Box19.png',
+        //                 accessibilityText: 'Unopened Box'});
+        // break;
 
-        case(20):
-        Box20Item.setDescription("Find out what is inside!");
-                        Box20Item.setImage({ url: 'https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/Box20.png',
-                        accessibilityText: 'Unopened Box'});
-        break;
+        // case(20):
+        // Box20Item.setDescription("Find out what is inside!");
+        //                 Box20Item.setImage({ url: 'https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/Box20.png',
+        //                 accessibilityText: 'Unopened Box'});
+        // break;
 
-        case(21):
-        Box21Item.setDescription("Find out what is inside!");
-                        Box21Item.setImage({ url: 'https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/Box21.png',
-                        accessibilityText: 'Unopened Box'});
-        break;
+        // case(21):
+        // Box21Item.setDescription("Find out what is inside!");
+        //                 Box21Item.setImage({ url: 'https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/Box21.png',
+        //                 accessibilityText: 'Unopened Box'});
+        // break;
 
-        case(22):
-        Box22Item.setDescription("Find out what is inside!");
-                        Box22Item.setImage({ url: 'https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/Box22.png',
-                        accessibilityText: 'Unopened Box'});
-        break;
+        // case(22):
+        // Box22Item.setDescription("Find out what is inside!");
+        //                 Box22Item.setImage({ url: 'https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/Box22.png',
+        //                 accessibilityText: 'Unopened Box'});
+        // break;
 
-        case(23):
-        Box23Item.setDescription("Find out what is inside!");
-                        Box23Item.setImage({ url: 'https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/Box23.png',
-                        accessibilityText: 'Unopened Box'});
-        break;
+        // case(23):
+        // Box23Item.setDescription("Find out what is inside!");
+        //                 Box23Item.setImage({ url: 'https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/Box23.png',
+        //                 accessibilityText: 'Unopened Box'});
+        // break;
 
-        case(24):
-        Box24Item.setDescription("Find out what is inside!");
-                        Box24Item.setImage({ url: 'https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/Box24.png',
-                        accessibilityText: 'Unopened Box'});
-        break;
+        // case(24):
+        // Box24Item.setDescription("Find out what is inside!");
+        //                 Box24Item.setImage({ url: 'https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/Box24.png',
+        //                 accessibilityText: 'Unopened Box'});
+        // break;
     }    
 }
 
@@ -2466,40 +2488,40 @@ function setBoxItemsToOpenImage(boxNum)
                             accessibilityText: 'Opened Box'});
         break;
 
-        case(19):
-        Box19Item.setDescription(inGameSounds[i].name);
-        Box19Item.setImage({ url: "https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/" + inGameSounds[i].name +".png",
-                            accessibilityText: 'Opened Box'});
-        break;
+        // case(19):
+        // Box19Item.setDescription(inGameSounds[i].name);
+        // Box19Item.setImage({ url: "https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/" + inGameSounds[i].name +".png",
+        //                     accessibilityText: 'Opened Box'});
+        // break;
 
-        case(20):
-        Box20Item.setDescription(inGameSounds[i].name);
-        Box20Item.setImage({ url: "https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/" + inGameSounds[i].name +".png",
-                            accessibilityText: 'Opened Box'});
-        break;
+        // case(20):
+        // Box20Item.setDescription(inGameSounds[i].name);
+        // Box20Item.setImage({ url: "https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/" + inGameSounds[i].name +".png",
+        //                     accessibilityText: 'Opened Box'});
+        // break;
 
-        case(21):
-        Box21Item.setDescription(inGameSounds[i].name);
-        Box21Item.setImage({ url: "https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/" + inGameSounds[i].name +".png",
-                            accessibilityText: 'Opened Box'});
-        break;
+        // case(21):
+        // Box21Item.setDescription(inGameSounds[i].name);
+        // Box21Item.setImage({ url: "https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/" + inGameSounds[i].name +".png",
+        //                     accessibilityText: 'Opened Box'});
+        // break;
 
-        case(22):
-        Box22Item.setDescription(inGameSounds[i].name);
-        Box22Item.setImage({ url: "https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/" + inGameSounds[i].name +".png",
-                            accessibilityText: 'Opened Box'});
-        break;
+        // case(22):
+        // Box22Item.setDescription(inGameSounds[i].name);
+        // Box22Item.setImage({ url: "https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/" + inGameSounds[i].name +".png",
+        //                     accessibilityText: 'Opened Box'});
+        // break;
 
-        case(23):
-        Box23Item.setDescription(inGameSounds[i].name);
-        Box23Item.setImage({ url: "https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/" + inGameSounds[i].name +".png",
-                            accessibilityText: 'Opened Box'});
-        break;
+        // case(23):
+        // Box23Item.setDescription(inGameSounds[i].name);
+        // Box23Item.setImage({ url: "https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/" + inGameSounds[i].name +".png",
+        //                     accessibilityText: 'Opened Box'});
+        // break;
 
-        case(24):
-        Box24Item.setDescription(inGameSounds[i].name);
-        Box24Item.setImage({ url: "https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/" + inGameSounds[i].name +".png",
-                            accessibilityText: 'Opened Box'});
-        break;
+        // case(24):
+        // Box24Item.setDescription(inGameSounds[i].name);
+        // Box24Item.setImage({ url: "https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/" + inGameSounds[i].name +".png",
+        //                     accessibilityText: 'Opened Box'});
+        // break;
     }    
 }
