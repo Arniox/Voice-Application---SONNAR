@@ -88,5 +88,15 @@
 		],
 		"isTemplate": false,
 		"count": 0
+	},
+	{
+		"data": [
+			{
+				"text": "hacks",
+				"userDefined": false
+			}
+		],
+		"isTemplate": false,
+		"count": 0
 	}
 ]

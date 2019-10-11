@@ -102,6 +102,16 @@
 	{
 		"data": [
 			{
+				"text": "how to play",
+				"userDefined": false
+			}
+		],
+		"isTemplate": false,
+		"count": 0
+	},
+	{
+		"data": [
+			{
 				"text": "please give me information",
 				"userDefined": false
 			}

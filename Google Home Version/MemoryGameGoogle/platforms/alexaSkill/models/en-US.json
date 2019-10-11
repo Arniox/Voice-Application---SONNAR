@@ -37,7 +37,7 @@
 						"no",
 						"nein",
 						"nu",
-						"no, fuck off"
+						"no fuck off"
 					]
 				},
 				{
@@ -72,6 +72,7 @@
 						"I need help",
 						"tutorial",
 						"tutorial please",
+						"how to play",
 						"please give me information"
 					]
 				},
@@ -106,7 +107,8 @@
 						"start game",
 						"play the game",
 						"play game",
-						"go"
+						"go",
+						"hacks"
 					]
 				},
 				{
@@ -128,6 +130,23 @@
 						"main menu please",
 						"main menu please",
 						"main menu"
+					]
+				},
+				{
+					"name": "ResetIntent",
+					"samples": [
+						"reset",
+						"restart",
+						"start again",
+						"new game",
+						"reset please",
+						"reset game",
+						"reset game please",
+						"restart please",
+						"restart game",
+						"restart game please",
+						"restart now",
+						"start again please"
 					]
 				},
 				{
