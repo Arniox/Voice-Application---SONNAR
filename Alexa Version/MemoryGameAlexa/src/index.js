@@ -12,9 +12,6 @@ const ddbTableName = 'MemoryGameUsers';
 const { DynamoDbPersistenceAdapter } = require('ask-sdk-dynamodb-persistence-adapter');
 var gameInfo = {};
 
-const jQuery = require('jquery');
-const $ = jQuery;
-
 //Execute query to get rank
 const RankQuery = function(bestScore){
   return new Promise(function (resolve, reject) {
@@ -316,10 +313,10 @@ const speech = {
   startNotFromMenu: "You can only start the game from the menu. ",
 
   inGamePleaseChooseBox: ["Please, choose the first box to start off between 1 and ", "Please choose the first box to start off between 1 and +gameInfo.boxes.length"],
-  inGameBoxInRange: ["Choose from 1 to ", "Choose from 1 to + gameInfo.boxes.length"],
+  inGameBoxInRange: ["You can choose a box number from 1 to ", "Choose from 1 to + gameInfo.boxes.length"],
   inGameBackToMenu: "if you go back to menu, you will lose your current level progress. do you really wanna go back to menu? ",
-  inGameBoxChosen: "The box is already choosen for your first box! Choose another box. ",
-  inGameBoxOpened: "The chosen box is already opened! Choose another box. ",
+  inGameBoxChosen: "The box is already choosen for your first box! There are other closed boxes waiting for you. ",
+  inGameBoxOpened: "The chosen box is already opened! There are other closed boxes waiting for you. ",
   inGameGoNextLevel: "Let's move on next level. ",
   
   levelWin: ["Congradulations on winning ", "audios.levelWin+Congradulations on winning + gameInfocurrentLevel.name"],
@@ -334,8 +331,8 @@ const speech = {
   menu: "Please choose either to: start! show my rank! help! or, quit the game. ",
   score: ["Your score is ", "Your score is +gameInfototalScore"], 
   
-  yes: "Yes, yes, yes, ",
-  no: "No, no, no, ",
+  yes: "Yes yes yes, ",
+  no: "No no no, ",
   
   gameContinue: "Okay, the game continues! ",
   help: "There is a set of boxes with animal hidden inside. You need to open two boxes and find same animals inside. When you have found the same animals within a turn, those boxes will stay open. As soon as every boxes are matched and opened, you will go to the next level. When you finish level six, You will win the game. The score will be calcultated every end of levels. ",
@@ -373,6 +370,20 @@ const InitiateGame = function(){
   gameInfo.numOfTry = 0;
   // The inital ingame page set to three sounds
   gameInfo.uipage = "./aplDocuments/threeSoundsPage.json";
+
+  gameInfo.specificHandlerInput = undefined;
+  gameInfo.specificAttributes = undefined;
+
+  gameInfo.allowYesNo = false;
+
+};
+
+const getSpecificHandlerInput = function(handlerInput) {
+  return handlerInput;
+};
+
+const getSpecificAttribute = function(attribute) {
+  return attribute;
 };
 
 const shuffleSounds = function(numOfanimals){
@@ -445,9 +456,9 @@ const LaunchHandler = {
     errorCount = 0;
     gameInfo.state = stateStr.menu;
     if(attributes.data.timesLoggedIn < 3){
-      speechOutput =speech.welcomeNewUser + speech.menuNewUser;
+      speechOutput += speech.welcomeNewUser + speech.menuNewUser;
     }else{
-      speechOutput =speech.welcomeBack + speech.menu;
+      speechOutput += speech.welcomeBack + speech.menu;
     }
     
     repromptText = RepromptText();
@@ -539,7 +550,8 @@ const MenuHandler = {
     var repromptText="";
     // Reset Error Count
     errorCount = 0;
-    if(gameInfo.state === stateStr.inGame && gameInfo.win === false){
+    if(gameInfo.state === stateStr.inGame){
+      gameInfo.allowYesNo = true;
       speechOutput += speech.inGameBackToMenu;
       if (SupportsAPL(handlerInput)) {
         handlerInput.responseBuilder.addDirective({
@@ -610,11 +622,16 @@ const BoxHandler = {
           //if the choosed box is already selected
           if(gameInfo.boxTurn===boxTurnStr.second && (gameInfo.firstBox === choosedIndex)){
             speechOutput = gameInfo.boxes[choosedIndex].resource+speech.inGameBoxChosen;
+            speechOutput += RepromptText();
+            repromptText = RepromptText();
+
           }
           
           //if the choosed box is already opened
           else if(gameInfo.boxes[choosedIndex].opened){
             speechOutput = gameInfo.boxes[choosedIndex].resource+speech.inGameBoxOpened;
+            speechOutput += RepromptText();
+            repromptText = RepromptText();
           }else{
             //Check the box turn
             if(gameInfo.boxTurn === boxTurnStr.first){
@@ -623,6 +640,8 @@ const BoxHandler = {
               boxImage[choosedIndex].current = gameInfo.boxes[choosedIndex].image;
               //it is about to second turn to choose a box
               gameInfo.boxTurn = boxTurnStr.second;
+              speechOutput += RepromptText();
+              repromptText = RepromptText();
             }else{
               gameInfo.numOfTry++;
               gameInfo.secondBox = choosedIndex;
@@ -638,71 +657,168 @@ const BoxHandler = {
                 //Give one score
                 gameInfo.score++;
                 //Check the player finished the current level
+
+                gameInfo.firstBox = undefined;
+                gameInfo.secondBox = undefined;
+                gameInfo.boxTurn =boxTurnStr.first;
+
                 gameInfo.win = (gameInfo.score === gameInfo.currentLevel.numberOfSounds);
-               
-                if(gameInfo.win){
-                  speechOutput +=  audios.levelWin
-                  +speech.levelWin[0]+gameInfo.currentLevel.name
+
+                if(!gameInfo.win){           
+                  speechOutput += RepromptText();
+                  repromptText = RepromptText();
+                }else{
+                  if (SupportsAPL(handlerInput)) {
+                  handlerInput.responseBuilder.addDirective({
+                    type: alexaPresentationAPL.renderDocument,
+                    document: require(gameInfo.uipage),
+                    datasources: {
+                      'pageData': {
+                          "score" : "Score: " + gameInfo.totalScore,
+                          "currentLevel" : "Level " + gameInfo.currentLevel.id,
+                          "Box1": boxImage[0].current,
+                          "Box2": boxImage[1].current,
+                          "Box3": boxImage[2].current,
+                          "Box4": boxImage[3].current,
+                          "Box5": boxImage[4].current,
+                          "Box6": boxImage[5].current,
+                          "Box7": boxImage[6].current,
+                          "Box8": boxImage[7].current,
+                          "Box9": boxImage[8].current,
+                          "Box10": boxImage[9].current,
+                          "Box11": boxImage[10].current,
+                          "Box12": boxImage[11].current,
+                          "Box13": boxImage[12].current,
+                          "Box14": boxImage[13].current,
+                          "Box15": boxImage[14].current,
+                          "Box16": boxImage[15].current,
+                          "Box17": boxImage[16].current,
+                          "Box18": boxImage[17].current,
+                          "Box19": boxImage[18].current,
+                          "Box20": boxImage[19].current,
+                          "Box21": boxImage[20].current,
+                          "Box22": boxImage[21].current,
+                          "Box23": boxImage[22].current,
+                          "Box24": boxImage[23].current
+                      }
+                    },
+                  });
+                }
+
+                speechOutput += speech.levelWin[0]+gameInfo.currentLevel.name
                   +". ";
-                  //gameInfo.totalScore += Math.round((gameInfo.currentLevel.bestTry*1.0 / gameInfo.numOfTry)*gameInfo.currentLevel.id*100);
-                 
-                  gameInfo.totalScore += Math.round( 1000*(Math.pow(gameInfo.currentLevel.bestTry, 1/(gameInfo.numOfTry/gameInfo.currentLevel.bestTry*1.0))));
-                  gameInfo.scoreText = "Score: " + gameInfo.totalScore;
-                  RecordScore(attributes);
-                  // *nc need change to 6 if set back to 6 level
-                  if(gameInfo.currentLevel.id === 1){
-                    gameInfo.state = stateStr.win;
-                    speechOutput += speech.gameWin[0]+ speech.score[0] + gameInfo.totalScore+". ";
-                    handlerInput.attributesManager.setPersistentAttributes(attributes);
-                    await handlerInput.attributesManager.savePersistentAttributes();
-                  }else{
-                    levelsUnlocked[gameInfo.currentLevel.id-1].unlocked = true;
-                    speechOutput += speech.inGameGoNextLevel;
-                    gameInfo.currentLevel = levelsUnlocked[gameInfo.currentLevel.id];
-                    InitiateGame();
-                    console.log(gameInfo.boxes);
-                    gameInfo.uipage = levelsUnlocked[gameInfo.currentLevel.id-1].pageName;
-                    resetBoxImage();
-                    speechOutput += gameInfo.currentLevel.resource;
-                    speechOutput += speech.inGamePleaseChooseBox[0]+gameInfo.boxes.length+". ";
-                  }//Check is level 6 End
-                }//Check win End
+                //gameInfo.totalScore += Math.round((gameInfo.currentLevel.bestTry*1.0 / gameInfo.numOfTry)*gameInfo.currentLevel.id*100);
+               gameInfo.specificAttributes = getSpecificAttribute(attributes);
+               gameInfo.specificHandlerInput = getSpecificHandlerInput(handlerInput);
+
+                return handlerInput.responseBuilder
+                  .speak(speechOutput)
+                  .addDirective({
+                    'type': 'GameEngine.StartInputHandler',
+                        'timeout': 8000,
+                        'recognizers': {
+                          'buttonPressedRecognizer': {
+                            'type': 'match',
+                            'fuzzy': true,
+                            'anchor': 'anywhere',
+                            'pattern': [
+                                {
+                                  'action': 'ACTION@'
+                                }
+                            ]
+                          }
+                        },
+                        'events': {
+                            'time_out_event': {
+                              'meets': [
+                                 'timed out'
+                              ],
+                              'fails': [ 
+                                'buttonPressedRecognizer' 
+                              ],
+                              'shouldEndInputHandler': true
+                            }
+                        }
+                  })
+                  .getResponse();
+                }
               }else{
-                speechOutput +=audios.closingBox
-                +audios.closingBox;
-                boxImage[gameInfo.firstBox].current = boxImage[gameInfo.firstBox].resource;
-                boxImage[gameInfo.secondBox].current = boxImage[gameInfo.secondBox].resource;
+                if (SupportsAPL(handlerInput)) {
+                  handlerInput.responseBuilder.addDirective({
+                    type: alexaPresentationAPL.renderDocument,
+                    document: require(gameInfo.uipage),
+                    datasources: {
+                      'pageData': {
+                          "score" : "Score: " + gameInfo.totalScore,
+                          "currentLevel" : "Level " + gameInfo.currentLevel.id,
+                          "Box1": boxImage[0].current,
+                          "Box2": boxImage[1].current,
+                          "Box3": boxImage[2].current,
+                          "Box4": boxImage[3].current,
+                          "Box5": boxImage[4].current,
+                          "Box6": boxImage[5].current,
+                          "Box7": boxImage[6].current,
+                          "Box8": boxImage[7].current,
+                          "Box9": boxImage[8].current,
+                          "Box10": boxImage[9].current,
+                          "Box11": boxImage[10].current,
+                          "Box12": boxImage[11].current,
+                          "Box13": boxImage[12].current,
+                          "Box14": boxImage[13].current,
+                          "Box15": boxImage[14].current,
+                          "Box16": boxImage[15].current,
+                          "Box17": boxImage[16].current,
+                          "Box18": boxImage[17].current,
+                          "Box19": boxImage[18].current,
+                          "Box20": boxImage[19].current,
+                          "Box21": boxImage[20].current,
+                          "Box22": boxImage[21].current,
+                          "Box23": boxImage[22].current,
+                          "Box24": boxImage[23].current
+                      }
+                    },
+                  });
+                }
+                return handlerInput.responseBuilder
+                  .speak(speechOutput)
+                  .addDirective({
+                    'type': 'GameEngine.StartInputHandler',
+                        'timeout': 3800,
+                        'recognizers': {
+                          'buttonPressedRecognizer': {
+                            'type': 'match',
+                            'fuzzy': true,
+                            'anchor': 'anywhere',
+                            'pattern': [
+                                {
+                                  'action': 'ACTION@'
+                                }
+                            ]
+                          }
+                        },
+                        'events': {
+                            'time_out_event': {
+                              'meets': [
+                                 'timed out'
+                              ],
+                              'fails': [ 
+                                'buttonPressedRecognizer' 
+                              ],
+                              'shouldEndInputHandler': true
+                            }
+                        }
+                  })
+                  .getResponse();
               }//Check selected boxes are the same End 
               //Change the box turn
-              gameInfo.firstBox = undefined;
-              gameInfo.secondBox = undefined;
-              gameInfo.boxTurn =boxTurnStr.first;
             }//Check the box turn End
           }//Check box opened End
         }else{//Check user input
           speechOutput = speech.inGameBoxInRange[0] + gameInfo.boxes.length + ". ";
         }//Check user input valid End
       }//Check the game over End
-    }
-    speechOutput += RepromptText();
-    repromptText = RepromptText();
-    
+    }    
     // *nc Need remove some of the data once confirm nine type only
-    if(gameInfo.state === stateStr.win){
-      if (SupportsAPL(handlerInput)) {
-        handlerInput.responseBuilder.addDirective({
-          type: alexaPresentationAPL.renderDocument,
-          document: require('./aplDocuments/yesOrNo.json'),
-          datasources: {
-            'yesOrNoData': {
-              "textTop": "Congradulations!",
-              "textMid": "You've got "+gameInfo.totalScore+"! ",
-              "textBot": "Do you want to play again?"
-            }
-          },
-        });
-      }    
-    }else{
       if (SupportsAPL(handlerInput)) {
         handlerInput.responseBuilder.addDirective({
           type: alexaPresentationAPL.renderDocument,
@@ -739,7 +855,6 @@ const BoxHandler = {
           },
         });
       }    
-    }
       
       
     //Save Session attributes
@@ -836,8 +951,10 @@ const YesHandler = {
     
     // Reset Error Count
     errorCount = 0;
-    if(gameInfo.state ===stateStr.inGame){
+    if(gameInfo.state === stateStr.inGame && gameInfo.allowYesNo){
       gameInfo.state = stateStr.menu;
+      gameInfo.allowYesNo = false;
+
       if(gameInfo.timesLoggedIn < 3){
         speechOutput = speech.menuNewUser;
       }else{
@@ -880,7 +997,8 @@ const NoHandler = {
     
     // Reset Error Count
     errorCount = 0;
-    if(gameInfo.state === stateStr.inGame){
+    if(gameInfo.state === stateStr.inGame && gameInfo.allowYesNo){
+      gameInfo.allowYesNo = false;
       speechOutput += speech.gameContinue;
         speechOutput += RepromptText();
       if (SupportsAPL(handlerInput)) {
@@ -941,8 +1059,8 @@ const RankHandler = {
   async handle(handlerInput) {
     //Get Session attributes
     const attributes = handlerInput.attributesManager.getSessionAttributes();
+
     var speechOutput = "";
-    var repromptText = RepromptText();
     // Reset Error Count
     errorCount = 0;
     await GetRank(attributes);
@@ -960,12 +1078,40 @@ const RankHandler = {
         },
       });
     }
-    speechOutput += RepromptText();
+    var time = 4500;
+    if(speechOutput.length>50) time += (speechOutput.length-50)*400;
 
     return handlerInput.responseBuilder
       .speak(speechOutput)
-      .reprompt(repromptText)
+      .addDirective({
+        'type': 'GameEngine.StartInputHandler',
+            'timeout': time,
+            'recognizers': {
+              'buttonPressedRecognizer': {
+                'type': 'match',
+                'fuzzy': true,
+                'anchor': 'anywhere',
+                'pattern': [
+                    {
+                      'action': 'ACTION@'
+                    }
+                ] 
+              }
+            },
+            'events': {
+                'time_out_event': {
+                  'meets': [
+                     'timed out'
+                  ],
+                  'fails': [ 
+                    'buttonPressedRecognizer' 
+                  ],
+                  'shouldEndInputHandler': true
+                }
+            }
+      })
       .getResponse();
+
   },
 };
 
@@ -996,22 +1142,6 @@ const HelpHandler = {
         speechOutput += RepromptText();
     }
     repromptText = RepromptText();
-    
-    //*nc Will delete once confirm not needed
-    // var intent = gameInfo.state === stateStr.inGame ? "Box" : "MenuIntent";
-    
-    // if (SupportsAPL(handlerInput)) {
-    //   handlerInput.responseBuilder.addDirective({
-    //     type: alexaPresentationAPL.renderDocument,
-    //     document: require('./aplDocuments/helpUI.json'),
-    //     datasources: {
-    //       'helpData': {
-    //         "text" : speechOutput,
-    //         "state" : intent
-    //       }
-    //     },
-    //   });
-    // }
     
     return handlerInput.responseBuilder
       .speak(speechOutput)
@@ -1107,6 +1237,208 @@ const ErrorHandler = {
   },
 };
 
+/**
+* Events from the game engine
+*/
+const ButtonTriggerHandler = {
+  canHandle(handlerInput) {
+    console.log('GameEventHandler: canHandle');
+    let {
+      attributesManager,
+      requestEnvelope
+    } = handlerInput;
+
+    return requestEnvelope.request.type === 'GameEngine.InputHandlerEvent';
+  },
+
+  handle(handlerInput) {
+    console.log('GameEventHandler: handle');
+
+    HandleGameInputEvent(handlerInput);
+    return handlerInput.responseBuilder.getResponse();
+  }
+};
+
+const HandleGameInputEvent = async function(handlerInput) {
+  let {
+      requestEnvelope,
+      attributesManager
+    } = handlerInput;
+
+    let ctx = attributesManager.getRequestAttributes();
+    let sessionAttributes = attributesManager.getSessionAttributes();
+    let gameEngineEvents = requestEnvelope.request.events;
+
+    var speechOutput = "";
+    var repromptText = "";
+
+    switch (gameEngineEvents[0].name) {
+      case 'time_out_event':
+        {
+          console.log('Game: time out event');
+
+         if(gameInfo.state === stateStr.menu) {
+
+            console.log('State menu');
+
+            if (SupportsAPL(handlerInput)) {
+              handlerInput.responseBuilder.addDirective({
+                  type: alexaPresentationAPL.renderDocument,
+                  document: require('./aplDocuments/menu.json'),
+                  datasources: {
+                    'menuData': {
+                      }
+                  },
+              
+              });
+            }
+          }else if (gameInfo.state === stateStr.inGame){
+
+            console.log('State inGame');
+            if(gameInfo.win){
+
+              gameInfo.totalScore += Math.round( 1000*(Math.pow(gameInfo.currentLevel.bestTry, 1/(gameInfo.numOfTry/gameInfo.currentLevel.bestTry*1.0))));
+              gameInfo.scoreText = "Score: " + gameInfo.totalScore;
+              RecordScore(sessionAttributes);
+              
+              // *nc need change to 6 if set back to 6 level
+              if(gameInfo.currentLevel.id < 2){ //TEST DONA
+                levelsUnlocked[gameInfo.currentLevel.id-1].unlocked = true;
+                speechOutput += speech.inGameGoNextLevel;
+                gameInfo.currentLevel = levelsUnlocked[gameInfo.currentLevel.id];
+                InitiateGame();
+                console.log(gameInfo.boxes);
+                gameInfo.uipage = levelsUnlocked[gameInfo.currentLevel.id-1].pageName;
+                resetBoxImage();
+                speechOutput += gameInfo.currentLevel.resource;
+                speechOutput += speech.inGamePleaseChooseBox[0]+gameInfo.boxes.length+". ";
+                speechOutput += ' <break time="1s" />';
+                if (SupportsAPL(handlerInput)) {
+                  handlerInput.responseBuilder.addDirective({
+
+                    type: alexaPresentationAPL.renderDocument,
+                    document: require(gameInfo.uipage),
+                    datasources: {
+                      'pageData': {
+                          "score" : "Score: " + gameInfo.totalScore,
+                          "currentLevel" : "Level " + gameInfo.currentLevel.id,
+                          "Box1": boxImage[0].current,
+                          "Box2": boxImage[1].current,
+                          "Box3": boxImage[2].current,
+                          "Box4": boxImage[3].current,
+                          "Box5": boxImage[4].current,
+                          "Box6": boxImage[5].current,
+                          "Box7": boxImage[6].current,
+                          "Box8": boxImage[7].current,
+                          "Box9": boxImage[8].current,
+                          "Box10": boxImage[9].current,
+                          "Box11": boxImage[10].current,
+                          "Box12": boxImage[11].current,
+                          "Box13": boxImage[12].current,
+                          "Box14": boxImage[13].current,
+                          "Box15": boxImage[14].current,
+                          "Box16": boxImage[15].current,
+                          "Box17": boxImage[16].current,
+                          "Box18": boxImage[17].current,
+                          "Box19": boxImage[18].current,
+                          "Box20": boxImage[19].current,
+                          "Box21": boxImage[20].current,
+                          "Box22": boxImage[21].current,
+                          "Box23": boxImage[22].current,
+                          "Box24": boxImage[23].current
+                      }
+                    },
+                  });
+                }
+              }else{
+                gameInfo.state = stateStr.win;
+                speechOutput += audios.levelWin;
+                speechOutput += speech.gameWin[0]+ speech.score[0] + gameInfo.totalScore+". ";
+                gameInfo.specificHandlerInput.attributesManager.setPersistentAttributes(gameInfo.specificAttributes);
+                await handlerInput.attributesManager.savePersistentAttributes();
+
+                if (SupportsAPL(handlerInput)) {
+                  handlerInput.responseBuilder.addDirective({
+                    type: alexaPresentationAPL.renderDocument,
+                    document: require('./aplDocuments/yesOrNo.json'),
+                    datasources: {
+                      'yesOrNoData': {
+                        "textTop": "Congradulations!",
+                        "textMid": "You've got "+gameInfo.totalScore+"! ",
+                        "textBot": "Do you want to play again?"
+                      }
+                    },
+                  });
+                }
+              }
+            }else{
+              speechOutput +=audios.closingBox
+                  +audios.closingBox;
+
+              boxImage[gameInfo.firstBox].current = boxImage[gameInfo.firstBox].resource;
+              boxImage[gameInfo.secondBox].current = boxImage[gameInfo.secondBox].resource;
+
+              if (SupportsAPL(handlerInput)) {
+                handlerInput.responseBuilder.addDirective({
+
+                  type: alexaPresentationAPL.renderDocument,
+                  document: require(gameInfo.uipage),
+                  datasources: {
+                    'pageData': {
+                        "score" : "Score: " + gameInfo.totalScore,
+                        "currentLevel" : "Level " + gameInfo.currentLevel.id,
+                        "Box1": boxImage[0].current,
+                        "Box2": boxImage[1].current,
+                        "Box3": boxImage[2].current,
+                        "Box4": boxImage[3].current,
+                        "Box5": boxImage[4].current,
+                        "Box6": boxImage[5].current,
+                        "Box7": boxImage[6].current,
+                        "Box8": boxImage[7].current,
+                        "Box9": boxImage[8].current,
+                        "Box10": boxImage[9].current,
+                        "Box11": boxImage[10].current,
+                        "Box12": boxImage[11].current,
+                        "Box13": boxImage[12].current,
+                        "Box14": boxImage[13].current,
+                        "Box15": boxImage[14].current,
+                        "Box16": boxImage[15].current,
+                        "Box17": boxImage[16].current,
+                        "Box18": boxImage[17].current,
+                        "Box19": boxImage[18].current,
+                        "Box20": boxImage[19].current,
+                        "Box21": boxImage[20].current,
+                        "Box22": boxImage[21].current,
+                        "Box23": boxImage[22].current,
+                        "Box24": boxImage[23].current
+                    }
+                  },
+                });
+              }
+              gameInfo.firstBox = undefined;
+              gameInfo.secondBox = undefined;
+              gameInfo.boxTurn = boxTurnStr.first;
+            }
+            attributesManager.setSessionAttributes(sessionAttributes);
+          }else{
+            console.log('time out event triggered in wrong state');            
+          }
+        
+          repromptText = RepromptText();
+          speechOutput += repromptText;
+          ctx.openMicrophone = true;
+
+          return handlerInput.responseBuilder
+              .speak(speechOutput)
+              .reprompt(repromptText)
+              .getResponse();
+        }
+      
+      default:
+        console.log('exception: echo button pressed');
+    }
+};
+
 const skillBuilder = Alexa.SkillBuilders.custom();    
 
 exports.handler = skillBuilder
@@ -1122,6 +1454,7 @@ exports.handler = skillBuilder
     StartHandler,
     MenuHandler,
     ExitHandler,
+    ButtonTriggerHandler,
     SessionEndedRequestHandler
   )
   .withPersistenceAdapter(new DynamoDbPersistenceAdapter({

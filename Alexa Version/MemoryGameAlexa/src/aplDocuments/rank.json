@@ -23,47 +23,6 @@
                             {
                                 "type": "Container",
                                 "width": "100vw",
-                                "height": "10vh",
-                                "direction": "row",
-                                "paddingLeft": "92vw",
-                                 "items":[
-                                    {
-                                        "type": "TouchWrapper",
-                                        "width": "6vw",
-                                        "height": "9vh",
-                                        "item": {
-                                            "type": "Frame",
-                                            "width": "6vw",
-                                            "height": "9vh",
-                                            "borderColor": "white",
-                                            "borderWidth": "2px",
-                                            "borderRadius": "45vw",
-                                            "item": [
-                                                {
-                                                    "type": "Text",
-                                                    "text": "<",
-                                                    "color": "white",
-                                                    "width": "6vw",
-                                                    "height": "9vh",
-                                                    "textAlign": "center",
-                                                    "textAlignVertical": "center",
-                                                    "fontSize": "7vh",
-                                                    "fontWeight": "100"
-                                                }
-                                            ]
-                                        },
-                                        "onPress": {
-                                            "type": "SendEvent",
-                                            "arguments": [
-                                                "MenuIntent"
-                                            ]
-                                        }
-                                    }
-                                ]
-                            },
-                            {
-                                "type": "Container",
-                                "width": "100vw",
                                 "height": "80vh",
                                 "items": [
                                     {
