@@ -1302,7 +1302,7 @@ const HandleGameInputEvent = async function(handlerInput) {
               RecordScore(sessionAttributes);
               
               // *nc need change to 6 if set back to 6 level
-              if(gameInfo.currentLevel.id < 2){ //TEST DONA
+              if(gameInfo.currentLevel.id < 1){ //TEST DONA
                 levelsUnlocked[gameInfo.currentLevel.id-1].unlocked = true;
                 speechOutput += speech.inGameGoNextLevel;
                 gameInfo.currentLevel = levelsUnlocked[gameInfo.currentLevel.id];
