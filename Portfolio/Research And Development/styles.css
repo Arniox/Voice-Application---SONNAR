@@ -27,7 +27,7 @@ body{
     margin-right: 10px;
 }
 
-.log-containerBox{
+.log-containerBox-80{
 	background-color: #FFF;
 	border-color: #bee5eb;
 	margin-bottom: 1rem;
@@ -35,6 +35,19 @@ body{
     border-radius: 10px;
     font-size: 15px;
     width: 80%;
+    margin: 0 auto;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.log-containerBox-100{
+    background-color: #FFF;
+    border-color: #bee5eb;
+    margin-bottom: 1rem;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    font-size: 15px;
+    width: 99%;
     margin: 0 auto;
     margin-top: 20px;
     margin-bottom: 20px;
