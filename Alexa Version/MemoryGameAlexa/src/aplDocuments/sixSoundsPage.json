@@ -172,7 +172,7 @@
                                         "onPress": {
                                             "type": "SendEvent",
                                             "arguments": [
-                                                "Box",
+                                                "BoxIntent",
                                                 1
                                             ]
                                         }
@@ -200,7 +200,7 @@
                                         "onPress": {
                                             "type": "SendEvent",
                                             "arguments": [
-                                                "Box",
+                                                "BoxIntent",
                                                 2
                                             ]
                                         }
@@ -228,7 +228,7 @@
                                         "onPress": {
                                             "type": "SendEvent",
                                             "arguments": [
-                                                "Box",
+                                                "BoxIntent",
                                                 3
                                             ]
                                         }
@@ -256,7 +256,7 @@
                                         "onPress": {
                                             "type": "SendEvent",
                                             "arguments": [
-                                                "Box",
+                                                "BoxIntent",
                                                 4
                                             ]
                                         }
@@ -293,7 +293,7 @@
                                         "onPress": {
                                             "type": "SendEvent",
                                             "arguments": [
-                                                "Box",
+                                                "BoxIntent",
                                                 5
                                             ]
                                         }
@@ -321,7 +321,7 @@
                                         "onPress": {
                                             "type": "SendEvent",
                                             "arguments": [
-                                                "Box",
+                                                "BoxIntent",
                                                 6
                                             ]
                                         }
@@ -349,7 +349,7 @@
                                         "onPress": {
                                             "type": "SendEvent",
                                             "arguments": [
-                                                "Box",
+                                                "BoxIntent",
                                                 7
                                             ]
                                         }
@@ -377,7 +377,7 @@
                                         "onPress": {
                                             "type": "SendEvent",
                                             "arguments": [
-                                                "Box",
+                                                "BoxIntent",
                                                 8
                                             ]
                                         }
@@ -414,7 +414,7 @@
                                         "onPress": {
                                             "type": "SendEvent",
                                             "arguments": [
-                                                "Box",
+                                                "BoxIntent",
                                                 9
                                             ]
                                         }
@@ -442,7 +442,7 @@
                                         "onPress": {
                                             "type": "SendEvent",
                                             "arguments": [
-                                                "Box",
+                                                "BoxIntent",
                                                 10
                                             ]
                                         }
@@ -470,7 +470,7 @@
                                         "onPress": {
                                             "type": "SendEvent",
                                             "arguments": [
-                                                "Box",
+                                                "BoxIntent",
                                                 11
                                             ]
                                         }
@@ -498,7 +498,7 @@
                                         "onPress": {
                                             "type": "SendEvent",
                                             "arguments": [
-                                                "Box",
+                                                "BoxIntent",
                                                 12
                                             ]
                                         }
