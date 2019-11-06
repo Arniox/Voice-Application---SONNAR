@@ -9,7 +9,7 @@ const { Alexa } = require('jovo-platform-alexa');
 const { GoogleAssistant,
     List,
     OptionItem,
-    } = require('jovo-platform-googleassistant'); 
+    } = require('jovo-platform-googleassistant');
 const { JovoDebugger } = require('jovo-plugin-debugger');
 const { FileDb } = require('jovo-db-filedb'); //<----- FileDB
 const { DynamoDb } = require('jovo-db-dynamodb'); // <----- DynamoDB
@@ -66,20 +66,9 @@ var bestScore = 0;
 //Previous text from winning
 var outsideText = "";
 
-//Hax used for debugging - will show the answers in the description of the OptionItem. HAX KEY
-var hax = false;
-
-// UI List items -----------------------------------------------------------------------------------
-
 /*
     MENU ITEMS ------------------------------------------------------------------ MENU ITEMS
 */
-
-let haxItem = new OptionItem(); //ENSURE 'hacks' PHRASE IS REMOVED FROM JSON FILE
-haxItem.setTitle("hacks");
-haxItem.setDescription("Hacks to for debugging, Will start the game");
-haxItem.setKey("haxOption");
-haxItem.addSynonym("hacks");
 
 let restartItem = new OptionItem();
 restartItem.setTitle("Restart");
@@ -135,7 +124,7 @@ Box1Item.addSynonym("1");
 Box1Item.setImage({ url: 'https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/Box1.png',
                     accessibilityText: 'Unopened Box'});
 
-let Box2Item = new OptionItem();//2 
+let Box2Item = new OptionItem();//2
 Box2Item.setTitle("2");
 Box2Item.setDescription("");
 Box2Item.setKey("Box2Item");
@@ -502,10 +491,10 @@ app.setHandler({
         currentStateOb.stateName = states[0].stateName;
         currentStateOb.userAttempts = states[0].userAttempts;
 
-        
+
         if(this.$user.$data.timesLoggedIn == 0 || this.$user.$data.timesLoggedIn == null)//checks if the user has logged in before
         {
-            this.$user.$data.timesLoggedIn = 1; //first time users will have their 'timesLoggedIn' field set to 1 in the database 
+            this.$user.$data.timesLoggedIn = 1; //first time users will have their 'timesLoggedIn' field set to 1 in the database
             this.$user.$data.bestScore = 0; //Set new users best score to 0 in database
             bestScore = 0;
         }
@@ -513,16 +502,16 @@ app.setHandler({
         {
             this.$user.$data.timesLoggedIn += 1; //repeat users will increment their 'timesLoggedIn' field by 1
             bestScore = this.$user.$data.bestScore; //assign a repeat users best score in DB to a local bestScore variable
-            
+
         }
-        numberOfTimesLoggedIn = this.$user.$data.timesLoggedIn; //assign the users 'timesLoggedIn' value to a local 'numberOfTimesLoggedIn' variable        
-        
+        numberOfTimesLoggedIn = this.$user.$data.timesLoggedIn; //assign the users 'timesLoggedIn' value to a local 'numberOfTimesLoggedIn' variable
+
         outsideText = "";
         //Logs
         console.log("Local Number of times logged in: "+numberOfTimesLoggedIn);
         console.log("DB Number of times logged in: "+this.$user.$data.timesLoggedIn);
         console.log("local bestScore var: " +bestScore);
-        console.log("bestScore in DB: " + this.$user.$data.bestScore);              
+        console.log("bestScore in DB: " + this.$user.$data.bestScore);
 
         if(numberOfTimesLoggedIn > 3){ //Short welcome for repeat users, long intro for new users
             this.$speech.addText(
@@ -534,14 +523,14 @@ app.setHandler({
                 '<audio src="https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/sounds/bgm.mp3"/>'+
                 '<audio src="https://alexa-hackathon-memory-game-assets.s3.amazonaws.com/sounds/Voices/Memory_Welcome.mp3"/> '
             );
-        }        
-        
+        }
+
         this.$reprompt.addText(Reprompt());
         // GenerateDisplayTexts();
         // this.showImageCard(title, content, imageUrl);
         //this.followUpState('StartState').ask(this.$speech, this.$reprompt);
         return this.toStatelessIntent('GiveMenu');
-    },   
+    },
 
     //---Start state: Only yes or no are accepted-------------------------------------------------------------------------------------------------------------------------------
     StartState: {
@@ -552,7 +541,7 @@ app.setHandler({
             {
                 this.toIntent('YesIntent');
             }
-            else if(selectedElement === 'NoOption') 
+            else if(selectedElement === 'NoOption')
             {
                 this.toIntent('NoIntent');
             }
@@ -587,7 +576,7 @@ app.setHandler({
                 this.followUpState('StartState').ask(this.$speech, this.$reprompt);
             }
         },
-    }, //REMOVE START STATE? 
+    }, //REMOVE START STATE?
 
     //Stateless intent for giving menu
     GiveMenu(){
@@ -622,7 +611,7 @@ app.setHandler({
                       '<p>Or ask for help! </p>';
             numberOfTimesLoggedIn++;
         }
-        
+
         //---------Display Generation-----------------------------
         let menuList = new List();
         menuList.setTitle('MainMenu');
@@ -630,17 +619,15 @@ app.setHandler({
         menuList.addItem(rankItem);
         menuList.addItem(helpItem);
         menuList.addItem(quitItem);
-        menuList.addItem(haxItem);
         this.$googleAction.showList(menuList);
         //---------Display Generation-----------------------------
 
         //set speech and reprompt, as well as reset any temporarily changed variables
-        hax = false;
-        finishedAllLevels = false;        
+        finishedAllLevels = false;
         this.$speech.addText(speech);
         this.$reprompt.addText(Reprompt());
         this.followUpState('MenuSelectionState').ask(this.$speech, this.$reprompt);
-        
+
     },
     //---MenuSelectState------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     MenuSelectionState: {
@@ -651,22 +638,17 @@ app.setHandler({
             {
                 this.toIntent('PlayIntent');
             }
-            else if(selectedElement === 'MainMenuQuitOption') 
+            else if(selectedElement === 'MainMenuQuitOption')
             {
                 this.toIntent('ExitIntent');
             }
-            else if(selectedElement === 'MainMenuHelpOption') 
+            else if(selectedElement === 'MainMenuHelpOption')
             {
                 this.toIntent('HelpIntent');
             }
-            else if(selectedElement === 'MainMenuRankOption') 
+            else if(selectedElement === 'MainMenuRankOption')
             {
                 this.toIntent('RankIntent');
-            }
-            else if(selectedElement === 'haxOption') 
-            {
-                hax = true;
-                this.toIntent('PlayIntent');
             }
         },
 
@@ -699,7 +681,7 @@ app.setHandler({
             this.followUpState('MenuSelectionState').ask(this.$speech, this.$reprompt);
         },
         RankIntent(){
-            
+
             //Current state is the main menu
             currentStateOb.state = states[3].state;
             currentStateOb.stateName = states[3].stateName;
@@ -719,7 +701,7 @@ app.setHandler({
                 menuList.addItem(quitItem);
                 this.$googleAction.showList(menuList);
             //---------Display Generation-----------------------------
-        
+
             this.followUpState('MenuSelectionState').ask(this.$speech, this.$reprompt);
         },
         PlayIntent(){
@@ -753,7 +735,7 @@ app.setHandler({
                 menuList.addItem(quitItem);
                 this.$googleAction.showList(menuList);
                 //---------Display Generation-----------------------------
-                
+
                 this.followUpState('MenuSelectionState').ask(this.$speech, this.$reprompt);
             }
         },
@@ -765,7 +747,7 @@ app.setHandler({
         currentStateOb.state = states[4].state;
         currentStateOb.stateName = states[4].stateName;
         currentStateOb.userAttempts = states[4].userAttempts;
-   
+
         //Set up speech
         speech  = "";
         if(fromReset == true)
@@ -809,7 +791,7 @@ app.setHandler({
         //Add winning speech
         if(outsideText != ""){
             speech += outsideText;
-        }        
+        }
 
         //----------------Intro---------------------
         if(numberOfTimesLoggedIn < 5 && currentLevel < 2){
@@ -846,7 +828,7 @@ app.setHandler({
             "<p>" + (levelsUnlocked[currentLevel-1].numberOfSounds*2) + " sounds! </p>" +
             "<p>" + levelsUnlocked[currentLevel-1].numberOfSounds + " pairs! Ready, set, GO! </p>";
         }
-        
+
         //Create a dynamic list of boxItems to select from
 
         //---------Display Generation-----------------------------
@@ -854,10 +836,6 @@ app.setHandler({
          aBoxList.setTitle('Boxes to Choose from');
          displayCurrentLevelBoxes(aBoxList);
          checkBoxImage(aBoxList);
-         if(hax == true)
-            {
-                haxFunc();
-            }            
          this.$googleAction.showList(aBoxList);
          this.$googleAction.showSuggestionChips(['help','Show my rank','Back to menu', 'Reset game', 'Quit']);
         //---------Display Generation-----------------------------
@@ -878,7 +856,7 @@ app.setHandler({
             finishedAllLevels = true;
             if(checkScore() == true)
             {
-               this.$user.$data.bestScore = bestScore; 
+               this.$user.$data.bestScore = bestScore;
             }
             else
             {
@@ -901,27 +879,27 @@ app.setHandler({
         FinishedAllLevelsState will let the user decide if they want to restart the game or go back to the main menu
     */
     FinishedAllLevelsState: {
-        ON_ELEMENT_SELECTED() 
+        ON_ELEMENT_SELECTED()
         {
             let selectedElement = this.getSelectedElementId();
             if (selectedElement === 'menuOption')
             {
                 this.toIntent('BackToMenuIntent');
             }
-            else if(selectedElement === 'restartOption') 
+            else if(selectedElement === 'restartOption')
             {
                 this.toIntent('ResetIntent');
             }
         },
 
         BackToMenuIntent()
-        {               
+        {
             resetAllLevels();
             return this.toStatelessIntent('GiveMenu');
         },
 
         ResetIntent()
-        {               
+        {
             resetAllLevels();
             fromReset = true;
             return this.toStatelessIntent('InitialisationIntent');
@@ -937,24 +915,24 @@ app.setHandler({
             {
                 this.toIntent('YesIntent');
             }
-            else if(selectedElement === 'NoOption') 
+            else if(selectedElement === 'NoOption')
             {
                 this.toIntent('NoIntent');
             }
         },
 
-        YesIntent(){            
+        YesIntent(){
             fromReset = true;
             return this.toStatelessIntent('InitialisationIntent');
         },
 
         NoIntent()
         {
-            speech = ""; 
+            speech = "";
             if(hasFirstSelected == false)
             {
                 speech += "<p>Back to the game! Please select your first box </p>";
-            } 
+            }
             else{
                 speech += "<p>Back to the game! Please select your second box </p>";
             }
@@ -963,10 +941,6 @@ app.setHandler({
             aBoxList.setTitle('Boxes to Choose from');
             displayCurrentLevelBoxes(aBoxList);
             checkBoxImage(aBoxList);
-            if(hax == true)
-            {
-                haxFunc();
-            }
             this.$googleAction.showList(aBoxList);
             this.$googleAction.showSuggestionChips(['help','Show my rank','Back to menu', 'Reset game', 'Quit']);
             //---------Display Generation-----------------------------
@@ -984,7 +958,7 @@ app.setHandler({
             {
                 this.toIntent('YesIntent');
             }
-            else if(selectedElement === 'NoOption') 
+            else if(selectedElement === 'NoOption')
             {
                 this.toIntent('NoIntent');
             }
@@ -1000,7 +974,7 @@ app.setHandler({
             if(hasFirstSelected == false)
             {
                 speech += "<p>Back to the game! Please select your first box </p>";
-            } 
+            }
             else{
                 speech += "<p>Back to the game! Please select your second box </p>";
             }
@@ -1010,12 +984,8 @@ app.setHandler({
             aBoxList.setTitle('Boxes to Choose from');
             displayCurrentLevelBoxes(aBoxList);
             checkBoxImage(aBoxList);
-            if(hax == true)
-            {
-                haxFunc();
-            }
             this.$googleAction.showList(aBoxList);
-            this.$googleAction.showSuggestionChips(['help','Show my rank','Back to menu', 'Reset game', 'Quit']);       
+            this.$googleAction.showSuggestionChips(['help','Show my rank','Back to menu', 'Reset game', 'Quit']);
             //---------Display Generation-----------------------------
 
             this.$speech.addText(speech);
@@ -1031,17 +1001,17 @@ app.setHandler({
             let selectedElement = this.getSelectedElementId();
             if (selectedElement === 'Box1Item')
             {
-                BoxChoiceToChange = 0;                
+                BoxChoiceToChange = 0;
                 this.toIntent('BoxIntent');
             }
             else if (selectedElement === 'Box2Item')
             {
-                BoxChoiceToChange = 1; 
+                BoxChoiceToChange = 1;
                 this.toIntent('BoxIntent');
             }
             else if (selectedElement === 'Box3Item')
             {
-                BoxChoiceToChange = 2; 
+                BoxChoiceToChange = 2;
                 this.toIntent('BoxIntent');
             }
             else if (selectedElement === 'Box4Item')
@@ -1051,108 +1021,108 @@ app.setHandler({
             }
             else if (selectedElement === 'Box5Item')
             {
-                BoxChoiceToChange = 4; 
+                BoxChoiceToChange = 4;
                 this.toIntent('BoxIntent');
             }
             else if (selectedElement === 'Box6Item')
             {
-                BoxChoiceToChange = 5; 
+                BoxChoiceToChange = 5;
                 this.toIntent('BoxIntent');
             }
             else if (selectedElement === 'Box7Item')
             {
-                BoxChoiceToChange = 6; 
+                BoxChoiceToChange = 6;
                 this.toIntent('BoxIntent');
             }
             else if (selectedElement === 'Box8Item')
             {
-                BoxChoiceToChange = 7; 
+                BoxChoiceToChange = 7;
                 this.toIntent('BoxIntent');
             }
             else if (selectedElement === 'Box9Item')
             {
-                BoxChoiceToChange = 8; 
+                BoxChoiceToChange = 8;
                 this.toIntent('BoxIntent');
             }
             else if (selectedElement === 'Box10Item')
             {
-                BoxChoiceToChange = 9; 
+                BoxChoiceToChange = 9;
                 this.toIntent('BoxIntent');
             }
             else if (selectedElement === 'Box11Item')
             {
-                BoxChoiceToChange = 10; 
+                BoxChoiceToChange = 10;
                 this.toIntent('BoxIntent');
             }
             else if (selectedElement === 'Box12Item')
             {
-                BoxChoiceToChange = 11; 
+                BoxChoiceToChange = 11;
                 this.toIntent('BoxIntent');
             }
             else if (selectedElement === 'Box13Item')
             {
-                BoxChoiceToChange = 12; 
+                BoxChoiceToChange = 12;
                 this.toIntent('BoxIntent');
             }
             else if (selectedElement === 'Box14Item')
             {
-                BoxChoiceToChange = 13; 
+                BoxChoiceToChange = 13;
                 this.toIntent('BoxIntent');
             }
             else if (selectedElement === 'Box15Item')
             {
-                BoxChoiceToChange = 14; 
+                BoxChoiceToChange = 14;
                 this.toIntent('BoxIntent');
             }
             else if (selectedElement === 'Box16Item')
             {
-                BoxChoiceToChange = 15; 
+                BoxChoiceToChange = 15;
                 this.toIntent('BoxIntent');
             }
             else if (selectedElement === 'Box17Item')
             {
-                BoxChoiceToChange = 16; 
+                BoxChoiceToChange = 16;
                 this.toIntent('BoxIntent');
             }
             else if (selectedElement === 'Box18Item')
             {
-                BoxChoiceToChange = 17; 
+                BoxChoiceToChange = 17;
                 this.toIntent('BoxIntent');
             }
             else if (selectedElement === 'Box19Item')
             {
-                BoxChoiceToChange = 18; 
+                BoxChoiceToChange = 18;
                 this.toIntent('BoxIntent');
             }
             else if (selectedElement === 'Box20Item')
             {
-                BoxChoiceToChange = 19; 
+                BoxChoiceToChange = 19;
                 this.toIntent('BoxIntent');
             }
             else if (selectedElement === 'Box21Item')
             {
-                BoxChoiceToChange = 20; 
+                BoxChoiceToChange = 20;
                 this.toIntent('BoxIntent');
             }
             else if (selectedElement === 'Box22Item')
             {
-                BoxChoiceToChange = 21; 
+                BoxChoiceToChange = 21;
                 this.toIntent('BoxIntent');
             }
             else if (selectedElement === 'Box23Item')
             {
-                BoxChoiceToChange = 22; 
+                BoxChoiceToChange = 22;
                 this.toIntent('BoxIntent');
             }
             else if (selectedElement === 'Box24Item')
             {
-                BoxChoiceToChange = 23; 
+                BoxChoiceToChange = 23;
                 this.toIntent('BoxIntent');
             }
         },
 
         BoxIntent(){
-            speech = "";           
+            speech = "";
 
             if(!hasFirstSelected){ //Check if first box or second box is being chosen
                 firstBoxChoice = BoxChoiceToChange;
@@ -1249,12 +1219,8 @@ app.setHandler({
             BboxList.setTitle('Boxes to Choose from');
             displayCurrentLevelBoxes(BboxList);
             checkBoxImage(BboxList);
-            if(hax == true)
-            {
-                haxFunc();
-            }
             this.$googleAction.showList(BboxList);
-            this.$googleAction.showSuggestionChips(['help','Show my rank','Back to menu', 'Reset game', 'Quit']);       
+            this.$googleAction.showSuggestionChips(['help','Show my rank','Back to menu', 'Reset game', 'Quit']);
             //---------Display Generation-----------------------------
 
             this.$speech.addText(speech);
@@ -1273,12 +1239,8 @@ app.setHandler({
             BboxList.setTitle('Boxes to Choose from');
             displayCurrentLevelBoxes(BboxList);
             checkBoxImage(BboxList);
-            if(hax == true)
-            {
-                haxFunc();
-            }
             this.$googleAction.showList(BboxList);
-            this.$googleAction.showSuggestionChips(['help','Back to menu', 'Reset game', 'Quit']);          
+            this.$googleAction.showSuggestionChips(['help','Back to menu', 'Reset game', 'Quit']);
             //---------Display Generation-----------------------------
             this.$speech.addText(speech);
             this.$reprompt.addText(Reprompt());
@@ -1295,12 +1257,8 @@ app.setHandler({
             BboxList.setTitle('Boxes to Choose from');
             displayCurrentLevelBoxes(BboxList);
             checkBoxImage(BboxList);
-            if(hax == true)
-            {
-                haxFunc();
-            }
             this.$googleAction.showList(BboxList);
-            this.$googleAction.showSuggestionChips(['Show my rank','Back to menu', 'Reset game', 'Quit']);         
+            this.$googleAction.showSuggestionChips(['Show my rank','Back to menu', 'Reset game', 'Quit']);
             //---------Display Generation-----------------------------
             this.$speech.addText(speech);
             this.$reprompt.addText(Reprompt());
@@ -1311,7 +1269,7 @@ app.setHandler({
             calculateScore();
             if(currentLevel > 1)
             {
-                speech += "<p>Are you sure you want to restart your game? you will lose your current score of " + playerScore + 
+                speech += "<p>Are you sure you want to restart your game? you will lose your current score of " + playerScore +
                 " and sent back to the first level </p>";
             }
             else{
@@ -1323,8 +1281,8 @@ app.setHandler({
             startList.setTitle('Reset Game?');
             startList.addItem(yesItem);
             startList.addItem(noItem);
-            this.$googleAction.showList(startList);            
-            //---------Display Generation-----------------------------  
+            this.$googleAction.showList(startList);
+            //---------Display Generation-----------------------------
             this.$speech.addText(speech);
             this.$reprompt.addText(Reprompt());
             this.followUpState('ResetGameState').ask(this.$speech, this.$reprompt);
@@ -1334,7 +1292,7 @@ app.setHandler({
             calculateScore();
             if(currentLevel > 1)
             {
-                speech += "<p>Are you sure you want to leave your game? you will lose your current score of " + playerScore + 
+                speech += "<p>Are you sure you want to leave your game? you will lose your current score of " + playerScore +
                 " and sent back to level 1 </p>";
             }
             else{
@@ -1346,7 +1304,7 @@ app.setHandler({
             startList.addItem(yesItem);
             startList.addItem(noItem);
             this.$googleAction.showList(startList);
-            //---------Display Generation-----------------------------        
+            //---------Display Generation-----------------------------
 
             this.$speech.addText(speech);
             this.$reprompt.addText(Reprompt());
@@ -1424,12 +1382,8 @@ app.setHandler({
                 BboxList.setTitle('Boxes to Choose from');
                 displayCurrentLevelBoxes(BboxList);
                 checkBoxImage(BboxList);
-                if(hax == true)
-                {
-                    haxFunc();
-                }
                 this.$googleAction.showList(BboxList);
-                this.$googleAction.showSuggestionChips(['help','Show my rank','Back to menu', 'Reset game', 'Quit']);         
+                this.$googleAction.showSuggestionChips(['help','Show my rank','Back to menu', 'Reset game', 'Quit']);
                 //---------Display Generation-----------------------------
                 this.followUpState('InGameState').ask(this.$speech, this.$reprompt);
             }
@@ -1454,7 +1408,7 @@ app.setHandler({
             speech += "<p>You're now ready for the next shipment! </p>";
         }
         else //if they have completed all the rounds
-        {            
+        {
             return this.toStatelessIntent('FinishedGame');
         }
 
@@ -1477,8 +1431,8 @@ app.setHandler({
         outsideText = speech;
         console.log("outsideText: " + outsideText);
         return this.toStatelessIntent('InitialisationIntent');
-    },   
-    
+    },
+
     END() {
         if(checkScore() == true)
         {
@@ -1542,11 +1496,11 @@ function showAnswers()
 {
     console.log("*******************ANSWERS***************************");
     for(var i = 0; i < inGameSounds.length; i++)
-    {     
+    {
         if (inGameSounds[i].opened == false)
         {
            console.log((i + 1) +" = "+ inGameSounds[i].name +" ||| ");
-        }        
+        }
     }
     console.log("*******************ANSWERS***************************");
 }
@@ -1675,11 +1629,11 @@ function GenerateDisplayTexts(){
         var answers = "";
         title = "In Game!";
         for(var i = 0; i < inGameSounds.length; i++) //ITERATES THROUGH ALL THE BOXES TO DISPLAY THE ANSWERS, USED FOR TESTING PURPOSES
-        {     
+        {
             if (inGameSounds[i].opened == false)
             {
                 answers += (i + 1) +" = "+ inGameSounds[i].name +" ||| ";
-            }    
+            }
         }
         content = answers;
     }
@@ -1691,7 +1645,7 @@ function GenerateDisplayTexts(){
 
 
 /*
-    Calculates/updates the users session score 
+    Calculates/updates the users session score
 */
 function calculateScore()
 {
@@ -1710,7 +1664,7 @@ function calculateScore()
             playerScore += Math.floor(1000*(Math.pow(levelsUnlocked[i].minimumTries, 1/(levelsUnlocked[i].tries/levelsUnlocked[i].minimumTries))));
             console.log("playerScore is now: "+playerScore);
             console.log("level " +(i + 1)+" tries = " + levelsUnlocked[i].tries);
-        }            
+        }
     }
 }
 
@@ -1727,12 +1681,12 @@ function checkScore()
         console.log("new Bestscore is: "+bestScore);
         return true;
     }
-    else 
+    else
     {
         console.log("no new high score: bestScore = " +bestScore+ " while playerScore = " +playerScore);
         return false;
     }
-    
+
 }
 
 /*
@@ -1742,123 +1696,13 @@ function resetAllLevels()
 {
     levelsUnlocked[0].tries = 0;
 
-    for(var i = 1; i < levelsUnlocked.length; i++) 
+    for(var i = 1; i < levelsUnlocked.length; i++)
     {
         levelsUnlocked[i].unlocked = false;
         levelsUnlocked[i].tries = 0;
     }
     playerScore = 0;
     currentLevel = 1;
-}
-
-//debugging function that displays the name of the animal on the boxItem (hax)
-function haxFunc()
-{
-    switch(currentLevel){
-        case(1):
-            Box1Item.setDescription(inGameSounds[0].name);
-            Box2Item.setDescription(inGameSounds[1].name);
-            Box3Item.setDescription(inGameSounds[2].name);
-            Box4Item.setDescription(inGameSounds[3].name);
-            Box5Item.setDescription(inGameSounds[4].name);
-            Box6Item.setDescription(inGameSounds[5].name);
-            break;
-           
-        case(2):
-            Box1Item.setDescription(inGameSounds[0].name);
-            Box2Item.setDescription(inGameSounds[1].name);
-            Box3Item.setDescription(inGameSounds[2].name);
-            Box4Item.setDescription(inGameSounds[3].name);
-            Box5Item.setDescription(inGameSounds[4].name);
-            Box6Item.setDescription(inGameSounds[5].name);
-            Box7Item.setDescription(inGameSounds[6].name);
-            Box8Item.setDescription(inGameSounds[7].name);
-            break;
-
-        case(3):
-            Box1Item.setDescription(inGameSounds[0].name);
-            Box2Item.setDescription(inGameSounds[1].name);
-            Box3Item.setDescription(inGameSounds[2].name);
-            Box4Item.setDescription(inGameSounds[3].name);
-            Box5Item.setDescription(inGameSounds[4].name);
-            Box6Item.setDescription(inGameSounds[5].name);
-            Box7Item.setDescription(inGameSounds[6].name);
-            Box8Item.setDescription(inGameSounds[7].name);
-            Box9Item.setDescription(inGameSounds[8].name);
-            Box10Item.setDescription(inGameSounds[9].name);
-            Box11Item.setDescription(inGameSounds[10].name);
-            Box12Item.setDescription(inGameSounds[11].name);
-            break;
-
-        case(4):
-            Box1Item.setDescription(inGameSounds[0].name);
-            Box2Item.setDescription(inGameSounds[1].name);
-            Box3Item.setDescription(inGameSounds[2].name);
-            Box4Item.setDescription(inGameSounds[3].name);
-            Box5Item.setDescription(inGameSounds[4].name);
-            Box6Item.setDescription(inGameSounds[5].name);
-            Box7Item.setDescription(inGameSounds[6].name);
-            Box8Item.setDescription(inGameSounds[7].name);
-            Box9Item.setDescription(inGameSounds[8].name);
-            Box10Item.setDescription(inGameSounds[9].name);
-            Box11Item.setDescription(inGameSounds[10].name);
-            Box12Item.setDescription(inGameSounds[11].name);
-            Box13Item.setDescription(inGameSounds[12].name);
-            Box14Item.setDescription(inGameSounds[13].name);
-            Box15Item.setDescription(inGameSounds[14].name);
-            Box16Item.setDescription(inGameSounds[15].name);
-            break; 
-
-        case(5):
-            Box1Item.setDescription(inGameSounds[0].name);
-            Box2Item.setDescription(inGameSounds[1].name);
-            Box3Item.setDescription(inGameSounds[2].name);
-            Box4Item.setDescription(inGameSounds[3].name);
-            Box5Item.setDescription(inGameSounds[4].name);
-            Box6Item.setDescription(inGameSounds[5].name);
-            Box7Item.setDescription(inGameSounds[6].name);
-            Box8Item.setDescription(inGameSounds[7].name);
-            Box9Item.setDescription(inGameSounds[8].name);
-            Box10Item.setDescription(inGameSounds[9].name);
-            Box11Item.setDescription(inGameSounds[10].name);
-            Box12Item.setDescription(inGameSounds[11].name);
-            Box13Item.setDescription(inGameSounds[12].name);
-            Box14Item.setDescription(inGameSounds[13].name);
-            Box15Item.setDescription(inGameSounds[14].name);
-            Box16Item.setDescription(inGameSounds[15].name);
-            Box17Item.setDescription(inGameSounds[16].name);
-            Box18Item.setDescription(inGameSounds[17].name);
-            // Box19Item.setDescription(inGameSounds[18].name);
-            // Box20Item.setDescription(inGameSounds[19].name);
-            break;
-
-        // case(6):
-        //     Box1Item.setDescription(inGameSounds[0].name);
-        //     Box2Item.setDescription(inGameSounds[1].name);
-        //     Box3Item.setDescription(inGameSounds[2].name);
-        //     Box4Item.setDescription(inGameSounds[3].name);
-        //     Box5Item.setDescription(inGameSounds[4].name);
-        //     Box6Item.setDescription(inGameSounds[5].name);
-        //     Box7Item.setDescription(inGameSounds[6].name);
-        //     Box8Item.setDescription(inGameSounds[7].name);
-        //     Box9Item.setDescription(inGameSounds[8].name);
-        //     Box10Item.setDescription(inGameSounds[9].name);
-        //     Box11Item.setDescription(inGameSounds[10].name);
-        //     Box12Item.setDescription(inGameSounds[11].name);
-        //     Box13Item.setDescription(inGameSounds[12].name);
-        //     Box14Item.setDescription(inGameSounds[13].name);
-        //     Box15Item.setDescription(inGameSounds[14].name);
-        //     Box16Item.setDescription(inGameSounds[15].name);
-        //     Box17Item.setDescription(inGameSounds[16].name);
-        //     Box18Item.setDescription(inGameSounds[17].name);
-        //     Box19Item.setDescription(inGameSounds[18].name);
-        //     Box20Item.setDescription(inGameSounds[19].name);
-        //     Box21Item.setDescription(inGameSounds[20].name);
-        //     Box22Item.setDescription(inGameSounds[21].name);
-        //     Box23Item.setDescription(inGameSounds[22].name);
-        //     Box24Item.setDescription(inGameSounds[23].name);
-        //     break;        
-    }
 }
 
 /*
@@ -1882,7 +1726,7 @@ function displayCurrentLevelBoxes(passedInList)
             passedInList.addItem(Box5Item);
             passedInList.addItem(Box6Item);
             break;
-           
+
         case(2):
         Box1Item.setDescription(inGameSounds[0].name);
         Box2Item.setDescription(inGameSounds[1].name);
@@ -1961,7 +1805,7 @@ function displayCurrentLevelBoxes(passedInList)
             passedInList.addItem(Box14Item);
             passedInList.addItem(Box15Item);
             passedInList.addItem(Box16Item);
-            break; 
+            break;
 
         case(5):
             passedInList.addItem(Box1Item);
@@ -2011,7 +1855,7 @@ function displayCurrentLevelBoxes(passedInList)
         //     passedInList.addItem(Box22Item);
         //     passedInList.addItem(Box23Item);
         //     passedInList.addItem(Box24Item);
-        //     break;        
+        //     break;
     }
 }
 
@@ -2023,7 +1867,7 @@ function checkBoxImage()
         {
             switch(i)
             {
-                case(0):                        
+                case(0):
                 setBoxItemsToOpenImage(1);
                 break;
 
@@ -2047,7 +1891,7 @@ function checkBoxImage()
                 setBoxItemsToOpenImage(6);
                 break;
 
-                case(6):                        
+                case(6):
                 setBoxItemsToOpenImage(7);
                 break;
 
@@ -2071,7 +1915,7 @@ function checkBoxImage()
                 setBoxItemsToOpenImage(12);
                 break;
 
-                case(12):                        
+                case(12):
                 setBoxItemsToOpenImage(13);
                 break;
 
@@ -2095,7 +1939,7 @@ function checkBoxImage()
                 setBoxItemsToOpenImage(18);
                 break;
 
-                // case(18):                        
+                // case(18):
                 // setBoxItemsToOpenImage(19);
                 // break;
 
@@ -2221,7 +2065,7 @@ function checkBoxImage()
                 // break;
             }
         }
-    }    
+    }
 }
 
 function setBoxItemsToDefault(boxNum)
@@ -2371,16 +2215,16 @@ function setBoxItemsToDefault(boxNum)
         //                 Box24Item.setImage({ url: 'https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/Box24.png',
         //                 accessibilityText: 'Unopened Box'});
         // break;
-    }    
+    }
 }
 
 function setBoxItemsToOpenImage(boxNum)
 {
-    var i = (boxNum - 1); //i is used to access 'inGameSounds' index, it is initialized to (boxNum - 1) because the number passed into the function will represent the boxItem number - which starts at 1 for readibility purposes.  
+    var i = (boxNum - 1); //i is used to access 'inGameSounds' index, it is initialized to (boxNum - 1) because the number passed into the function will represent the boxItem number - which starts at 1 for readibility purposes.
 
     switch(boxNum)
     {
-        case(1):                        
+        case(1):
             Box1Item.setImage({ url: "https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/" + inGameSounds[i].name +".png",
                                 accessibilityText: 'Opened Box'});
             Box1Item.setDescription(inGameSounds[i].name);
@@ -2523,5 +2367,5 @@ function setBoxItemsToOpenImage(boxNum)
         // Box24Item.setImage({ url: "https://s3.amazonaws.com/alexa-hackathon-memory-game-assets/Image/" + inGameSounds[i].name +".png",
         //                     accessibilityText: 'Opened Box'});
         // break;
-    }    
+    }
 }
